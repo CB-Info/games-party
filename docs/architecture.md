@@ -1,0 +1,393 @@
+# Architecture — Games Party
+
+> Tant qu'un point marqué **À DÉCIDER** subsiste, il ne doit pas être implémenté.
+> L'organisation des dossiers et les règles de couches sont décrites dans `CLAUDE.md`, section « Organisation du code ».
+
+## 1. Contexte et contraintes
+
+- Groupe d'amis en France, en vocal Discord pendant les parties.
+- **10 personnes maximum par room**, spectateurs et bots compris.
+- Jeux temps réel (curseurs synchronisés 30 fois par seconde) et, plus tard, jeux au tour par tour.
+- **Un seul process Node** sur Render (offre gratuite, région Frankfurt). Tout l'état est en mémoire, sans base de données.
+- PC avec souris uniquement.
+
+Conséquences acceptées :
+
+- Un redémarrage du serveur (déploiement, mise en veille, redémarrage imposé par Render) ferme toutes les rooms en cours.
+- Après 15 minutes sans trafic, le serveur se met en veille. Le premier visiteur attend environ une minute qu'il redémarre.
+
+## 2. Vue d'ensemble
+
+```
+ Navigateur (React SPA)                    Serveur Node (un seul process)
+┌─────────────────────────┐              ┌──────────────────────────────────┐
+│ Pages : accueil, room   │   HTTP       │ Express : sert dist/client       │
+│ UI React (lobby, scores)│◄────────────►│          + /healthz              │
+│ Engine : canvas, curseur│              │                                  │
+│ virtuel, interpolation  │  WebSocket   │ Socket.IO (handlers)             │
+│                         │◄────────────►│   └─ RoomManager                 │
+└─────────────────────────┘ (Socket.IO)  │        └─ Room (état, hôte, tick)│
+                                         │             └─ GameInstance      │
+                                         └──────────────────────────────────┘
+```
+
+- **En production :** le site et Socket.IO sont servis par le même process, à la même adresse. Pas de CORS.
+- **En développement :** Vite (port 5173) redirige `/socket.io` vers le serveur (port 3000).
+- Toute requête HTTP qui ne correspond ni à un fichier statique, ni à `/healthz`, ni à `/socket.io` renvoie `index.html`. Le routage est géré par le client.
+
+### Routes du client
+
+| Route      | Contenu                                                                                                                                                                                                                        |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `/`        | Accueil : saisie du pseudo, bouton « Créer une room »                                                                                                                                                                          |
+| `/r/:code` | Room : lobby, puis jeu, puis résultats. Si la room n'existe pas : message « Cette room n'existe pas ou a expiré » et bouton de retour à l'accueil. Si le pseudo n'est pas encore défini : saisie du pseudo avant de rejoindre. |
+| autre      | Page 404 avec bouton de retour à l'accueil                                                                                                                                                                                     |
+
+Sur un écran tactile sans souris (détecté via `matchMedia("(pointer: coarse)")` sans `(any-pointer: fine)`), toutes les routes affichent « Games Party se joue sur ordinateur, avec une souris. »
+
+## 3. Glossaire
+
+| Terme          | Définition                                                                                            |
+| -------------- | ----------------------------------------------------------------------------------------------------- |
+| **Room**       | Salon identifié par un code. Contient des joueurs et enchaîne les parties.                            |
+| **Joueur**     | Personne présente dans une room et participant aux parties.                                           |
+| **Hôte**       | Joueur qui choisit et lance les jeux.                                                                 |
+| **Spectateur** | Personne arrivée pendant une partie. Elle la regarde sans jouer et devient joueur au retour au lobby. |
+| **Partie**     | Une session d'un jeu, du compte à rebours aux résultats. Peut contenir plusieurs manches.             |
+| **Manche**     | Subdivision d'une partie, définie par chaque jeu.                                                     |
+| **Input**      | Intention envoyée par un client (ex. : déplacement de souris).                                        |
+| **Tick**       | Un pas de la boucle serveur (30 par seconde).                                                         |
+| **Vue**        | Ce qu'un destinataire précis a le droit de voir de l'état du jeu.                                     |
+| **Session**    | Identité d'un navigateur, conservée entre les rechargements de page.                                  |
+
+## 4. Identité et session
+
+- À la première connexion sans `sessionToken` valide, le serveur génère :
+  - un `sessionToken` **secret** (nanoid, 32 caractères), stocké par le client dans `localStorage` et renvoyé à chaque connexion dans `auth` du handshake Socket.IO ;
+  - un `playerId` **public** (nanoid, 12 caractères), qui identifie le joueur auprès des autres.
+- Le serveur envoie ces deux valeurs via `session:init`. Le `sessionToken` n'est jamais envoyé à un autre client ni écrit dans les logs.
+- Les sessions sont gardées en mémoire. Une session qui n'est liée à aucune room ni à aucun socket depuis 24 h est supprimée.
+- Le client stocke aussi dans `localStorage` son pseudo et l'identifiant de sa couleur préférée.
+- **Pseudo :** obligatoire avant de créer ou rejoindre une room. De `PSEUDO_MIN_LENGTH` à `PSEUDO_MAX_LENGTH` caractères après suppression des espaces aux extrémités, sans caractères de contrôle. Unique dans la room, sans tenir compte des majuscules. En cas de doublon, `room:join` échoue avec `PSEUDO_TAKEN` et le client propose d'en saisir un autre.
+- **Couleur :** palette de 10 couleurs, identifiées `c1` à `c10` dans `shared/constants.ts`. Leurs valeurs viennent de `docs/design-system.md`. Couleur unique dans la room. Si la couleur préférée est prise, la première couleur libre dans l'ordre `c1` → `c10` est attribuée. Le joueur peut en changer dans le lobby parmi les couleurs libres.
+- **Deux onglets avec la même session :** la nouvelle connexion remplace l'ancienne. L'ancien socket reçoit `session:replaced` puis est déconnecté, et l'ancien onglet affiche « Games Party est ouvert dans un autre onglet. »
+
+## 5. Rooms
+
+### 5.1 Création et accès
+
+- Code de room : `ROOM_CODE_LENGTH` caractères générés avec `customAlphabet` de nanoid, alphabet `23456789abcdefghijkmnpqrstuvwxyz`. Lien : `/r/<code>`.
+- Accès ouvert à toute personne qui a le lien.
+- Le créateur devient l'hôte et rejoint automatiquement la room.
+- Capacité : `ROOM_CAPACITY` personnes, joueurs, spectateurs et bots compris. Au-delà, `room:join` échoue avec `ROOM_FULL`.
+- Une room vide depuis `EMPTY_ROOM_TTL_MS` est supprimée.
+- Au maximum `MAX_ROOMS` rooms simultanées. Au-delà, `room:create` échoue avec `SERVER_FULL`.
+- Un socket ne peut être que dans une seule room. Rejoindre une autre room fait d'abord quitter la précédente.
+
+### 5.2 États d'une room
+
+```
+LOBBY ──(hôte lance)──► COUNTDOWN ──► PLAYING ──(jeu terminé)──► RESULTS ──(hôte ou délai)──► LOBBY
+                            │             │
+                            └─────────────┴──(joueurs < minimum du jeu)──► LOBBY
+```
+
+| État        | Ce qui se passe                                                                                                                                                                                                                                                                                                                      |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `LOBBY`     | Liste des joueurs. L'hôte choisit un jeu, règle ses options s'il en a, puis le lance. Le lancement n'est possible que si le nombre de joueurs est compris entre le minimum et le maximum du jeu. Chacun peut changer de couleur. À chaque changement du nombre de joueurs, le serveur recalcule les options avec `normalizeOptions`. |
+| `COUNTDOWN` | Compte à rebours de `COUNTDOWN_MS`. Annulé (retour au `LOBBY`) si le nombre de joueurs passe sous le minimum du jeu.                                                                                                                                                                                                                 |
+| `PLAYING`   | La boucle de tick tourne.                                                                                                                                                                                                                                                                                                            |
+| `RESULTS`   | Classement de la partie et classement cumulé de la room. L'hôte peut cliquer sur « Retour au lobby ». Sinon, retour automatique au bout de `RESULTS_AUTO_RETURN_MS`.                                                                                                                                                                 |
+
+**Partie abandonnée :** si, pendant `PLAYING`, le nombre de joueurs non retirés passe sous le minimum du jeu, la partie s'arrête immédiatement. La room revient au `LOBBY`, aucun point n'est attribué, et tous reçoivent `game:event` `{ type: "aborted" }` pour afficher « Partie arrêtée : pas assez de joueurs ».
+
+### 5.3 Hôte
+
+- Seul l'hôte peut choisir le jeu, régler ses options, le lancer, revenir au lobby depuis les résultats et, en développement, ajouter ou retirer des bots.
+- Si l'hôte est retiré de la room (fin du délai de reconnexion ou départ volontaire), le rôle passe au joueur humain présent depuis le plus longtemps. Un bot ne peut jamais être hôte. S'il ne reste que des bots, la room est considérée comme vide.
+
+### 5.4 Arrivée en cours de partie
+
+- Quelqu'un qui rejoint pendant `COUNTDOWN`, `PLAYING` ou `RESULTS` devient spectateur et reçoit la vue spectateur du jeu.
+- Au retour au `LOBBY`, les spectateurs deviennent joueurs.
+
+### 5.5 Déconnexion, départ et reconnexion
+
+- **Déconnexion :** le joueur est marqué `connected: false` et sa place est gardée `RECONNECT_GRACE_MS`. Pendant une partie, le jeu est notifié (`onPlayerDisconnect`). Chaque `rules.md` définit le comportement du jeu dans ce cas.
+- **Reconnexion** avec le même `sessionToken` dans ce délai : le joueur retrouve sa place (pseudo, couleur, score cumulé, rôle dans la partie en cours). Le jeu est notifié (`onPlayerReconnect`).
+- **Retrait :** à la fin du délai, ou immédiatement en cas de `room:leave`, le joueur est retiré. Le jeu est notifié (`onPlayerLeave`), le rôle d'hôte est transféré si nécessaire, et son score cumulé est supprimé. S'il revient plus tard, il repart de zéro.
+
+### 5.6 Classement de partie et classement cumulé
+
+- À la fin d'une partie, le jeu renvoie via `getRanking()` le classement des joueurs non retirés.
+- La room calcule la place de chaque joueur : `place = 1 + nombre de joueurs ayant un score strictement supérieur`. Des joueurs à égalité ont la même place, et les places suivantes sont sautées (ex. : 1er, 1er, 3e, 4e).
+- Points gagnés : `N − place`, où N est le nombre de joueurs classés. Le premier marque N − 1 points, avec 1 point d'écart par place, et le dernier marque 0.
+- Exemple à 4 joueurs sans égalité : 3 / 2 / 1 / 0. Avec deux premiers ex æquo : 3 / 3 / 1 / 0.
+- Le calcul se trouve dans `server/rooms/ranking.ts`.
+- Les points sont ajoutés au classement cumulé de la room, trié par points décroissants. Il disparaît avec la room.
+
+## 6. Protocole réseau
+
+### 6.1 Principes
+
+- Un seul namespace Socket.IO (`/`). Chaque room correspond à une room Socket.IO `room:<code>`.
+- Tous les événements sont typés dans `src/shared/protocol.ts` (`ClientToServerEvents`, `ServerToClientEvents`).
+- Nommage : `domaine:action`.
+- Les requêtes du client qui attendent une réponse utilisent les **acknowledgements** Socket.IO et renvoient `{ ok: true, data }` ou `{ ok: false, error: ErrorCode }`.
+- `ErrorCode` : `INVALID_PAYLOAD`, `ROOM_NOT_FOUND`, `ROOM_FULL`, `SERVER_FULL`, `PSEUDO_TAKEN`, `COLOR_TAKEN`, `NOT_HOST`, `INVALID_STATE`, `NOT_ENOUGH_PLAYERS`, `TOO_MANY_PLAYERS`, `RATE_LIMITED`.
+
+### 6.2 Événements
+
+| Sens             | Événement                            | Payload                            | Rôle                                                                                                      |
+| ---------------- | ------------------------------------ | ---------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| client → serveur | `room:create` (ack)                  | `{ pseudo, preferredColor }`       | Créer une room et la rejoindre                                                                            |
+| client → serveur | `room:join` (ack)                    | `{ code, pseudo, preferredColor }` | Rejoindre une room                                                                                        |
+| client → serveur | `room:leave`                         | —                                  | Quitter la room                                                                                           |
+| client → serveur | `lobby:setColor` (ack)               | `{ color }`                        | Changer de couleur                                                                                        |
+| client → serveur | `lobby:selectGame` (ack)             | `{ gameId, options }`              | Hôte : choisir le jeu et ses options                                                                      |
+| client → serveur | `lobby:start` (ack)                  | —                                  | Hôte : lancer la partie                                                                                   |
+| client → serveur | `results:backToLobby` (ack)          | —                                  | Hôte : quitter l'écran de résultats                                                                       |
+| client → serveur | `dev:addBot` / `dev:removeBot` (ack) | — / `{ playerId }`                 | Hôte, développement uniquement                                                                            |
+| client → serveur | `game:input`                         | défini par le jeu                  | Input continu, ex. déplacement (**volatile**)                                                             |
+| client → serveur | `game:action` (ack)                  | défini par le jeu                  | Action ponctuelle qui ne doit pas se perdre, ex. « Prêt »                                                 |
+| serveur → client | `session:init`                       | `{ sessionToken, playerId }`       | Identité de la session                                                                                    |
+| serveur → client | `session:replaced`                   | —                                  | Session ouverte ailleurs                                                                                  |
+| serveur → client | `room:state`                         | `RoomState`                        | État de la room : joueurs, hôte, état, jeu et options choisis, classement cumulé, fin du compte à rebours |
+| serveur → client | `game:view`                          | `{ tick, serverTime, view }`       | Vue du jeu pour ce destinataire (**volatile**)                                                            |
+| serveur → client | `game:event`                         | défini par le jeu, plus `aborted`  | Événement ponctuel (sons, animations)                                                                     |
+| serveur → client | `game:results`                       | `{ ranking, pointsAwarded }`       | Classement de la partie terminée                                                                          |
+
+- **Messages fiables** (tous sauf `game:input` et `game:view`) : ils ne doivent pas se perdre. `game:action` renvoie `INVALID_PAYLOAD` si le schéma n'est pas respecté, `INVALID_STATE` si l'action n'est pas possible à ce moment.
+- **Messages volatiles** : un message en retard est abandonné au lieu de s'accumuler.
+- `room:state` est envoyé à toute la room à chaque changement de l'état de la room, jamais à chaque tick.
+
+### 6.3 Boucle de tick
+
+- La boucle ne tourne que pendant `PLAYING`, via `setInterval` de `1000 / SERVER_TICK_RATE` ms.
+- `dt` est mesuré avec `performance.now()` et plafonné à `MAX_TICK_DT_MS`.
+- À chaque tick :
+  1. appliquer les inputs reçus depuis le tick précédent, dans leur ordre d'arrivée ;
+  2. appeler `tick(dt)` ;
+  3. si `isOver()` : arrêter la boucle et passer à `RESULTS` ;
+  4. sinon, envoyer à chaque joueur et spectateur connecté `game:view` avec `{ tick, serverTime: Date.now(), view: getViewFor(destinataire) }`.
+
+### 6.4 Arène
+
+- Coordonnées logiques : `ARENA_WIDTH` × `ARENA_HEIGHT`, origine en haut à gauche. Le serveur ne raisonne qu'en unités logiques.
+- Le client affiche l'arène en gardant le ratio, la plus grande possible dans la zone de jeu, centrée. `scale = largeur affichée / ARENA_WIDTH`.
+
+### 6.5 Curseur virtuel (jeux au curseur)
+
+**Capture de la souris**
+
+- Le curseur système est masqué dans l'arène (`cursor: none`).
+- Au clic dans l'arène, le client appelle `requestPointerLock()` **sans** `unadjustedMovement`. L'accélération et la sensibilité du système d'exploitation de chaque joueur s'appliquent donc : le curseur virtuel se comporte comme son curseur habituel.
+- La sensibilité est commune à tous : `CURSOR_SENSITIVITY`, sans réglage par joueur.
+- **Pointer Lock perdu** (Échap, alt-tab) : overlay « Clique pour reprendre ». Aucun input n'est envoyé, donc le curseur reste immobile côté serveur.
+
+**Inputs**
+
+- Le client convertit chaque `movementX/Y` en unités logiques : `delta / scale × CURSOR_SENSITIVITY`.
+- Il additionne ces deltas et envoie `game:input` `{ seq, dx, dy }` toutes les `1000 / INPUT_SEND_RATE` ms si la somme n'est pas nulle.
+- `seq` est un entier qui augmente de 1 à chaque envoi. Il repart de 0 au début de chaque partie et à chaque reconnexion, et le serveur remet alors le dernier `seq` traité de ce joueur à −1. Le serveur ignore tout input dont `seq` est inférieur ou égal au dernier `seq` traité pour ce joueur.
+- Schéma Zod : `seq` entier ≥ 0, `dx` et `dy` nombres finis entre −`MAX_INPUT_DELTA` et `MAX_INPUT_DELTA`.
+
+**Déplacement : `shared/cursor/moveCursor.ts`**
+
+Fonction pure utilisée à l'identique par le serveur et par la prédiction client.
+
+- **Budget de déplacement.** Chaque curseur a un budget en unités logiques.
+  - Une fois par tick serveur, à la fin de `tick(dt)` et donc avant les inputs du tick suivant : `budget = min(budget + maxSpeed × dt / 1000, maxSpeed × MOVE_BUDGET_CAP_MS / 1000)`.
+  - Pour un input de longueur `L` : distance autorisée `A = min(L, budget)`. Le delta est réduit dans la proportion `A / L`, puis `budget -= A`.
+  - `maxSpeed` est fourni par le jeu (unités logiques par seconde).
+- **Collisions.** Le curseur est un disque de rayon `radius` fourni par le jeu.
+  - Le delta autorisé est découpé en pas d'au plus `MOVE_SUBSTEP` unités.
+  - Pour chaque pas : appliquer la composante X ; si le disque chevauche un mur ou sort de l'arène, annuler la composante X de ce pas. Faire de même pour Y. Le curseur glisse ainsi le long des murs.
+  - Un mur est un rectangle `{ x, y, width, height }`. Chevauchement : distance entre le centre du disque et le point le plus proche du rectangle strictement inférieure à `radius`.
+  - Bords : le centre reste entre `radius` et `ARENA_WIDTH − radius` en X, `radius` et `ARENA_HEIGHT − radius` en Y.
+
+**Prédiction du curseur local**
+
+- Chaque vue contient la position officielle du joueur et le dernier `seq` traité.
+- À réception d'une vue, le client repart de la position officielle et rejoue avec `moveCursor` ses inputs envoyés mais pas encore traités, puis le delta en cours d'accumulation. Le budget client se recharge selon le temps réel écoulé, avec les mêmes formules.
+- Si l'écart entre la position affichée et la nouvelle position prédite est inférieur ou égal à `CORRECTION_SNAP_DISTANCE`, la position affichée rejoint la position prédite en `CORRECTION_SMOOTHING_MS` (interpolation linéaire). Au-delà, elle est replacée immédiatement.
+- Les effets décidés par le jeu (gel, téléportation) viennent uniquement du serveur. Le client ne les prédit pas.
+
+**Affichage des autres curseurs**
+
+- Le client garde les vues reçues des `INTERPOLATION_BUFFER_MS` dernières millisecondes.
+- Temps d'affichage : `serverTime de la dernière vue + (maintenant − heure de réception de cette vue) − INTERPOLATION_DELAY_MS`.
+- La position est interpolée linéairement entre les deux vues qui encadrent ce temps. S'il n'en existe pas de plus récente, la dernière position connue est affichée.
+- Si la distance entre deux positions successives d'un joueur dépasse `TELEPORT_SNAP_DISTANCE`, aucune interpolation : la nouvelle position est affichée directement.
+
+## 7. Interface d'un jeu
+
+```ts
+// src/games/gameServer.types.ts
+interface GameDefinition<Input, Action, View, Options> {
+  id: string; // ex. "cursor-tag"
+  name: string; // nom affiché, en français
+  minPlayers: number;
+  maxPlayers: number;
+  inputSchema: z.ZodType<Input>; // validation de game:input
+  actionSchema: z.ZodType<Action>; // validation de game:action
+  optionsSchema: z.ZodType<Options>; // validation des options envoyées par l'hôte
+  defaultOptions(playerCount: number): Options;
+  normalizeOptions(options: Options, playerCount: number): Options; // ramène les options dans les bornes valides
+  create(ctx: GameContext, options: Options): GameInstance<Input, Action, View>;
+  bot: BotPolicy<Input, Action, View>;
+}
+
+interface GameContext {
+  players: ReadonlyArray<{ playerId: string; color: string; isBot: boolean }>;
+  emitEvent(event: GameEvent, to?: string[]): void; // game:event, à toute la room si `to` est absent
+  getHostId(): string; // hôte actuel de la room (peut changer pendant la partie)
+  random(): number; // nombre dans [0, 1)
+}
+
+interface GameInstance<Input, Action, View> {
+  onInput(playerId: string, input: Input): void;
+  onAction(
+    playerId: string,
+    action: Action,
+  ): { ok: true } | { ok: false; error: "INVALID_STATE" | "NOT_HOST" };
+  tick(dtMs: number): void;
+  onPlayerDisconnect(playerId: string): void;
+  onPlayerReconnect(playerId: string): void;
+  onPlayerLeave(playerId: string): void;
+  getViewFor(viewer: { playerId: string } | { spectator: true }): View;
+  isOver(): boolean;
+  getRanking(): Array<{ playerId: string; score: number }>; // trié par score décroissant
+}
+
+interface BotPolicy<Input, Action, View> {
+  nextInput(
+    view: View,
+    botPlayerId: string,
+    dtMs: number,
+    random: () => number,
+  ): Input | null;
+  nextAction(view: View, botPlayerId: string): Action | null;
+}
+```
+
+```ts
+// src/games/gameClient.types.ts
+interface GameClientDefinition<Input, Action, View, Options> {
+  id: string;
+  Screen: React.FC<{
+    viewStore: ViewStore<View>; // buffer des vues, lu par le moteur sans re-render
+    sendInput(input: Input): void;
+    sendAction(action: Action): Promise<{ ok: boolean }>;
+    me: { playerId: string } | { spectator: true };
+  }>;
+  OptionsForm: React.FC<{
+    // affiché dans le lobby, modifiable par l'hôte uniquement
+    options: Options;
+    playerCount: number;
+    editable: boolean;
+    onChange(options: Options): void;
+  }> | null; // null si le jeu n'a pas d'option
+}
+```
+
+- `ViewStore` (`client/engine/viewStore.ts`) garde les vues reçues avec leur heure de réception et expose `latest()` et `sampleAt(time)`.
+- Le serveur appelle `onInput` et `onAction` uniquement pour les joueurs de la partie, jamais pour les spectateurs.
+
+## 8. Bots (développement uniquement)
+
+- Disponibles uniquement si `NODE_ENV !== "production"`. En production, les événements `dev:*` sont ignorés.
+- Ajoutés et retirés par l'hôte depuis un panneau de développement dans le lobby.
+- Pseudo `Bot 1`, `Bot 2`… couleur attribuée comme pour un joueur.
+- Un bot est un faux joueur côté serveur : à chaque tick, `BotRunner` appelle `nextInput` et `nextAction` avec la vue du bot, et transmet les résultats non nuls à `onInput` et `onAction`, comme pour un joueur.
+- Les bots comptent dans la capacité de la room et ne peuvent pas être hôtes.
+
+## 9. Sécurité
+
+| Risque                                  | Protection                                                                                                                                                                                              |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Messages malformés ou malveillants      | Validation Zod de chaque message entrant. Message invalide ignoré, ou ack `INVALID_PAYLOAD`.                                                                                                            |
+| Triche (fausses positions, faux scores) | Le serveur fait autorité. Les déplacements sont bornés par le budget, les murs et les bords.                                                                                                            |
+| Lecture d'informations cachées          | Tout passe par `getViewFor`. L'état interne n'est jamais diffusé.                                                                                                                                       |
+| Usurpation d'un joueur                  | `sessionToken` secret, jamais diffusé ni loggé. Le `playerId` envoyé par un client n'est jamais cru.                                                                                                    |
+| Flood de messages                       | Au plus `RATE_LIMIT_MESSAGES_PER_SECOND` messages par seconde glissante par socket, inputs compris. Surplus ignoré. Limite dépassée pendant `RATE_LIMIT_KICK_AFTER_MS` sans interruption : déconnexion. |
+| Messages géants                         | `maxHttpBufferSize` Socket.IO fixé à `MAX_MESSAGE_BYTES`.                                                                                                                                               |
+| Recherche de rooms au hasard            | Codes de `ROOM_CODE_LENGTH` caractères. Au plus `MAX_JOIN_FAILURES_PER_MINUTE` échecs de `room:join` par socket par minute glissante, puis `RATE_LIMITED`.                                              |
+| Saturation du serveur gratuit           | `MAX_ROOMS` rooms simultanées, 1 room par socket.                                                                                                                                                       |
+| Injection dans la page (XSS)            | Pas de `dangerouslySetInnerHTML`. Textes de joueurs affichés comme texte. En-têtes HTTP via `helmet`.                                                                                                   |
+| Requêtes d'autres sites                 | Même origine en production, pas de CORS configuré.                                                                                                                                                      |
+
+## 10. Déploiement (Render)
+
+| Réglage                   | Valeur                                |
+| ------------------------- | ------------------------------------- |
+| Type                      | Web Service, runtime Node, offre Free |
+| Région                    | Frankfurt                             |
+| Build Command             | `npm install && npm run build`        |
+| Start Command             | `npm start`                           |
+| Health Check Path         | `/healthz` (répond `200` avec `ok`)   |
+| Variables d'environnement | `NODE_ENV=production`                 |
+| Déploiement automatique   | À chaque fusion dans `main`           |
+
+- Le serveur écoute sur `process.env.PORT`, ou 3000 s'il n'est pas défini.
+- Pendant une perte de connexion, le client affiche « Connexion perdue, reconnexion… » et laisse Socket.IO se reconnecter. Si la room n'existe plus après la reconnexion : message « Cette room n'existe pas ou a expiré » et retour à l'accueil.
+
+## 11. Tests
+
+- Vitest sur tout le code des couches pures : `shared/`, `games/*/logic/`, `games/*/shared/`, `server/rooms/` (machine d'états, capacité, hôte, classement).
+- Classement : cas sans égalité, égalité en tête, égalité au milieu, égalité de tous les joueurs (tous marquent N − 1).
+- Les jeux reçoivent un `random` déterministe dans les tests.
+- Pas de tests end-to-end pour l'instant.
+
+## 12. Décisions et compromis
+
+| Décision                                                    | Raison                                                                                    | Compromis accepté                                                            |
+| ----------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| Serveur Node + Socket.IO sur Render                         | Serveur temps réel classique, bien connu de l'IA, même modèle que skribbl.io ou JKLM      | Mise en veille et redémarrages de l'offre gratuite                           |
+| Vite + React, sans Next.js                                  | Pas besoin de référencement ni de rendu serveur. Le site est servi par le serveur de jeu. | Aucun pour ce projet                                                         |
+| État en mémoire, sans base de données                       | Rien à conserver après une room                                                           | Tout est perdu au redémarrage                                                |
+| Un seul `package.json`                                      | Simplicité du build et du déploiement                                                     | Dépendances client et serveur mélangées                                      |
+| Bundle du serveur avec esbuild                              | Évite les problèmes d'extensions d'import de TypeScript en ESM                            | Un outil de build de plus                                                    |
+| Couches vérifiées par ESLint                                | Les règles d'organisation sont contrôlées automatiquement, pas seulement écrites          | Configuration ESLint un peu plus longue                                      |
+| Pointer Lock sans `unadjustedMovement`, sensibilité commune | Chaque joueur garde la sensation de son propre curseur, sans réglage dans le jeu          | Écarts de sensibilité entre joueurs, limités par la vitesse maximale commune |
+
+## 13. Valeurs de référence
+
+À reporter telles quelles dans `src/shared/constants.ts`.
+
+| Constante                        | Valeur           |
+| -------------------------------- | ---------------- |
+| `ROOM_CAPACITY`                  | `10`             |
+| `ROOM_CODE_LENGTH`               | `10`             |
+| `MAX_ROOMS`                      | `50`             |
+| `EMPTY_ROOM_TTL_MS`              | `300000` (5 min) |
+| `RECONNECT_GRACE_MS`             | `30000`          |
+| `COUNTDOWN_MS`                   | `3000`           |
+| `RESULTS_AUTO_RETURN_MS`         | `20000`          |
+| `PSEUDO_MIN_LENGTH`              | `2`              |
+| `PSEUDO_MAX_LENGTH`              | `16`             |
+| `PLAYER_COLOR_IDS`               | `c1` à `c10`     |
+| `SERVER_TICK_RATE`               | `30`             |
+| `INPUT_SEND_RATE`                | `30`             |
+| `MAX_TICK_DT_MS`                 | `100`            |
+| `ARENA_WIDTH`                    | `1600`           |
+| `ARENA_HEIGHT`                   | `900`            |
+| `CURSOR_SENSITIVITY`             | `1`              |
+| `MAX_INPUT_DELTA`                | `2000`           |
+| `MOVE_BUDGET_CAP_MS`             | `200`            |
+| `MOVE_SUBSTEP`                   | `7`              |
+| `INTERPOLATION_DELAY_MS`         | `100`            |
+| `INTERPOLATION_BUFFER_MS`        | `1000`           |
+| `CORRECTION_SNAP_DISTANCE`       | `48`             |
+| `CORRECTION_SMOOTHING_MS`        | `100`            |
+| `TELEPORT_SNAP_DISTANCE`         | `200`            |
+| `RATE_LIMIT_MESSAGES_PER_SECOND` | `60`             |
+| `RATE_LIMIT_KICK_AFTER_MS`       | `5000`           |
+| `MAX_MESSAGE_BYTES`              | `16384`          |
+| `MAX_JOIN_FAILURES_PER_MINUTE`   | `10`             |
+
+Les valeurs de gameplay (vitesses, rayons, durées) sont des points de départ réglables après les tests avec le groupe. Toute modification passe par ce tableau ou par le `rules.md` du jeu.
+
+## 14. À DÉCIDER
+
+Aucun point en attente.
