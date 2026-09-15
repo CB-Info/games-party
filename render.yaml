@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: games-party
+    runtime: node
+    plan: free
+    region: frankfurt
+    branch: main
+    autoDeploy: true
+    # NODE_ENV=production also applies during the build, so devDependencies
+    # (Vite, esbuild, TypeScript) must be requested explicitly.
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: npm start
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_ENV
+        value: production
