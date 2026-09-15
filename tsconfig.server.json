@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "target": "ES2023",
+    "lib": ["ES2023"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    // vite.config.ts is loaded by Vite itself, which requires explicit .ts extensions.
+    "allowImportingTsExtensions": true,
+    "moduleDetection": "force",
+    "types": ["node"],
+
+    "noEmit": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "erasableSyntaxOnly": true,
+
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "include": [
+    "src/server",
+    "src/shared",
+    "src/games/*/shared",
+    "src/games/*/logic",
+    "src/games/*/server",
+    "vite.config.ts"
+  ]
+}
