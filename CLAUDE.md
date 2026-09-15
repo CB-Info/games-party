@@ -7,7 +7,6 @@ Site de mini-jeux multijoueurs en temps réel pour un groupe d'amis qui joue ens
 Premier jeu : **Cursor Tag**, un jeu du chat où chaque joueur contrôle un curseur.
 
 Priorités, dans cet ordre :
-
 1. Fiabilité et fluidité pendant les parties
 2. Sécurité
 3. Code clair, lisible et bien rangé
@@ -29,16 +28,15 @@ C'est un projet entre amis : pas de comptes utilisateurs, pas de base de donnée
 
 ## Stack
 
-- **TypeScript** en mode strict, partout
+- **TypeScript 6.0** en mode strict, partout. Ne pas passer à TypeScript 7 tant que typescript-eslint ne le supporte pas officiellement.
 - **Client** : React + Vite, react-router, Tailwind CSS
-- **Serveur** : Node.js (version LTS) + Express + Socket.IO
+- **Serveur** : Node.js 24 (LTS, fixé par `engines.node` à `24.x` dans `package.json`, identique en local et sur Render ; en local, `nvm use` dans le dossier du projet) + Express + Socket.IO
 - **Validation** : Zod
 - **Tests** : Vitest
 - **Qualité** : ESLint (typescript-eslint, règles des hooks React, restrictions d'import par couche) + Prettier
 - **Hébergement** : Render (Web Service gratuit, région Frankfurt), déploiement automatique depuis `main`
 
 Dépendances autorisées :
-
 - Production : `react`, `react-dom`, `react-router`, `socket.io`, `socket.io-client`, `express`, `helmet`, `zod`, `nanoid`
 - Développement : `typescript`, `vite`, `@vitejs/plugin-react`, `tailwindcss` et son plugin Vite officiel, `vitest`, `esbuild`, `tsx`, `concurrently`, `eslint`, `@eslint/js`, `typescript-eslint`, `eslint-plugin-react-hooks`, `globals`, `prettier`, `eslint-config-prettier`, et les paquets `@types/*` correspondants
 
@@ -46,15 +44,15 @@ Toute autre dépendance : demander.
 
 ## Commandes
 
-| Commande            | Rôle                                                                                                                 |
-| ------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| `npm run dev`       | Lance le client Vite (port 5173) et le serveur (port 3000) en parallèle. Vite redirige `/socket.io` vers le serveur. |
-| `npm run build`     | Build du client (Vite → `dist/client`) et bundle du serveur (esbuild → `dist/server.js`)                             |
-| `npm start`         | Lance `dist/server.js`, qui sert le site et Socket.IO sur `process.env.PORT`                                         |
-| `npm test`          | Tests Vitest                                                                                                         |
-| `npm run typecheck` | Vérification TypeScript (`tsc --noEmit`)                                                                             |
-| `npm run lint`      | ESLint, y compris le respect des couches                                                                             |
-| `npm run format`    | Prettier                                                                                                             |
+| Commande | Rôle |
+|---|---|
+| `npm run dev` | Lance le client Vite (port 5173) et le serveur (port 3000) en parallèle. Vite redirige `/socket.io` vers le serveur. |
+| `npm run build` | Build du client (Vite → `dist/client`) et bundle du serveur (esbuild → `dist/server.js`) |
+| `npm start` | Lance `dist/server.js`, qui sert le site et Socket.IO sur `process.env.PORT` |
+| `npm test` | Tests Vitest |
+| `npm run typecheck` | Vérification TypeScript des deux projets : `tsconfig.client.json` (types du DOM) puis `tsconfig.server.json` (types de Node) |
+| `npm run lint` | ESLint, y compris le respect des couches |
+| `npm run format` | Prettier sur le code et les fichiers de configuration. Les fichiers Markdown (`*.md`) sont exclus pour que la documentation reste telle qu'écrite. |
 
 ## Organisation du code
 
@@ -62,6 +60,12 @@ Toute autre dépendance : demander.
 
 ```
 CLAUDE.md
+.nvmrc                          version de Node du projet (24), lue par `nvm use`
+render.yaml                     configuration Render versionnée (Blueprint)
+tsconfig.json                   configuration racine pour l'éditeur
+tsconfig.client.json            client + code commun, types du DOM, sans types Node
+tsconfig.server.json            serveur + code commun, types de Node, sans types du DOM
+eslint.config.js
 docs/
   architecture.md               rooms, identité, réseau, interface des jeux, sécurité, constantes
   design-system.md              écrit avant l'étape 2
@@ -102,6 +106,9 @@ src/
       RoomPage.tsx
       NotFoundPage.tsx
     features/                   fonctionnalités de l'application
+      connection/
+        components/             ConnectionStatus.tsx…
+        hooks/                  useConnectionStatus.ts…
       session/
         components/
         hooks/
@@ -140,17 +147,17 @@ src/
 
 ### Rôle de chaque couche
 
-| Couche                                                                              | Contient                                                      | N'a pas le droit de                                                                      |
-| ----------------------------------------------------------------------------------- | ------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| `client/pages`                                                                      | Assemblage des features pour une route                        | Contenir de la logique, appeler un service                                               |
-| `client/features/*/components`, `client/components/ui`, `games/*/client/components` | Affichage et réception des actions utilisateur                | Appeler Socket.IO, `localStorage` ou un service directement ; contenir des règles métier |
-| `client/components/ui`                                                              | Composants génériques du design system                        | Importer une feature ou un jeu                                                           |
-| `*/hooks`                                                                           | État React et effets qui relient services et composants       | Contenir du JSX ; contenir des règles de jeu                                             |
-| `client/services`                                                                   | Effets de bord hors React : socket, stockage, audio           | Importer React                                                                           |
-| `client/engine`, `games/*/client/render`                                            | Boucle temps réel, Pointer Lock, interpolation, dessin canvas | Importer React                                                                           |
-| `client/utils`, `shared/`, `games/*/logic`, `games/*/shared`                        | Fonctions pures et types                                      | Faire des effets de bord (réseau, DOM, stockage, timers, `Math.random`)                  |
-| `server/socket/handlers`                                                            | Transport : valider (Zod), appeler la room, répondre          | Contenir des règles de room ou de jeu                                                    |
-| `server/rooms`, `games/*/server`                                                    | Logique de room et orchestration des jeux                     | Importer Socket.IO ou Express                                                            |
+| Couche | Contient | N'a pas le droit de |
+|---|---|---|
+| `client/pages` | Assemblage des features pour une route | Contenir de la logique, appeler un service |
+| `client/features/*/components`, `client/components/ui`, `games/*/client/components` | Affichage et réception des actions utilisateur | Appeler Socket.IO, `localStorage` ou un service directement ; contenir des règles métier |
+| `client/components/ui` | Composants génériques du design system | Importer une feature ou un jeu |
+| `*/hooks` | État React et effets qui relient services et composants | Contenir du JSX ; contenir des règles de jeu |
+| `client/services` | Effets de bord hors React : socket, stockage, audio. Seule couche autorisée à utiliser `localStorage` et `sessionStorage`. | Importer React |
+| `client/engine`, `games/*/client/render` | Boucle temps réel, Pointer Lock, interpolation, dessin canvas | Importer React |
+| `client/utils`, `shared/`, `games/*/logic`, `games/*/shared` | Fonctions pures et types | Faire des effets de bord (réseau, DOM, stockage, timers, `Math.random`) |
+| `server/socket/handlers` | Transport : valider (Zod), appeler la room, répondre | Contenir des règles de room ou de jeu |
+| `server/rooms`, `games/*/server` | Logique de room et orchestration des jeux | Importer Socket.IO ou Express |
 
 ### Sens des imports
 
@@ -158,6 +165,7 @@ src/
 - `hooks` → `services`, `engine`, `utils`, `shared`
 - `server/socket/handlers` → `server/rooms` → `games/*/server` → `games/*/logic` → `shared`
 - Le client n'importe jamais `src/server/` ni `games/*/server/`. Le serveur n'importe jamais `src/client/` ni `games/*/client/`.
+- Le code commun (`src/shared/`, `games/*/shared/`, `games/*/logic/`) est inclus dans **les deux** projets TypeScript. Il doit donc compiler sans types du DOM et sans types de Node : un `document` ou un `process` dans ce code fait échouer le typecheck.
 - Rien n'importe `pages`. `components/ui` n'importe aucune feature ni aucun jeu.
 
 Ces restrictions sont vérifiées par `npm run lint` (`no-restricted-imports` par dossier). Ne jamais les désactiver avec un commentaire `eslint-disable`.
@@ -169,6 +177,7 @@ Ces restrictions sont vérifiées par `npm run lint` (`no-restricted-imports` pa
 - Classes : `PascalCase.ts`. Autres fichiers : `camelCase.ts`.
 - Tests à côté du fichier testé : `nomDuFichier.test.ts`.
 - Exports nommés uniquement, pas d'`export default`.
+- Imports sans extension de fichier. Seule exception : `vite.config.ts`, qui importe avec l'extension `.ts` (exigence de Vite).
 - **Interdit :** les fichiers fourre-tout nommés `utils.ts`, `helpers.ts`, `common.ts`, `misc.ts` ou `index.ts` de réexport. Un fichier est nommé d'après ce qu'il contient (`formatDuration.ts`, `geometry.ts`).
 - Un fichier qui dépasse 200 lignes doit être découpé. Propose le découpage avant de l'écrire.
 - Pas de code mort ni de code commenté.
@@ -217,8 +226,8 @@ Ces restrictions sont vérifiées par `npm run lint` (`no-restricted-imports` pa
 
 - [x] **Étape 0 : documentation**
 - [ ] **Étape 1 : squelette.** Client + serveur + Socket.IO, ESLint et Prettier configurés, page affichant « connecté », déployée sur Render.
-- [ ] **Design system**, réalisé avec Claude Design, puis `docs/design-system.md`.
-- [ ] **Étape 2 : rooms.** Créer et rejoindre par lien, pseudo, couleur, lobby, hôte, spectateurs, reconnexion, résultats et classement cumulé.
+- [ ] **Design system**, réalisé avec Claude Design, puis `docs/design-system.md`. Resserrer la CSP (`style-src` sans `'unsafe-inline'`) une fois le style en place.
+- [ ] **Étape 2 : rooms.** Créer et rejoindre par lien, pseudo, couleur, lobby, hôte, spectateurs, reconnexion, résultats et classement cumulé, message « ordinateur uniquement » (règle d'or 10).
 - [ ] **Étape 3 : moteur curseur.** Pointer Lock, curseur virtuel, arène, synchronisation, prédiction, interpolation, bots.
 - [ ] **Étape 4 : Cursor Tag complet.**
 - [ ] **Étape 5 : finitions.** Sons, animations, transitions, puis test avec le groupe.
