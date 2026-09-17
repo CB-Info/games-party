@@ -68,7 +68,8 @@ tsconfig.server.json            serveur + code commun, types de Node, sans types
 eslint.config.js
 docs/
   architecture.md               rooms, identité, réseau, interface des jeux, sécurité, constantes
-  design-system.md              écrit avant l'étape 2
+  design-system.md              tokens, composants, règles visuelles (source de vérité du design)
+  maquettes/                    maquettes HTML de Claude Design (référence visuelle uniquement)
   games/_template.md            modèle de fiche de jeu
 src/
   shared/                       code commun client + serveur (aucun effet de bord)
@@ -192,7 +193,7 @@ Ces restrictions sont vérifiées par `npm run lint` (`no-restricted-imports` pa
 6. **Pas de valeurs magiques.** Toutes les valeurs chiffrées viennent de `src/shared/constants.ts` ou de `games/<jeu>/shared/constants.ts`, avec les valeurs exactes données dans la documentation.
 7. **L'aléatoire des jeux passe par `GameContext.random`**, jamais par `Math.random`, pour que les tests soient reproductibles.
 8. **Langues.** Textes de l'interface en français. Code, noms, commentaires et commits en anglais.
-9. **Design.** Utiliser uniquement les tokens du design system (`docs/design-system.md`). Pas de couleur en dur. Tant que ce document n'existe pas : interface neutre et fonctionnelle, sans travail de style.
+9. **Design.** Utiliser uniquement les tokens et les composants de `docs/design-system.md` : aucune couleur, taille, espacement, rayon, ombre ou durée en dur. Les maquettes de `docs/maquettes/` servent de référence visuelle ; **en cas de différence entre une maquette et `docs/design-system.md`, c'est `docs/design-system.md` qui gagne**. Ne jamais recopier une valeur relevée dans une maquette sans la vérifier dans ce document.
 10. **Cible : PC avec souris**, navigateurs de bureau récents. Sur mobile, afficher un message indiquant que le site se joue sur ordinateur.
 
 ## Ajouter un jeu
@@ -207,6 +208,7 @@ Ces restrictions sont vérifiées par `npm run lint` (`no-restricted-imports` pa
 - `npm run typecheck`, `npm run lint` et `npm test` passent.
 - La logique de jeu est couverte par des tests : déplacements, collisions, score, fin de manche.
 - Testé manuellement avec 3 onglets ou des bots, **y compris la déconnexion et la reconnexion d'un joueur**.
+- Tout nouveau composant d'interface est ajouté à la page `/dev/ui`, dans tous ses états.
 - Relecture faite au regard des règles d'or 1 à 5 et de la section « Organisation du code ».
 - Documentation mise à jour si une décision a changé.
 
@@ -220,14 +222,17 @@ Ces restrictions sont vérifiées par `npm run lint` (`no-restricted-imports` pa
 
 - `docs/architecture.md` : à lire avant toute tâche serveur, réseau, room ou moteur curseur.
 - `docs/design-system.md` : à lire avant toute tâche d'interface.
+- `docs/maquettes/` : ouvrir l'écran concerné (dans un navigateur, avec `support.js` dans le même dossier) avant toute tâche d'interface, pour la disposition et la hiérarchie visuelle.
 - `src/games/<jeu>/rules.md` : à lire avant toute tâche sur un jeu.
 
 ## Feuille de route
 
 - [x] **Étape 0 : documentation**
-- [ ] **Étape 1 : squelette.** Client + serveur + Socket.IO, ESLint et Prettier configurés, page affichant « connecté », déployée sur Render.
-- [ ] **Design system**, réalisé avec Claude Design, puis `docs/design-system.md`. Resserrer la CSP (`style-src` sans `'unsafe-inline'`) une fois le style en place.
-- [ ] **Étape 2 : rooms.** Créer et rejoindre par lien, pseudo, couleur, lobby, hôte, spectateurs, reconnexion, résultats et classement cumulé, message « ordinateur uniquement » (règle d'or 10).
+- [x] **Étape 1 : squelette.** Client + serveur + Socket.IO, ESLint et Prettier configurés, page affichant « connecté », déployée sur Render.
+- [x] **Design system**, réalisé avec Claude Design, puis `docs/design-system.md`.
+- [ ] **Étape 2a : design system dans le code.** Tokens (`@theme`), polices hébergées, icônes, logo, composants de base de `client/components/ui/`, page de démonstration `/dev/ui` (développement uniquement).
+- [ ] **Étape 2b : rooms côté serveur.** Sessions, création, aperçu, rejoindre, lobby, statut prêt, options des jeux, hôte, spectateurs, reconnexion, départ, classement cumulé, avec leurs tests.
+- [ ] **Étape 2c : écrans de l'accueil et du lobby.** Accueil, invitation, erreurs, lobby (joueurs, palette, jeu, réglages, prêt, lancement), confirmation « Quitter la room », notifications, message « ordinateur uniquement » (règle d'or 10). Resserrer la CSP (`style-src` sans `'unsafe-inline'`) une fois ces écrans construits.
 - [ ] **Étape 3 : moteur curseur.** Pointer Lock, curseur virtuel, arène, synchronisation, prédiction, interpolation, bots.
-- [ ] **Étape 4 : Cursor Tag complet.**
-- [ ] **Étape 5 : finitions.** Sons, animations, transitions, puis test avec le groupe.
+- [ ] **Étape 4 : Cursor Tag complet.** Écran de jeu, préparation, écran de résultats.
+- [ ] **Étape 5 : finitions.** Sons, animations, transitions, démo animée de chaque jeu (accueil et lobby, jouée par le moteur du jeu à partir d'une séquence écrite à l'avance, avec des joueurs fictifs fixes, au moins 4, sans lien avec les joueurs de la room), puis test avec le groupe.

@@ -36,6 +36,7 @@ Conséquences acceptées :
 - **Cache HTTP :**
   - `index.html` : `Cache-Control: no-store`, pour qu'un déploiement soit visible immédiatement ;
   - fichiers de `assets/` (noms contenant un hash généré par Vite) : `Cache-Control: public, max-age=STATIC_ASSETS_MAX_AGE_S, immutable`.
+  - tous les autres fichiers statiques (polices de `fonts/`, favicon…), dont le nom ne change pas d'une version à l'autre : aucun cache long, revalidation par ETag à chaque visite.
 - **CSP :** politique par défaut de helmet, avec `connect-src 'self'`. `style-src` y autorise encore `'unsafe-inline'` : à resserrer lors de l'étape design system.
 
 ### Routes du client
@@ -43,7 +44,8 @@ Conséquences acceptées :
 | Route | Contenu |
 |---|---|
 | `/` | Accueil : saisie du pseudo, bouton « Créer une room » |
-| `/r/:code` | Room : lobby, puis jeu, puis résultats. Si la room n'existe pas : message « Cette room n'existe pas ou a expiré » et bouton de retour à l'accueil. Si le pseudo n'est pas encore défini : saisie du pseudo avant de rejoindre. |
+| `/r/:code` | Room : lobby, puis jeu, puis résultats. Si la room n'existe pas : message « Cette room n'existe pas ou a expiré » et bouton de retour à l'accueil. Si le pseudo n'est pas encore défini : écran d'invitation (aperçu de la room via `room:preview`, section 5.7) avec saisie du pseudo avant de rejoindre. |
+| `/dev/ui` | **Développement uniquement.** Planche des composants du design system. La route n'est pas ajoutée quand `import.meta.env.DEV` est faux, et la page n'entre pas dans le build de production. |
 | autre | Page 404 avec bouton de retour à l'accueil |
 
 Sur un écran tactile sans souris (détecté via `matchMedia("(pointer: coarse)")` sans `(any-pointer: fine)`), toutes les routes affichent « Games Party se joue sur ordinateur, avec une souris. »
@@ -56,7 +58,7 @@ Sur un écran tactile sans souris (détecté via `matchMedia("(pointer: coarse)"
 | **Joueur** | Personne présente dans une room et participant aux parties. |
 | **Hôte** | Joueur qui choisit et lance les jeux. |
 | **Spectateur** | Personne arrivée pendant une partie. Elle la regarde sans jouer et devient joueur au retour au lobby. |
-| **Partie** | Une session d'un jeu, du compte à rebours aux résultats. Peut contenir plusieurs manches. |
+| **Partie** | Une session d'un jeu, du lancement par l'hôte aux résultats. Peut contenir plusieurs manches. |
 | **Manche** | Subdivision d'une partie, définie par chaque jeu. |
 | **Input** | Intention envoyée par un client (ex. : déplacement de souris). |
 | **Tick** | Un pas de la boucle serveur (30 par seconde). |
@@ -90,16 +92,15 @@ Sur un écran tactile sans souris (détecté via `matchMedia("(pointer: coarse)"
 ### 5.2 États d'une room
 
 ```
-LOBBY ──(hôte lance)──► COUNTDOWN ──► PLAYING ──(jeu terminé)──► RESULTS ──(hôte ou délai)──► LOBBY
-                            │             │
-                            └─────────────┴──(joueurs < minimum du jeu)──► LOBBY
+LOBBY ──(hôte lance)──► PLAYING ──(jeu terminé)──► RESULTS ──(hôte ou délai)──► LOBBY
+                            │
+                            └──(joueurs < minimum du jeu)──► LOBBY
 ```
 
 | État | Ce qui se passe |
 |---|---|
-| `LOBBY` | Liste des joueurs. L'hôte choisit un jeu, règle ses options s'il en a, puis le lance. Le lancement n'est possible que si le nombre de joueurs est compris entre le minimum et le maximum du jeu. Chacun peut changer de couleur. À chaque changement du nombre de joueurs, le serveur recalcule les options avec `normalizeOptions`. |
-| `COUNTDOWN` | Compte à rebours de `COUNTDOWN_MS`. Annulé (retour au `LOBBY`) si le nombre de joueurs passe sous le minimum du jeu. |
-| `PLAYING` | La boucle de tick tourne. |
+| `LOBBY` | Liste des joueurs. L'hôte choisit un jeu, règle ses options s'il en a, puis le lance (section 5.3). Les autres joueurs se déclarent prêts (section 5.8). Chacun peut changer de couleur. À chaque changement du nombre de joueurs, le serveur recalcule les options avec `normalizeOptions`. |
+| `PLAYING` | La boucle de tick tourne. La room n'a pas de compte à rebours propre : chaque jeu gère son départ, par exemple une phase de préparation avant chaque manche (voir le `rules.md` du jeu). |
 | `RESULTS` | Classement de la partie et classement cumulé de la room. L'hôte peut cliquer sur « Retour au lobby ». Sinon, retour automatique au bout de `RESULTS_AUTO_RETURN_MS`. |
 
 **Partie abandonnée :** si, pendant `PLAYING`, le nombre de joueurs non retirés passe sous le minimum du jeu, la partie s'arrête immédiatement. La room revient au `LOBBY`, aucun point n'est attribué, et tous reçoivent `game:event` `{ type: "aborted" }` pour afficher « Partie arrêtée : pas assez de joueurs ».
@@ -107,18 +108,26 @@ LOBBY ──(hôte lance)──► COUNTDOWN ──► PLAYING ──(jeu termin
 ### 5.3 Hôte
 
 - Seul l'hôte peut choisir le jeu, régler ses options, le lancer, revenir au lobby depuis les résultats et, en développement, ajouter ou retirer des bots.
+- **Aucun jeu n'est sélectionné automatiquement.** À la création de la room, `selectedGameId` vaut `null`. L'hôte choisit un jeu dans la liste ; tant qu'aucun jeu n'est choisi, les autres joueurs voient que l'hôte est en train de choisir.
+- **Options des jeux :** la room conserve les options de chaque jeu déjà choisi. Au premier choix d'un jeu, ses options valent `defaultOptions`. Si l'hôte change de jeu puis revient à un jeu déjà choisi, ses dernières options sont restaurées, puis passées par `normalizeOptions` (le nombre de joueurs a pu changer). Ces options disparaissent avec la room.
+- L'hôte n'a pas de statut « prêt » : lancer la partie vaut accord de sa part.
+- **Conditions de lancement (`lobby:start`), vérifiées dans cet ordre :**
+  1. un jeu est sélectionné, sinon `NO_GAME_SELECTED` ;
+  2. le nombre de joueurs est au moins le minimum du jeu, sinon `NOT_ENOUGH_PLAYERS`, et au plus le maximum, sinon `TOO_MANY_PLAYERS` ;
+  3. sans `force` : tous les joueurs **connectés**, hôte excepté, sont prêts, sinon `NOT_ALL_READY`. Avec `force: true` (« Lancer quand même »), cette condition est ignorée. Les conditions 1 et 2 s'appliquent toujours.
 - Si l'hôte est retiré de la room (fin du délai de reconnexion ou départ volontaire), le rôle passe au joueur humain présent depuis le plus longtemps. Un bot ne peut jamais être hôte. S'il ne reste que des bots, la room est considérée comme vide.
 
 ### 5.4 Arrivée en cours de partie
 
-- Quelqu'un qui rejoint pendant `COUNTDOWN`, `PLAYING` ou `RESULTS` devient spectateur et reçoit la vue spectateur du jeu.
-- Au retour au `LOBBY`, les spectateurs deviennent joueurs.
+- Quelqu'un qui rejoint pendant `PLAYING` ou `RESULTS` devient spectateur et reçoit la vue spectateur du jeu.
+- Au retour au `LOBBY`, les spectateurs deviennent joueurs, non prêts.
 
 ### 5.5 Déconnexion, départ et reconnexion
 
 - **Déconnexion :** le joueur est marqué `connected: false` et sa place est gardée `RECONNECT_GRACE_MS`. Pendant une partie, le jeu est notifié (`onPlayerDisconnect`). Chaque `rules.md` définit le comportement du jeu dans ce cas.
 - **Reconnexion** avec le même `sessionToken` dans ce délai : le joueur retrouve sa place (pseudo, couleur, score cumulé, rôle dans la partie en cours). Le jeu est notifié (`onPlayerReconnect`).
 - **Retrait :** à la fin du délai, ou immédiatement en cas de `room:leave`, le joueur est retiré. Le jeu est notifié (`onPlayerLeave`), le rôle d'hôte est transféré si nécessaire, et son score cumulé est supprimé. S'il revient plus tard, il repart de zéro.
+- **Quitter volontairement :** un bouton « Quitter la room » est disponible dans le lobby et, pendant une partie, sur l'écran « Clique pour reprendre ». Il ouvre toujours une confirmation. Après confirmation, le client envoie `room:leave` puis revient à l'accueil (`/`). Si le joueur est l'hôte, la confirmation indique le pseudo du joueur qui deviendra hôte (le joueur humain présent depuis le plus longtemps, section 5.3).
 
 ### 5.6 Classement de partie et classement cumulé
 
@@ -128,6 +137,36 @@ LOBBY ──(hôte lance)──► COUNTDOWN ──► PLAYING ──(jeu termin
 - Exemple à 4 joueurs sans égalité : 3 / 2 / 1 / 0. Avec deux premiers ex æquo : 3 / 3 / 1 / 0.
 - Le calcul se trouve dans `server/rooms/ranking.ts`.
 - Les points sont ajoutés au classement cumulé de la room, trié par points décroissants. Il disparaît avec la room.
+- **Ordre d'affichage des égalités :** dans tous les classements (partie et soirée), les joueurs à égalité sont affichés par ordre alphabétique de leur pseudo, sans tenir compte des majuscules ni des accents. Ils gardent la même place.
+- **Contenu de `GameResults`**, calculé par la room à la fin de la partie :
+  - `ranking` : pour chaque joueur classé, `playerId`, `place`, `score` et `pointsAwarded` ;
+  - `cumulative` : pour chaque joueur de la room hors spectateurs, `playerId`, `points` (total après la partie), `place` (après la partie) et `previousPlace` (place au classement cumulé juste avant la partie, calculée avec la même règle d'égalité). Le client en déduit la flèche de progression : place gagnée, perdue ou identique.
+
+### 5.7 Aperçu d'une room avant de la rejoindre
+
+- L'écran d'invitation appelle `room:preview` avec le code de la room, sans la rejoindre.
+- La réponse est une photographie de la room à cet instant, **sans mise à jour en direct** :
+  - `hostPseudo` ;
+  - `players` : pour chaque joueur, `pseudo`, `color`, `isHost` ;
+  - `playerCount` et `capacity` ;
+  - `status` : `"lobby"` si la room est en `LOBBY`, `"in_game"` si elle est en `PLAYING` ou `RESULTS` ;
+  - `selectedGameId` (ou `null`).
+- La réponse ne contient ni chrono, ni manche, ni rôle, ni score, ni aucun identifiant (`playerId`, `sessionToken`).
+- Un `room:preview` sur un code inexistant renvoie `ROOM_NOT_FOUND` et compte comme un échec pour la limite `MAX_JOIN_FAILURES_PER_MINUTE` (section 9).
+
+### 5.8 Statut « prêt » dans le lobby
+
+- Chaque joueur, hôte excepté, a un statut « prêt », visible par tous dans `room:state` (`readyPlayerIds`).
+- `lobby:setReady` `{ ready: boolean }` le définit. Un second clic sur le bouton « Prêt » envoie `ready: false`.
+- `lobby:setReady` n'est accepté qu'en `LOBBY`, sinon `INVALID_STATE`. Envoyé par l'hôte : `INVALID_STATE`.
+- **Le statut « prêt » est perdu :**
+  - à chaque entrée dans l'état `LOBBY` (après les résultats, après une partie abandonnée) : tous les joueurs repartent non prêts ;
+  - à la déconnexion du joueur ;
+  - pour tous les joueurs, quand l'hôte sélectionne un jeu différent du jeu actuellement sélectionné. Chaque joueur qui était prêt reçoit une notification indiquant que le jeu a changé.
+- **Le statut « prêt » est conservé** quand l'hôte modifie les options du jeu.
+- Un joueur qui rejoint la room ou devient hôte n'est pas prêt.
+- Les joueurs déconnectés ne bloquent jamais le lancement (section 5.3, condition 3).
+- Les bots se déclarent prêts automatiquement dès qu'ils sont dans le lobby.
 
 ## 6. Protocole réseau
 
@@ -137,28 +176,32 @@ LOBBY ──(hôte lance)──► COUNTDOWN ──► PLAYING ──(jeu termin
 - Tous les événements sont typés dans `src/shared/protocol.ts` (`ClientToServerEvents`, `ServerToClientEvents`).
 - Nommage : `domaine:action`.
 - Les requêtes du client qui attendent une réponse utilisent les **acknowledgements** Socket.IO et renvoient `{ ok: true, data }` ou `{ ok: false, error: ErrorCode }`.
-- `ErrorCode` : `INVALID_PAYLOAD`, `ROOM_NOT_FOUND`, `ROOM_FULL`, `SERVER_FULL`, `PSEUDO_TAKEN`, `COLOR_TAKEN`, `NOT_HOST`, `INVALID_STATE`, `NOT_ENOUGH_PLAYERS`, `TOO_MANY_PLAYERS`, `RATE_LIMITED`.
+- `ErrorCode` : `INVALID_PAYLOAD`, `ROOM_NOT_FOUND`, `ROOM_FULL`, `SERVER_FULL`, `PSEUDO_TAKEN`, `COLOR_TAKEN`, `NOT_HOST`, `INVALID_STATE`, `NOT_ENOUGH_PLAYERS`, `TOO_MANY_PLAYERS`, `NO_GAME_SELECTED`, `NOT_ALL_READY`, `RATE_LIMITED`.
 
 ### 6.2 Événements
 
 | Sens | Événement | Payload | Rôle |
 |---|---|---|---|
 | client → serveur | `room:create` (ack) | `{ pseudo, preferredColor }` | Créer une room et la rejoindre |
+| client → serveur | `room:preview` (ack) | `{ code }` | Aperçu d'une room sans la rejoindre (section 5.7) |
 | client → serveur | `room:join` (ack) | `{ code, pseudo, preferredColor }` | Rejoindre une room |
 | client → serveur | `room:leave` | — | Quitter la room |
 | client → serveur | `lobby:setColor` (ack) | `{ color }` | Changer de couleur |
-| client → serveur | `lobby:selectGame` (ack) | `{ gameId, options }` | Hôte : choisir le jeu et ses options |
-| client → serveur | `lobby:start` (ack) | — | Hôte : lancer la partie |
+| client → serveur | `lobby:selectGame` (ack) | `{ gameId }` | Hôte : choisir le jeu (options restaurées ou par défaut, section 5.3) |
+| client → serveur | `lobby:setOptions` (ack) | `{ options }` | Hôte : modifier les options du jeu sélectionné. Refusé avec `NO_GAME_SELECTED` si aucun jeu n'est choisi. Le serveur applique `normalizeOptions` puis diffuse `room:state`. |
+| client → serveur | `lobby:setReady` (ack) | `{ ready }` | Joueur : se déclarer prêt ou non (section 5.8) |
+| client → serveur | `lobby:start` (ack) | `{ force }` | Hôte : lancer la partie ; `force: true` pour « Lancer quand même » (section 5.3) |
 | client → serveur | `results:backToLobby` (ack) | — | Hôte : quitter l'écran de résultats |
 | client → serveur | `dev:addBot` / `dev:removeBot` (ack) | — / `{ playerId }` | Hôte, développement uniquement |
 | client → serveur | `game:input` | défini par le jeu | Input continu, ex. déplacement (**volatile**) |
 | client → serveur | `game:action` (ack) | défini par le jeu | Action ponctuelle qui ne doit pas se perdre, ex. « Prêt » |
 | serveur → client | `session:init` | `{ sessionToken, playerId }` | Identité de la session |
 | serveur → client | `session:replaced` | — | Session ouverte ailleurs |
-| serveur → client | `room:state` | `RoomState` | État de la room : joueurs, hôte, état, jeu et options choisis, classement cumulé, fin du compte à rebours |
+| serveur → client | `room:state` | `RoomState` | État de la room : joueurs, hôte, état, jeu et options choisis (`selectedGameId` peut valoir `null`), joueurs prêts (`readyPlayerIds`), classement cumulé, et pendant `RESULTS` les derniers résultats (`lastResults: GameResults`), pour qu'un joueur qui rejoint ou se reconnecte pendant les résultats les voie |
+| serveur → client | `lobby:gameChanged` | `{ gameId }` | Envoyé aux joueurs qui ont perdu leur statut « prêt » parce que l'hôte a changé de jeu |
 | serveur → client | `game:view` | `{ tick, serverTime, view }` | Vue du jeu pour ce destinataire (**volatile**) |
 | serveur → client | `game:event` | défini par le jeu, plus `aborted` | Événement ponctuel (sons, animations) |
-| serveur → client | `game:results` | `{ ranking, pointsAwarded }` | Classement de la partie terminée |
+| serveur → client | `game:results` | `GameResults` (section 5.6) | Classement de la partie terminée et classement cumulé mis à jour |
 
 - **Messages fiables** (tous sauf `game:input` et `game:view`) : ils ne doivent pas se perdre. `game:action` renvoie `INVALID_PAYLOAD` si le schéma n'est pas respecté, `INVALID_STATE` si l'action n'est pas possible à ce moment.
 - **Messages volatiles** : un message en retard est abandonné au lieu de s'accumuler.
@@ -302,7 +345,7 @@ interface GameClientDefinition<Input, Action, View, Options> {
 | Usurpation d'un joueur | `sessionToken` secret, jamais diffusé ni loggé. Le `playerId` envoyé par un client n'est jamais cru. |
 | Flood de messages | Au plus `RATE_LIMIT_MESSAGES_PER_SECOND` messages par seconde glissante par socket, inputs compris. Surplus ignoré. Limite dépassée pendant `RATE_LIMIT_KICK_AFTER_MS` sans interruption : déconnexion. |
 | Messages géants | `maxHttpBufferSize` Socket.IO fixé à `MAX_MESSAGE_BYTES`. |
-| Recherche de rooms au hasard | Codes de `ROOM_CODE_LENGTH` caractères. Au plus `MAX_JOIN_FAILURES_PER_MINUTE` échecs de `room:join` par socket par minute glissante, puis `RATE_LIMITED`. |
+| Recherche de rooms au hasard | Codes de `ROOM_CODE_LENGTH` caractères. Au plus `MAX_JOIN_FAILURES_PER_MINUTE` échecs de `room:join` ou `room:preview` par socket par minute glissante, puis `RATE_LIMITED`. |
 | Saturation du serveur gratuit | `MAX_ROOMS` rooms simultanées, 1 room par socket. |
 | Injection dans la page (XSS) | Pas de `dangerouslySetInnerHTML`. Textes de joueurs affichés comme texte. En-têtes HTTP via `helmet`. |
 | Requêtes d'autres sites | Même origine en production, pas de CORS configuré. |
@@ -330,6 +373,9 @@ La configuration est versionnée dans `render.yaml`, à la racine du dépôt. Le
 
 - Vitest sur tout le code des couches pures : `shared/`, `games/*/logic/`, `games/*/shared/`, `server/rooms/` (machine d'états, capacité, hôte, classement).
 - Classement : cas sans égalité, égalité en tête, égalité au milieu, égalité de tous les joueurs (tous marquent N − 1).
+- Lobby : lancement refusé sans jeu, sous le minimum, au-dessus du maximum, avec un joueur connecté non prêt ; lancement accepté avec `force` ; joueur déconnecté non prêt qui ne bloque pas ; statut « prêt » perdu à l'entrée en `LOBBY`, à la déconnexion et au changement de jeu, conservé au changement d'option.
+- Aperçu : réponse sans chrono, rôle ni identifiant ; `status` correct pour chaque état de room ; code inexistant compté comme échec.
+- Options : valeurs par défaut au premier choix d'un jeu, options restaurées au retour sur un jeu déjà choisi, `lobby:setOptions` refusé sans jeu, statut « prêt » conservé après `lobby:setOptions`.
 - Les jeux reçoivent un `random` déterministe dans les tests.
 - Pas de tests end-to-end pour l'instant.
 
@@ -360,7 +406,6 @@ Valeurs exactes à utiliser dans `src/shared/constants.ts`. Chaque constante est
 | `MAX_ROOMS` | `50` |
 | `EMPTY_ROOM_TTL_MS` | `300000` (5 min) |
 | `RECONNECT_GRACE_MS` | `30000` |
-| `COUNTDOWN_MS` | `3000` |
 | `RESULTS_AUTO_RETURN_MS` | `20000` |
 | `PSEUDO_MIN_LENGTH` | `2` |
 | `PSEUDO_MAX_LENGTH` | `16` |

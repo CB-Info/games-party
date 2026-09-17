@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  body{margin:0;background:#E7E9E3;color:#16191A;-webkit-font-smoothing:antialiased;font-family:'Work Sans',system-ui,sans-serif}
+  a{color:#0A6653;text-decoration:none}
+  a:hover{color:#084F40;text-decoration:underline}
+  input{font:inherit;box-sizing:border-box;outline:none}
+  @keyframes gpBlink{0%,100%{opacity:1}50%{opacity:.35}}
+</style>
+</helmet>
+
+<section style="padding:64px;display:flex;flex-direction:column;gap:40px">
+  <div style="display:flex;flex-direction:column;gap:12px;max-width:880px">
+    <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#5A6066">Tour 3 · écran 5.1 — v2</span>
+    <h1 style="margin:0;font-family:'Nunito',system-ui;font-size:44px;font-weight:800;line-height:1.05;letter-spacing:-.03em">Accueil</h1>
+    <p style="margin:0;font-size:17px;line-height:1.6;color:#5A6066;text-wrap:pretty">Portails neutres, distingués par la forme de l'anneau et leur lettre. Ligne de joueur à hauteur fixe (38 px) : la carte s'allonge d'une ligne par arrivée, et 10 lignes tiennent aussi en 1366 × 768. <a href="#3a">3a</a> créer une room, <a href="#3b">3b</a> arriver par un lien, <a href="#3c">3c</a> arriver pendant une partie, <a href="#3d">3d</a> pseudo déjà pris, <a href="#3e">3e</a> room pleine, <a href="#3f">3f</a> serveur complet, <a href="#3g">3g</a> contrôle 1366 × 768.</p>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:44px">
+
+    <div id="3a" style="display:flex;flex-direction:column;gap:16px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:600;color:#FFFFFF;background:#16191A;border-radius:999px;padding:5px 11px">3a</span>
+        <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em">Accueil · créer une room</span>
+        <span style="font-size:13px;color:#5A6066">1440 × 900</span>
+      </div>
+      <div data-screen-label="5.1 Accueil" style="width:1440px;height:900px;background:#F4F5F2;border-radius:24px;overflow:hidden;box-shadow:0 2px 6px rgba(22,25,26,.06),0 40px 80px -50px rgba(22,25,26,.45);display:flex;flex-direction:column;color:#16191A">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:32px 56px">
+          <div style="display:flex;align-items:center;gap:13px">
+            <div style="position:relative;width:44px;height:44px;border-radius:16px;background:#0E7C66;flex:none">
+              <div style="position:absolute;left:9px;top:9px;width:10px;height:10px;border-radius:999px;background:#FFFFFF"></div>
+              <div style="position:absolute;right:8px;top:14px;width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.62)"></div>
+              <div style="position:absolute;left:16px;bottom:8px;width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.82)"></div>
+            </div>
+            <span style="font-family:'Nunito',system-ui;font-size:26px;font-weight:800;letter-spacing:-.03em">Games Party</span>
+          </div>
+          <sc-if value="{{ soundOn }}" hint-placeholder-val="{{ true }}">
+            <button type="button" aria-label="Couper le son" style="width:48px;height:48px;border:1px solid #DFE2DB;border-radius:999px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .12s cubic-bezier(.4,0,1,1),border-color .12s cubic-bezier(.4,0,1,1)" style-hover="background:#ECEEE8;border-color:#C7CCC0"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#16191A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3L11 6v12l-4-3.5H4z"></path><path d="M15 9.6a3.6 3.6 0 0 1 0 4.8"></path><path d="M17.6 7.2a7 7 0 0 1 0 9.6"></path></svg></button>
+          </sc-if>
+          <sc-if value="{{ soundOff }}" hint-placeholder-val="{{ false }}">
+            <button type="button" aria-label="Activer le son" style="width:48px;height:48px;border:1px solid #DFE2DB;border-radius:999px;background:#ECEEE8;display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="border-color:#C7CCC0"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#5A6066" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3L11 6v12l-4-3.5H4z"></path><path d="M16 10l4 4"></path><path d="M20 10l-4 4"></path></svg></button>
+          </sc-if>
+        </div>
+
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:0 56px 64px">
+          <div style="width:1240px;box-sizing:border-box;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:24px;padding:56px;display:flex;align-items:center;justify-content:center;gap:56px;box-shadow:0 1px 3px rgba(22,25,26,.05)">
+            <div style="width:452px;flex:none;display:flex;flex-direction:column;gap:22px">
+              <span style="align-self:flex-start;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#0A6653;background:#E3F0EA;border-radius:999px;padding:7px 13px">Mini-jeux multijoueurs</span>
+              <h2 style="margin:0;font-family:'Nunito',system-ui;font-size:56px;font-weight:800;line-height:1.02;letter-spacing:-.03em">Tes potes, un lien, dix curseurs.</h2>
+              <p style="margin:0;font-size:17px;line-height:1.6;color:#5A6066;text-wrap:pretty">Crée une room, envoie le lien à tes potes, ils arrivent en un clic. Jusqu'à 10 joueurs, sur ordinateur, à la souris.</p>
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <label style="font-size:13px;font-weight:600">Ton pseudo</label>
+                <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px">
+                  <div style="position:relative;display:flex">
+                    <input type="text" value="Mika" maxlength="16" style="flex:1;min-width:0;height:54px;border-radius:999px;border:1px solid #DFE2DB;background:#FFFFFF;padding:0 62px 0 20px;font-size:16px;font-weight:500" style-focus="border-color:#0E7C66;box-shadow:0 0 0 4px #E3F0EA">
+                    <span style="position:absolute;right:20px;top:0;height:54px;display:flex;align-items:center;font-size:12px;font-weight:600;color:#5A6066">4/16</span>
+                  </div>
+                  <button type="button" style="height:54px;border:none;border-radius:999px;background:#0E7C66;color:#FFFFFF;padding:0 30px;font:inherit;font-size:16px;font-weight:600;cursor:pointer;transition:background .16s cubic-bezier(.2,.8,.3,1),transform .16s cubic-bezier(.2,.8,.3,1)" style-hover="background:#0A6653;transform:translateY(-1px)">Créer une room</button>
+                </div>
+                <span style="font-size:13px;color:#5A6066">2 à 16 caractères. Tu choisiras ta couleur dans le lobby.</span>
+              </div>
+            </div>
+
+            <div style="width:620px;flex:none;display:flex;flex-direction:column;gap:18px">
+              <div style="position:relative;width:620px;height:349px;border-radius:20px;background:#1E2422;overflow:hidden">
+                <div style="position:absolute;left:287px;top:151px;width:46px;height:46px;border-radius:8px;background:#333B37"></div>
+                <div style="position:absolute;left:116px;top:77px;width:116px;height:15px;border-radius:8px;background:#333B37"></div>
+                <div style="position:absolute;left:387px;top:256px;width:116px;height:15px;border-radius:8px;background:#333B37"></div>
+                <div style="position:absolute;left:457px;top:46px;width:15px;height:101px;border-radius:8px;background:#333B37"></div>
+                <div style="position:absolute;left:147px;top:201px;width:15px;height:101px;border-radius:8px;background:#333B37"></div>
+                <div style="position:absolute;left:32px;top:32px;width:28px;height:28px;box-sizing:border-box;border-radius:999px;border:3px solid #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">A</div>
+                <div style="position:absolute;left:560px;top:288px;width:28px;height:28px;box-sizing:border-box;border-radius:999px;border:3px solid #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">A</div>
+                <div style="position:absolute;left:560px;top:32px;width:28px;height:28px;box-sizing:border-box;border-radius:999px;border:3px dashed #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">B</div>
+                <div style="position:absolute;left:32px;top:288px;width:28px;height:28px;box-sizing:border-box;border-radius:999px;border:3px dashed #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">B</div>
+                <div style="position:absolute;left:224px;top:112px;display:flex;align-items:center;gap:7px">
+                  <div style="position:relative;width:24px;height:24px;border-radius:999px;background:#FF5FB0;box-shadow:0 0 0 4px rgba(255,95,176,.28),0 0 0 8px rgba(255,95,176,.12)">
+                    <div style="position:absolute;left:1px;top:-5px;width:8px;height:8px;border-radius:2px;transform:rotate(45deg);background:#FF5FB0"></div>
+                    <div style="position:absolute;right:1px;top:-5px;width:8px;height:8px;border-radius:2px;transform:rotate(45deg);background:#FF5FB0"></div>
+                  </div>
+                  <span style="font-size:12px;font-weight:600;color:#F2F5F1;background:rgba(0,0,0,.45);border-radius:6px;padding:3px 8px">Mika <span style="color:#9BA6A0">· chat</span></span>
+                </div>
+                <div style="position:absolute;left:356px;top:92px;display:flex;align-items:center;gap:7px">
+                  <div style="width:20px;height:20px;border-radius:999px;background:#2BA8FF;box-shadow:0 0 0 2.5px rgba(255,255,255,.3)"></div>
+                  <span style="font-size:12px;font-weight:600;color:#F2F5F1;background:rgba(0,0,0,.45);border-radius:6px;padding:3px 8px">ClementLeBoss123</span>
+                </div>
+                <div style="position:absolute;left:190px;top:250px;display:flex;align-items:center;gap:7px">
+                  <div style="width:20px;height:20px;border-radius:999px;background:#3DDC97;box-shadow:0 0 0 2.5px rgba(255,255,255,.3)"></div>
+                  <span style="font-size:12px;font-weight:600;color:#F2F5F1;background:rgba(0,0,0,.45);border-radius:6px;padding:3px 8px">Lulu</span>
+                </div>
+                <div style="position:absolute;left:470px;top:190px;display:flex;align-items:center;gap:7px">
+                  <div style="width:20px;height:20px;border-radius:999px;background:#F5D131;box-shadow:0 0 0 2.5px rgba(255,255,255,.3)"></div>
+                  <span style="font-size:12px;font-weight:600;color:#F2F5F1;background:rgba(0,0,0,.45);border-radius:6px;padding:3px 8px">Nono</span>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:16px;border:1px solid #DFE2DB;border-radius:20px;padding:18px 20px">
+                <div style="position:relative;width:46px;height:46px;flex:none;border-radius:16px;background:#E2542B">
+                  <div style="position:absolute;left:13px;top:12px;width:7px;height:7px;border-radius:2px;transform:rotate(45deg);background:#FFFFFF"></div>
+                  <div style="position:absolute;right:13px;top:12px;width:7px;height:7px;border-radius:2px;transform:rotate(45deg);background:#FFFFFF"></div>
+                  <div style="position:absolute;left:14px;top:17px;width:18px;height:18px;border-radius:999px;background:#FFFFFF"></div>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:3px;flex:1;min-width:0">
+                  <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:800;line-height:1.15">Cursor Tag</span>
+                  <span style="font-size:13px;color:#5A6066">Un jeu du chat à la souris. Esquive, prends les portails, ne te fais pas toucher.</span>
+                </div>
+                <span style="flex:none;font-size:12px;font-weight:600;background:#ECEEE8;border-radius:999px;padding:4px 8px">3 à 10 joueurs</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="3b" style="display:flex;flex-direction:column;gap:16px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:600;color:#FFFFFF;background:#16191A;border-radius:999px;padding:5px 11px">3b</span>
+        <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em">Arrivée par le lien d'une room</span>
+        <span style="font-size:13px;color:#5A6066">Lobby ouvert, le joueur n'a pas encore de pseudo</span>
+      </div>
+      <div data-screen-label="5.1 Rejoindre" style="width:1440px;height:900px;background:#F4F5F2;border-radius:24px;overflow:hidden;box-shadow:0 2px 6px rgba(22,25,26,.06),0 40px 80px -50px rgba(22,25,26,.45);display:flex;flex-direction:column;color:#16191A">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:32px 56px">
+          <div style="display:flex;align-items:center;gap:13px">
+            <div style="position:relative;width:44px;height:44px;border-radius:16px;background:#0E7C66;flex:none">
+              <div style="position:absolute;left:9px;top:9px;width:10px;height:10px;border-radius:999px;background:#FFFFFF"></div>
+              <div style="position:absolute;right:8px;top:14px;width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.62)"></div>
+              <div style="position:absolute;left:16px;bottom:8px;width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.82)"></div>
+            </div>
+            <span style="font-family:'Nunito',system-ui;font-size:26px;font-weight:800;letter-spacing:-.03em">Games Party</span>
+          </div>
+          <button type="button" aria-label="Couper le son" style="width:48px;height:48px;border:1px solid #DFE2DB;border-radius:999px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:#ECEEE8;border-color:#C7CCC0"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#16191A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3L11 6v12l-4-3.5H4z"></path><path d="M15 9.6a3.6 3.6 0 0 1 0 4.8"></path><path d="M17.6 7.2a7 7 0 0 1 0 9.6"></path></svg></button>
+        </div>
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:0 56px 64px">
+          <div style="width:1240px;box-sizing:border-box;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:24px;padding:56px;display:flex;align-items:center;justify-content:center;gap:56px;box-shadow:0 1px 3px rgba(22,25,26,.05)">
+            <div style="width:452px;flex:none;display:flex;flex-direction:column;gap:22px">
+              <span style="align-self:flex-start;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#0A6653;background:#E3F0EA;border-radius:999px;padding:7px 13px">Invitation</span>
+              <h2 style="margin:0;font-family:'Nunito',system-ui;font-size:56px;font-weight:800;line-height:1.02;letter-spacing:-.03em">La room de Mika t'attend.</h2>
+              <p style="margin:0;font-size:17px;line-height:1.6;color:#5A6066;text-wrap:pretty">Ils sont déjà 5 à traîner dans le lobby. Choisis un pseudo, tu récupères ta couleur juste après.</p>
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <label style="font-size:13px;font-weight:600">Ton pseudo</label>
+                <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px">
+                  <div style="position:relative;display:flex">
+                    <input type="text" placeholder="ex. Sam" maxlength="16" style="flex:1;min-width:0;height:54px;border-radius:999px;border:1px solid #0E7C66;background:#FFFFFF;padding:0 62px 0 20px;font-size:16px;font-weight:500;box-shadow:0 0 0 4px #E3F0EA" style-focus="border-color:#0E7C66">
+                    <span style="position:absolute;right:20px;top:0;height:54px;display:flex;align-items:center;font-size:12px;font-weight:600;color:#5A6066">0/16</span>
+                  </div>
+                  <button type="button" style="height:54px;border:none;border-radius:999px;background:#0E7C66;color:#FFFFFF;padding:0 30px;font:inherit;font-size:16px;font-weight:600;cursor:pointer;transition:background .16s cubic-bezier(.2,.8,.3,1),transform .16s cubic-bezier(.2,.8,.3,1)" style-hover="background:#0A6653;transform:translateY(-1px)">Rejoindre</button>
+                </div>
+                <span style="font-size:13px;color:#5A6066">2 à 16 caractères. Ils s'apprêtent à lancer Cursor Tag.</span>
+              </div>
+            </div>
+            <div style="width:620px;flex:none;background:#F4F5F2;border:1px solid #DFE2DB;border-radius:20px;padding:24px;display:flex;flex-direction:column;gap:16px">
+              <div style="display:flex;align-items:baseline;justify-content:space-between">
+                <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700">Déjà dans la room</span>
+                <span style="font-size:13px;font-weight:500;line-height:1.45;color:#5A6066">5 / 10</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <div style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:16px;padding:0 14px;height:38px;box-sizing:border-box">
+                  <div style="width:22px;height:22px;flex:none;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:#FF5FB0"></div>
+                  <span style="flex:1;min-width:0;font-size:15px;font-weight:600;line-height:1.4">Mika</span>
+                  <span style="font-size:12px;font-weight:600;color:#0A6653;background:#E3F0EA;border-radius:999px;padding:4px 8px">Hôte</span>
+                </div>
+                <sc-for list="{{ roomPlayers }}" as="p" hint-placeholder-count="4">
+                  <div style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:16px;padding:0 14px;height:38px;box-sizing:border-box">
+                    <div style="width:22px;height:22px;flex:none;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:{{ p.hex }}"></div>
+                    <span style="flex:1;min-width:0;font-size:15px;font-weight:600;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ p.nom }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="3c" style="display:flex;flex-direction:column;gap:16px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:600;color:#FFFFFF;background:#16191A;border-radius:999px;padding:5px 11px">3c</span>
+        <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em">Arrivée pendant une partie</span>
+        <span style="font-size:13px;color:#5A6066">Le joueur sait qu'il entre en spectateur</span>
+      </div>
+      <div data-screen-label="5.1 Rejoindre en spectateur" style="width:1440px;height:900px;background:#F4F5F2;border-radius:24px;overflow:hidden;box-shadow:0 2px 6px rgba(22,25,26,.06),0 40px 80px -50px rgba(22,25,26,.45);display:flex;flex-direction:column;color:#16191A">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:32px 56px">
+          <div style="display:flex;align-items:center;gap:13px">
+            <div style="position:relative;width:44px;height:44px;border-radius:16px;background:#0E7C66;flex:none">
+              <div style="position:absolute;left:9px;top:9px;width:10px;height:10px;border-radius:999px;background:#FFFFFF"></div>
+              <div style="position:absolute;right:8px;top:14px;width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.62)"></div>
+              <div style="position:absolute;left:16px;bottom:8px;width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.82)"></div>
+            </div>
+            <span style="font-family:'Nunito',system-ui;font-size:26px;font-weight:800;letter-spacing:-.03em">Games Party</span>
+          </div>
+          <button type="button" aria-label="Couper le son" style="width:48px;height:48px;border:1px solid #DFE2DB;border-radius:999px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:#ECEEE8;border-color:#C7CCC0"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#16191A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3L11 6v12l-4-3.5H4z"></path><path d="M15 9.6a3.6 3.6 0 0 1 0 4.8"></path><path d="M17.6 7.2a7 7 0 0 1 0 9.6"></path></svg></button>
+        </div>
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:0 56px 64px">
+          <div style="width:1240px;box-sizing:border-box;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:24px;padding:56px;display:flex;align-items:center;justify-content:center;gap:56px;box-shadow:0 1px 3px rgba(22,25,26,.05)">
+            <div style="width:452px;flex:none;display:flex;flex-direction:column;gap:22px">
+              <span style="align-self:flex-start;display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#7A5400;background:#F7EEDC;border-radius:999px;padding:7px 13px"><span style="width:7px;height:7px;border-radius:999px;background:#7A5400;animation:gpBlink 1.4s ease-in-out infinite"></span>Partie en cours</span>
+              <h2 style="margin:0;font-family:'Nunito',system-ui;font-size:56px;font-weight:800;line-height:1.02;letter-spacing:-.03em">Ça joue déjà chez Mika.</h2>
+              <p style="margin:0;font-size:17px;line-height:1.6;color:#5A6066;text-wrap:pretty">Tu entres en spectateur : tu regardes la fin de la partie, et tu joues à la suivante. Choisis quand même ton pseudo maintenant.</p>
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <label style="font-size:13px;font-weight:600">Ton pseudo</label>
+                <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px">
+                  <div style="position:relative;display:flex">
+                    <input type="text" placeholder="ex. Sam" maxlength="16" style="flex:1;min-width:0;height:54px;border-radius:999px;border:1px solid #DFE2DB;background:#FFFFFF;padding:0 62px 0 20px;font-size:16px;font-weight:500" style-focus="border-color:#0E7C66;box-shadow:0 0 0 4px #E3F0EA">
+                    <span style="position:absolute;right:20px;top:0;height:54px;display:flex;align-items:center;font-size:12px;font-weight:600;color:#5A6066">0/16</span>
+                  </div>
+                  <button type="button" style="height:54px;border:none;border-radius:999px;background:#0E7C66;color:#FFFFFF;padding:0 26px;font:inherit;font-size:16px;font-weight:600;cursor:pointer;transition:background .16s cubic-bezier(.2,.8,.3,1),transform .16s cubic-bezier(.2,.8,.3,1)" style-hover="background:#0A6653;transform:translateY(-1px)">Regarder</button>
+                </div>
+                <span style="font-size:13px;color:#5A6066">Tu joueras à la prochaine partie, sans rien avoir à refaire.</span>
+              </div>
+            </div>
+            <div style="width:620px;flex:none;background:#F4F5F2;border:1px solid #DFE2DB;border-radius:20px;padding:24px;display:flex;flex-direction:column;gap:16px">
+              <div style="display:flex;align-items:baseline;justify-content:space-between">
+                <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700">Partie en cours : Cursor Tag</span>
+                <span style="font-size:13px;font-weight:500;line-height:1.45;color:#5A6066">5 / 10</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <div style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:16px;padding:0 14px;height:38px;box-sizing:border-box">
+                  <div style="width:22px;height:22px;flex:none;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:#FF5FB0"></div>
+                  <span style="flex:1;min-width:0;font-size:15px;font-weight:600;line-height:1.4">Mika</span>
+                  <span style="font-size:12px;font-weight:600;color:#0A6653;background:#E3F0EA;border-radius:999px;padding:4px 8px">Hôte</span>
+                </div>
+                <sc-for list="{{ roomPlayers }}" as="p" hint-placeholder-count="4">
+                  <div style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:16px;padding:0 14px;height:38px;box-sizing:border-box">
+                    <div style="width:22px;height:22px;flex:none;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:{{ p.hex }}"></div>
+                    <span style="flex:1;min-width:0;font-size:15px;font-weight:600;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ p.nom }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <sc-if value="{{ showErreurs }}" hint-placeholder-val="{{ true }}">
+      <div id="3d" style="display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:600;color:#FFFFFF;background:#16191A;border-radius:999px;padding:5px 11px">3d</span>
+          <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em">Erreur · pseudo déjà pris</span>
+          <span style="font-size:13px;color:#5A6066">Même écran que 3b, champ en erreur</span>
+        </div>
+        <div data-screen-label="5.1 Pseudo pris" style="width:1440px;height:900px;background:#F4F5F2;border-radius:24px;overflow:hidden;box-shadow:0 2px 6px rgba(22,25,26,.06),0 40px 80px -50px rgba(22,25,26,.45);display:flex;flex-direction:column;color:#16191A">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:32px 56px">
+            <div style="display:flex;align-items:center;gap:13px">
+              <div style="position:relative;width:44px;height:44px;border-radius:16px;background:#0E7C66;flex:none">
+                <div style="position:absolute;left:9px;top:9px;width:10px;height:10px;border-radius:999px;background:#FFFFFF"></div>
+                <div style="position:absolute;right:8px;top:14px;width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.62)"></div>
+                <div style="position:absolute;left:16px;bottom:8px;width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.82)"></div>
+              </div>
+              <span style="font-family:'Nunito',system-ui;font-size:26px;font-weight:800;letter-spacing:-.03em">Games Party</span>
+            </div>
+            <button type="button" aria-label="Couper le son" style="width:48px;height:48px;border:1px solid #DFE2DB;border-radius:999px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:#ECEEE8;border-color:#C7CCC0"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#16191A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3L11 6v12l-4-3.5H4z"></path><path d="M15 9.6a3.6 3.6 0 0 1 0 4.8"></path><path d="M17.6 7.2a7 7 0 0 1 0 9.6"></path></svg></button>
+          </div>
+          <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:0 56px 64px">
+            <div style="width:1240px;box-sizing:border-box;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:24px;padding:56px;display:flex;align-items:center;justify-content:center;gap:56px;box-shadow:0 1px 3px rgba(22,25,26,.05)">
+              <div style="width:452px;flex:none;display:flex;flex-direction:column;gap:22px">
+                <span style="align-self:flex-start;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#0A6653;background:#E3F0EA;border-radius:999px;padding:7px 13px">Invitation</span>
+                <h2 style="margin:0;font-family:'Nunito',system-ui;font-size:56px;font-weight:800;line-height:1.02;letter-spacing:-.03em">La room de Mika t'attend.</h2>
+                <p style="margin:0;font-size:17px;line-height:1.6;color:#5A6066;text-wrap:pretty">Ils sont déjà 5 à traîner dans le lobby. Choisis un pseudo, tu récupères ta couleur juste après.</p>
+                <div style="display:flex;flex-direction:column;gap:10px">
+                  <label style="font-size:13px;font-weight:600">Ton pseudo</label>
+                  <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px">
+                    <div style="position:relative;display:flex">
+                      <div style="flex:1;min-width:0;height:54px;border-radius:999px;border:1px solid #B3261E;background:#FFFFFF;padding:0 62px 0 20px;display:flex;align-items:center;font-size:16px;font-weight:500;box-shadow:0 0 0 4px #FBEAE8">Lulu</div>
+                      <span style="position:absolute;right:20px;top:0;height:54px;display:flex;align-items:center;font-size:12px;font-weight:600;color:#5A6066">4/16</span>
+                    </div>
+                    <button type="button" style="height:54px;border:none;border-radius:999px;background:#0E7C66;color:#FFFFFF;padding:0 30px;font:inherit;font-size:16px;font-weight:600;cursor:pointer;transition:background .16s cubic-bezier(.2,.8,.3,1)" style-hover="background:#0A6653">Rejoindre</button>
+                  </div>
+                  <span style="display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:500;line-height:1.45;color:#B3261E"><span style="width:7px;height:7px;border-radius:999px;background:#B3261E"></span>Ce pseudo est déjà pris dans la room. Ajoute un chiffre, ou change complètement.</span>
+                </div>
+              </div>
+              <div style="width:620px;flex:none;background:#F4F5F2;border:1px solid #DFE2DB;border-radius:20px;padding:24px;display:flex;flex-direction:column;gap:16px">
+                <div style="display:flex;align-items:baseline;justify-content:space-between">
+                  <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700">Déjà dans la room</span>
+                  <span style="font-size:13px;font-weight:500;line-height:1.45;color:#5A6066">5 / 10</span>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:8px">
+                  <div style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:16px;padding:0 14px;height:38px;box-sizing:border-box">
+                    <div style="width:22px;height:22px;flex:none;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:#FF5FB0"></div>
+                    <span style="flex:1;min-width:0;font-size:15px;font-weight:600;line-height:1.4">Mika</span>
+                    <span style="font-size:12px;font-weight:600;color:#0A6653;background:#E3F0EA;border-radius:999px;padding:4px 8px">Hôte</span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:16px;padding:0 14px;height:38px;box-sizing:border-box">
+                    <div style="width:22px;height:22px;flex:none;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:#2BA8FF"></div>
+                    <span style="flex:1;min-width:0;font-size:15px;font-weight:600;line-height:1.4">ClementLeBoss123</span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border:1px solid #B3261E;border-radius:16px;padding:0 14px;height:38px;box-sizing:border-box;box-shadow:0 0 0 3px #FBEAE8">
+                    <div style="width:22px;height:22px;flex:none;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:#3DDC97"></div>
+                    <span style="flex:1;min-width:0;font-size:15px;font-weight:600;line-height:1.4">Lulu</span>
+                    <span style="font-size:12px;font-weight:600;color:#B3261E;background:#FBEAE8;border-radius:999px;padding:4px 8px">C'est ce pseudo</span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:16px;padding:0 14px;height:38px;box-sizing:border-box">
+                    <div style="width:22px;height:22px;flex:none;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:#F5D131"></div>
+                    <span style="flex:1;min-width:0;font-size:15px;font-weight:600;line-height:1.4">Nono</span>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:16px;padding:0 14px;height:38px;box-sizing:border-box">
+                    <div style="width:22px;height:22px;flex:none;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:#C77DFF"></div>
+                    <span style="flex:1;min-width:0;font-size:15px;font-weight:600;line-height:1.4">Tibo</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="3e" style="display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:600;color:#FFFFFF;background:#16191A;border-radius:999px;padding:5px 11px">3e</span>
+          <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em">Erreur · room pleine</span>
+          <span style="font-size:13px;color:#5A6066">La colonne de gauche est remplacée</span>
+        </div>
+        <div data-screen-label="5.1 Room pleine" style="width:1440px;height:900px;background:#F4F5F2;border-radius:24px;overflow:hidden;box-shadow:0 2px 6px rgba(22,25,26,.06),0 40px 80px -50px rgba(22,25,26,.45);display:flex;flex-direction:column;color:#16191A">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:32px 56px">
+            <div style="display:flex;align-items:center;gap:13px">
+              <div style="position:relative;width:44px;height:44px;border-radius:16px;background:#0E7C66;flex:none">
+                <div style="position:absolute;left:9px;top:9px;width:10px;height:10px;border-radius:999px;background:#FFFFFF"></div>
+                <div style="position:absolute;right:8px;top:14px;width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.62)"></div>
+                <div style="position:absolute;left:16px;bottom:8px;width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.82)"></div>
+              </div>
+              <span style="font-family:'Nunito',system-ui;font-size:26px;font-weight:800;letter-spacing:-.03em">Games Party</span>
+            </div>
+            <button type="button" aria-label="Couper le son" style="width:48px;height:48px;border:1px solid #DFE2DB;border-radius:999px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:#ECEEE8;border-color:#C7CCC0"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#16191A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3L11 6v12l-4-3.5H4z"></path><path d="M15 9.6a3.6 3.6 0 0 1 0 4.8"></path><path d="M17.6 7.2a7 7 0 0 1 0 9.6"></path></svg></button>
+          </div>
+          <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:0 56px 64px">
+            <div style="width:1240px;box-sizing:border-box;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:24px;padding:48px 56px;display:flex;align-items:center;justify-content:center;gap:56px;box-shadow:0 1px 3px rgba(22,25,26,.05)">
+              <div style="width:452px;flex:none;display:flex;flex-direction:column;gap:22px">
+                <span style="align-self:flex-start;display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#B3261E;background:#FBEAE8;border-radius:999px;padding:7px 13px"><span style="width:7px;height:7px;border-radius:999px;background:#B3261E"></span>10 / 10</span>
+                <h2 style="margin:0;font-family:'Nunito',system-ui;font-size:56px;font-weight:800;line-height:1.02;letter-spacing:-.03em">La room est pleine.</h2>
+                <p style="margin:0;font-size:17px;line-height:1.6;color:#5A6066;text-wrap:pretty">Dix joueurs, c'est le maximum. Demande à Mika de libérer une place, ou lance ta propre room et envoie le lien à tes potes.</p>
+                <div style="display:flex;gap:12px">
+                  <button type="button" style="height:54px;border:none;border-radius:999px;background:#0E7C66;color:#FFFFFF;padding:0 30px;font:inherit;font-size:16px;font-weight:600;cursor:pointer;transition:background .16s cubic-bezier(.2,.8,.3,1),transform .16s cubic-bezier(.2,.8,.3,1)" style-hover="background:#0A6653;transform:translateY(-1px)">Créer ma room</button>
+                  <button type="button" style="height:54px;border:1px solid #DFE2DB;border-radius:999px;background:#FFFFFF;color:#16191A;padding:0 26px;font:inherit;font-size:16px;font-weight:600;cursor:pointer;transition:background .12s cubic-bezier(.4,0,1,1)" style-hover="background:#ECEEE8;border-color:#C7CCC0">Réessayer</button>
+                </div>
+              </div>
+              <div style="width:620px;flex:none;background:#F4F5F2;border:1px solid #DFE2DB;border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:14px">
+                <div style="display:flex;align-items:baseline;justify-content:space-between">
+                  <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700">Dans la room</span>
+                  <span style="font-size:13px;font-weight:500;line-height:1.45;color:#B3261E">10 / 10</span>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:8px">
+                  <div style="display:flex;align-items:center;gap:11px;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:16px;padding:0 14px;height:38px;box-sizing:border-box">
+                    <div style="width:22px;height:22px;flex:none;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:#FF5FB0"></div>
+                    <span style="flex:1;min-width:0;font-size:15px;font-weight:600;line-height:1.4">Mika</span>
+                    <span style="font-size:12px;font-weight:600;color:#0A6653;background:#E3F0EA;border-radius:999px;padding:4px 8px">Hôte</span>
+                  </div>
+                  <sc-for list="{{ roomFull }}" as="p" hint-placeholder-count="9">
+                    <div style="display:flex;align-items:center;gap:11px;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:16px;padding:0 14px;height:38px;box-sizing:border-box">
+                      <div style="width:22px;height:22px;flex:none;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:{{ p.hex }}"></div>
+                      <span style="flex:1;min-width:0;font-size:15px;font-weight:600;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ p.nom }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="3f" style="display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:600;color:#FFFFFF;background:#16191A;border-radius:999px;padding:5px 11px">3f</span>
+          <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em">Erreur · serveur complet</span>
+          <span style="font-size:13px;color:#5A6066">Un seul bouton, pas de tentative automatique</span>
+        </div>
+        <div data-screen-label="5.1 Serveur complet" style="width:1440px;height:900px;background:#F4F5F2;border-radius:24px;overflow:hidden;box-shadow:0 2px 6px rgba(22,25,26,.06),0 40px 80px -50px rgba(22,25,26,.45);display:flex;flex-direction:column;color:#16191A">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:32px 56px">
+            <div style="display:flex;align-items:center;gap:13px">
+              <div style="position:relative;width:44px;height:44px;border-radius:16px;background:#0E7C66;flex:none">
+                <div style="position:absolute;left:9px;top:9px;width:10px;height:10px;border-radius:999px;background:#FFFFFF"></div>
+                <div style="position:absolute;right:8px;top:14px;width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.62)"></div>
+                <div style="position:absolute;left:16px;bottom:8px;width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.82)"></div>
+              </div>
+              <span style="font-family:'Nunito',system-ui;font-size:26px;font-weight:800;letter-spacing:-.03em">Games Party</span>
+            </div>
+            <button type="button" aria-label="Couper le son" style="width:48px;height:48px;border:1px solid #DFE2DB;border-radius:999px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:#ECEEE8;border-color:#C7CCC0"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#16191A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3L11 6v12l-4-3.5H4z"></path><path d="M15 9.6a3.6 3.6 0 0 1 0 4.8"></path><path d="M17.6 7.2a7 7 0 0 1 0 9.6"></path></svg></button>
+          </div>
+          <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:0 56px 64px">
+            <div style="width:1240px;box-sizing:border-box;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:24px;padding:56px;display:flex;align-items:center;justify-content:center;gap:56px;box-shadow:0 1px 3px rgba(22,25,26,.05)">
+              <div style="width:452px;flex:none;display:flex;flex-direction:column;gap:22px">
+                <span style="align-self:flex-start;display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#7A5400;background:#F7EEDC;border-radius:999px;padding:7px 13px"><span style="width:7px;height:7px;border-radius:999px;background:#7A5400"></span>Serveur complet</span>
+                <h2 style="margin:0;font-family:'Nunito',system-ui;font-size:56px;font-weight:800;line-height:1.02;letter-spacing:-.03em">Toutes les rooms sont prises.</h2>
+                <p style="margin:0;font-size:17px;line-height:1.6;color:#5A6066;text-wrap:pretty">Le serveur tourne à plein régime. Laisse passer une minute et retente : il s'en libère tout le temps.</p>
+                <button type="button" style="align-self:flex-start;height:54px;border:none;border-radius:999px;background:#0E7C66;color:#FFFFFF;padding:0 30px;font:inherit;font-size:16px;font-weight:600;cursor:pointer;transition:background .16s cubic-bezier(.2,.8,.3,1),transform .16s cubic-bezier(.2,.8,.3,1)" style-hover="background:#0A6653;transform:translateY(-1px)">Réessayer</button>
+              </div>
+              <div style="width:620px;flex:none;display:flex;flex-direction:column;gap:18px">
+                <div style="position:relative;width:620px;height:349px;border-radius:20px;background:#1E2422;overflow:hidden">
+                  <div style="position:absolute;left:287px;top:151px;width:46px;height:46px;border-radius:8px;background:#333B37"></div>
+                  <div style="position:absolute;left:116px;top:77px;width:116px;height:15px;border-radius:8px;background:#333B37"></div>
+                  <div style="position:absolute;left:387px;top:256px;width:116px;height:15px;border-radius:8px;background:#333B37"></div>
+                  <div style="position:absolute;left:457px;top:46px;width:15px;height:101px;border-radius:8px;background:#333B37"></div>
+                  <div style="position:absolute;left:147px;top:201px;width:15px;height:101px;border-radius:8px;background:#333B37"></div>
+                  <div style="position:absolute;left:32px;top:32px;width:28px;height:28px;box-sizing:border-box;border-radius:999px;border:3px solid #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">A</div>
+                  <div style="position:absolute;left:560px;top:288px;width:28px;height:28px;box-sizing:border-box;border-radius:999px;border:3px solid #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">A</div>
+                  <div style="position:absolute;left:560px;top:32px;width:28px;height:28px;box-sizing:border-box;border-radius:999px;border:3px dashed #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">B</div>
+                  <div style="position:absolute;left:32px;top:288px;width:28px;height:28px;box-sizing:border-box;border-radius:999px;border:3px dashed #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">B</div>
+                  <div style="position:absolute;left:224px;top:112px;display:flex;align-items:center;gap:7px">
+                    <div style="position:relative;width:24px;height:24px;border-radius:999px;background:#FF5FB0;box-shadow:0 0 0 4px rgba(255,95,176,.28),0 0 0 8px rgba(255,95,176,.12)">
+                      <div style="position:absolute;left:1px;top:-5px;width:8px;height:8px;border-radius:2px;transform:rotate(45deg);background:#FF5FB0"></div>
+                      <div style="position:absolute;right:1px;top:-5px;width:8px;height:8px;border-radius:2px;transform:rotate(45deg);background:#FF5FB0"></div>
+                    </div>
+                    <span style="font-size:12px;font-weight:600;color:#F2F5F1;background:rgba(0,0,0,.45);border-radius:6px;padding:3px 8px">Mika <span style="color:#9BA6A0">· chat</span></span>
+                  </div>
+                  <div style="position:absolute;left:356px;top:92px;display:flex;align-items:center;gap:7px">
+                    <div style="width:20px;height:20px;border-radius:999px;background:#2BA8FF;box-shadow:0 0 0 2.5px rgba(255,255,255,.3)"></div>
+                    <span style="font-size:12px;font-weight:600;color:#F2F5F1;background:rgba(0,0,0,.45);border-radius:6px;padding:3px 8px">ClementLeBoss123</span>
+                  </div>
+                  <div style="position:absolute;left:190px;top:250px;display:flex;align-items:center;gap:7px">
+                    <div style="width:20px;height:20px;border-radius:999px;background:#3DDC97;box-shadow:0 0 0 2.5px rgba(255,255,255,.3)"></div>
+                    <span style="font-size:12px;font-weight:600;color:#F2F5F1;background:rgba(0,0,0,.45);border-radius:6px;padding:3px 8px">Lulu</span>
+                  </div>
+                  <div style="position:absolute;left:470px;top:190px;display:flex;align-items:center;gap:7px">
+                    <div style="width:20px;height:20px;border-radius:999px;background:#F5D131;box-shadow:0 0 0 2.5px rgba(255,255,255,.3)"></div>
+                    <span style="font-size:12px;font-weight:600;color:#F2F5F1;background:rgba(0,0,0,.45);border-radius:6px;padding:3px 8px">Nono</span>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:center;gap:16px;border:1px solid #DFE2DB;border-radius:20px;padding:18px 20px">
+                  <div style="position:relative;width:46px;height:46px;flex:none;border-radius:16px;background:#E2542B">
+                    <div style="position:absolute;left:13px;top:12px;width:7px;height:7px;border-radius:2px;transform:rotate(45deg);background:#FFFFFF"></div>
+                    <div style="position:absolute;right:13px;top:12px;width:7px;height:7px;border-radius:2px;transform:rotate(45deg);background:#FFFFFF"></div>
+                    <div style="position:absolute;left:14px;top:17px;width:18px;height:18px;border-radius:999px;background:#FFFFFF"></div>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:3px;flex:1;min-width:0">
+                    <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:800;line-height:1.15">Cursor Tag</span>
+                    <span style="font-size:13px;color:#5A6066">Il t'attend dès qu'une room se libère.</span>
+                  </div>
+                  <span style="flex:none;font-size:12px;font-weight:600;background:#ECEEE8;border-radius:999px;padding:4px 8px">3 à 10 joueurs</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ show1366 }}" hint-placeholder-val="{{ true }}">
+      <div id="3g" style="display:flex;flex-direction:column;gap:16px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:600;color:#FFFFFF;background:#16191A;border-radius:999px;padding:5px 11px">3g</span>
+          <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em">Contrôle 1366 × 768</span>
+          <span style="font-size:13px;color:#5A6066">Marges 48, carte 1180, colonnes 540 + 520, arène 520 × 293, titre 40</span>
+        </div>
+        <div data-screen-label="5.1 Accueil · 1366" style="width:1366px;height:768px;background:#F4F5F2;border-radius:24px;overflow:hidden;box-shadow:0 2px 6px rgba(22,25,26,.06),0 40px 80px -50px rgba(22,25,26,.45);display:flex;flex-direction:column;color:#16191A">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:24px 48px">
+            <div style="display:flex;align-items:center;gap:11px">
+              <div style="position:relative;width:38px;height:38px;border-radius:12px;background:#0E7C66;flex:none">
+                <div style="position:absolute;left:8px;top:8px;width:9px;height:9px;border-radius:999px;background:#FFFFFF"></div>
+                <div style="position:absolute;right:7px;top:12px;width:9px;height:9px;border-radius:999px;background:rgba(255,255,255,.62)"></div>
+                <div style="position:absolute;left:14px;bottom:7px;width:9px;height:9px;border-radius:999px;background:rgba(255,255,255,.82)"></div>
+              </div>
+              <span style="font-family:'Nunito',system-ui;font-size:23px;font-weight:800;letter-spacing:-.03em">Games Party</span>
+            </div>
+            <button type="button" aria-label="Couper le son" style="width:44px;height:44px;border:1px solid #DFE2DB;border-radius:999px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:#ECEEE8;border-color:#C7CCC0"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#16191A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3L11 6v12l-4-3.5H4z"></path><path d="M15 9.6a3.6 3.6 0 0 1 0 4.8"></path><path d="M17.6 7.2a7 7 0 0 1 0 9.6"></path></svg></button>
+          </div>
+          <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:0 48px 48px">
+            <div style="width:1180px;box-sizing:border-box;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:24px;padding:40px;display:flex;align-items:center;gap:40px;box-shadow:0 1px 3px rgba(22,25,26,.05)">
+              <div style="width:540px;flex:none;display:flex;flex-direction:column;gap:18px">
+                <span style="align-self:flex-start;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#0A6653;background:#E3F0EA;border-radius:999px;padding:6px 12px">Mini-jeux multijoueurs</span>
+                <h2 style="margin:0;font-family:'Nunito',system-ui;font-size:40px;font-weight:800;line-height:1.05;letter-spacing:-.03em">Tes potes, un lien, dix curseurs.</h2>
+                <p style="margin:0;font-size:15px;line-height:1.55;color:#5A6066;text-wrap:pretty">Crée une room, envoie le lien à tes potes, ils arrivent en un clic. Jusqu'à 10 joueurs, à la souris.</p>
+                <div style="display:flex;flex-direction:column;gap:9px">
+                  <label style="font-size:13px;font-weight:600">Ton pseudo</label>
+                  <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px">
+                    <div style="position:relative;display:flex">
+                      <input type="text" value="Mika" maxlength="16" style="flex:1;min-width:0;height:50px;border-radius:999px;border:1px solid #DFE2DB;background:#FFFFFF;padding:0 58px 0 18px;font-size:15px;font-weight:500" style-focus="border-color:#0E7C66;box-shadow:0 0 0 4px #E3F0EA">
+                      <span style="position:absolute;right:18px;top:0;height:50px;display:flex;align-items:center;font-size:12px;font-weight:600;color:#5A6066">4/16</span>
+                    </div>
+                    <button type="button" style="height:50px;border:none;border-radius:999px;background:#0E7C66;color:#FFFFFF;padding:0 24px;font:inherit;font-size:15px;font-weight:600;cursor:pointer" style-hover="background:#0A6653">Créer une room</button>
+                  </div>
+                  <span style="font-size:13px;color:#5A6066">2 à 16 caractères.</span>
+                </div>
+              </div>
+              <div style="width:520px;flex:none;display:flex;flex-direction:column;gap:14px">
+                <div style="position:relative;width:520px;height:293px;border-radius:16px;background:#1E2422;overflow:hidden">
+                  <div style="position:absolute;left:241px;top:127px;width:39px;height:39px;border-radius:8px;background:#333B37"></div>
+                  <div style="position:absolute;left:98px;top:65px;width:98px;height:13px;border-radius:8px;background:#333B37"></div>
+                  <div style="position:absolute;left:325px;top:215px;width:98px;height:13px;border-radius:8px;background:#333B37"></div>
+                  <div style="position:absolute;left:384px;top:39px;width:13px;height:85px;border-radius:8px;background:#333B37"></div>
+                  <div style="position:absolute;left:124px;top:169px;width:13px;height:85px;border-radius:8px;background:#333B37"></div>
+                  <div style="position:absolute;left:26px;top:26px;width:26px;height:26px;box-sizing:border-box;border-radius:999px;border:3px solid #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">A</div>
+                  <div style="position:absolute;left:468px;top:240px;width:26px;height:26px;box-sizing:border-box;border-radius:999px;border:3px solid #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">A</div>
+                  <div style="position:absolute;left:468px;top:26px;width:26px;height:26px;box-sizing:border-box;border-radius:999px;border:3px dashed #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">B</div>
+                  <div style="position:absolute;left:26px;top:240px;width:26px;height:26px;box-sizing:border-box;border-radius:999px;border:3px dashed #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">B</div>
+                  <div style="position:absolute;left:188px;top:94px;display:flex;align-items:center;gap:6px">
+                    <div style="position:relative;width:22px;height:22px;border-radius:999px;background:#FF5FB0;box-shadow:0 0 0 3.5px rgba(255,95,176,.28),0 0 0 7px rgba(255,95,176,.12)">
+                      <div style="position:absolute;left:1px;top:-5px;width:7px;height:7px;border-radius:2px;transform:rotate(45deg);background:#FF5FB0"></div>
+                      <div style="position:absolute;right:1px;top:-5px;width:7px;height:7px;border-radius:2px;transform:rotate(45deg);background:#FF5FB0"></div>
+                    </div>
+                    <span style="font-size:12px;font-weight:600;color:#F2F5F1;background:rgba(0,0,0,.45);border-radius:6px;padding:3px 8px">Mika <span style="color:#9BA6A0">· chat</span></span>
+                  </div>
+                  <div style="position:absolute;left:299px;top:77px;display:flex;align-items:center;gap:6px">
+                    <div style="width:19px;height:19px;border-radius:999px;background:#2BA8FF;box-shadow:0 0 0 2.5px rgba(255,255,255,.3)"></div>
+                    <span style="font-size:12px;font-weight:600;color:#F2F5F1;background:rgba(0,0,0,.45);border-radius:6px;padding:3px 8px">ClementLeBoss123</span>
+                  </div>
+                  <div style="position:absolute;left:159px;top:210px;display:flex;align-items:center;gap:6px">
+                    <div style="width:19px;height:19px;border-radius:999px;background:#3DDC97;box-shadow:0 0 0 2.5px rgba(255,255,255,.3)"></div>
+                    <span style="font-size:12px;font-weight:600;color:#F2F5F1;background:rgba(0,0,0,.45);border-radius:6px;padding:3px 8px">Lulu</span>
+                  </div>
+                  <div style="position:absolute;left:394px;top:159px;display:flex;align-items:center;gap:6px">
+                    <div style="width:19px;height:19px;border-radius:999px;background:#F5D131;box-shadow:0 0 0 2.5px rgba(255,255,255,.3)"></div>
+                    <span style="font-size:12px;font-weight:600;color:#F2F5F1;background:rgba(0,0,0,.45);border-radius:6px;padding:3px 8px">Nono</span>
+                  </div>
+                </div>
+                <div style="display:flex;align-items:center;gap:14px;border:1px solid #DFE2DB;border-radius:16px;padding:14px 18px">
+                  <div style="position:relative;width:40px;height:40px;flex:none;border-radius:12px;background:#E2542B">
+                    <div style="position:absolute;left:11px;top:10px;width:6px;height:6px;border-radius:2px;transform:rotate(45deg);background:#FFFFFF"></div>
+                    <div style="position:absolute;right:11px;top:10px;width:6px;height:6px;border-radius:2px;transform:rotate(45deg);background:#FFFFFF"></div>
+                    <div style="position:absolute;left:12px;top:15px;width:16px;height:16px;border-radius:999px;background:#FFFFFF"></div>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:2px;flex:1;min-width:0">
+                    <span style="font-family:'Nunito',system-ui;font-size:18px;font-weight:800;line-height:1.15">Cursor Tag</span>
+                    <span style="font-size:13px;color:#5A6066">Un jeu du chat à la souris. Esquive, prends les portails.</span>
+                  </div>
+                  <span style="flex:none;font-size:12px;font-weight:600;background:#ECEEE8;border-radius:999px;padding:4px 8px">3 à 10 joueurs</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+  </div>
+</section>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;soundOn&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Barre du haut&quot;},&quot;showErreurs&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Écrans&quot;},&quot;show1366&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Écrans&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const on = this.props.soundOn ?? true;
+    return {
+      soundOn: on,
+      soundOff: !on,
+      showErreurs: this.props.showErreurs ?? true,
+      show1366: this.props.show1366 ?? true,
+      roomPlayers: [
+        { nom: "ClementLeBoss123", hex: "#2BA8FF" },
+        { nom: "Lulu", hex: "#3DDC97" },
+        { nom: "Nono", hex: "#F5D131" },
+        { nom: "Tibo", hex: "#C77DFF" }
+      ],
+      roomFull: [
+        { nom: "ClementLeBoss123", hex: "#2BA8FF" },
+        { nom: "Lulu", hex: "#3DDC97" },
+        { nom: "Nono", hex: "#F5D131" },
+        { nom: "Tibo", hex: "#C77DFF" },
+        { nom: "Sam", hex: "#FF4D4D" },
+        { nom: "Zoé", hex: "#7C8CFF" },
+        { nom: "Kev", hex: "#22D3EE" },
+        { nom: "Manu", hex: "#A3E635" },
+        { nom: "Chloé", hex: "#FF9330" }
+      ]
+    };
+  }
+}
+
+</script>
+</body>
+</html>

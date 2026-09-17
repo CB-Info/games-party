@@ -10,7 +10,8 @@ const CLIENT_FILES = ["src/client/**", "src/games/*/client/**"];
 const SERVER_FILES = ["src/server/**", "src/games/*/server/**"];
 
 export default tseslint.config(
-  { ignores: ["dist/**", "coverage/**"] },
+  // docs/ holds reference material only, including the generated runtime of the maquettes.
+  { ignores: ["dist/**", "coverage/**", "docs/**"] },
   js.configs.recommended,
   tseslint.configs.recommended,
   {
