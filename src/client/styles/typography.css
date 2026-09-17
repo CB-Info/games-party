@@ -1,0 +1,143 @@
+/* §5 — one composite class per text style. Family, size, line height, letter spacing and weight
+   all come from the `--type-` tokens: no literal value here, and no parallel Tailwind text class. */
+
+@utility t-display {
+  font-family: var(--font-display);
+  font-size: var(--type-title-1-size);
+  line-height: var(--type-title-1-line-height);
+  letter-spacing: var(--type-title-1-letter-spacing);
+  font-weight: var(--type-title-1-font-weight);
+
+  @variant wide {
+    font-size: var(--type-display-size);
+    line-height: var(--type-display-line-height);
+    letter-spacing: var(--type-display-letter-spacing);
+    font-weight: var(--type-display-font-weight);
+  }
+}
+
+@utility t-title-1 {
+  font-family: var(--font-display);
+  font-size: var(--type-title-1-size);
+  line-height: var(--type-title-1-line-height);
+  letter-spacing: var(--type-title-1-letter-spacing);
+  font-weight: var(--type-title-1-font-weight);
+}
+
+@utility t-title-2 {
+  font-family: var(--font-display);
+  font-size: var(--type-title-2-size);
+  line-height: var(--type-title-2-line-height);
+  letter-spacing: var(--type-title-2-letter-spacing);
+  font-weight: var(--type-title-2-font-weight);
+}
+
+@utility t-title-3 {
+  font-family: var(--font-display);
+  font-size: var(--type-title-3-size);
+  line-height: var(--type-title-3-line-height);
+  letter-spacing: var(--type-title-3-letter-spacing);
+  font-weight: var(--type-title-3-font-weight);
+}
+
+@utility t-body-lg {
+  font-family: var(--font-body);
+  font-size: var(--type-body-lg-size);
+  line-height: var(--type-body-lg-line-height);
+  letter-spacing: normal;
+  font-weight: var(--type-body-lg-font-weight);
+}
+
+@utility t-body {
+  font-family: var(--font-body);
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-line-height);
+  letter-spacing: normal;
+  font-weight: var(--type-body-font-weight);
+}
+
+@utility t-body-strong {
+  font-family: var(--font-body);
+  font-size: var(--type-body-strong-size);
+  line-height: var(--type-body-strong-line-height);
+  letter-spacing: normal;
+  font-weight: var(--type-body-strong-font-weight);
+}
+
+@utility t-control {
+  font-family: var(--font-body);
+  font-size: var(--type-control-size);
+  line-height: var(--type-control-line-height);
+  letter-spacing: normal;
+  font-weight: var(--type-control-font-weight);
+}
+
+@utility t-input {
+  font-family: var(--font-body);
+  font-size: var(--type-control-size);
+  line-height: var(--type-control-line-height);
+  letter-spacing: normal;
+  font-weight: var(--type-control-input-font-weight);
+}
+
+@utility t-small {
+  font-family: var(--font-body);
+  font-size: var(--type-small-size);
+  line-height: var(--type-small-line-height);
+  letter-spacing: normal;
+  font-weight: var(--type-small-font-weight);
+}
+
+@utility t-micro {
+  font-family: var(--font-body);
+  font-size: var(--type-micro-size);
+  line-height: var(--type-micro-line-height);
+  letter-spacing: var(--type-micro-letter-spacing);
+  font-weight: var(--type-micro-font-weight);
+  text-transform: uppercase;
+}
+
+/* Badges and arena labels: micro size and weight, without capitals or letter spacing (§5). */
+@utility t-label {
+  font-family: var(--font-body);
+  font-size: var(--type-micro-size);
+  line-height: var(--type-micro-line-height);
+  letter-spacing: normal;
+  font-weight: var(--type-micro-font-weight);
+}
+
+@utility t-timer {
+  font-family: var(--font-display);
+  font-size: var(--type-timer-size);
+  line-height: var(--type-timer-line-height);
+  letter-spacing: normal;
+  font-weight: var(--type-timer-font-weight);
+  font-variant-numeric: tabular-nums;
+}
+
+@utility t-countdown {
+  font-family: var(--font-display);
+  font-size: var(--type-countdown-size);
+  line-height: var(--type-countdown-size);
+  letter-spacing: normal;
+  font-weight: var(--type-countdown-font-weight);
+  font-variant-numeric: tabular-nums;
+
+  @variant wide {
+    font-size: var(--type-countdown-size-wide);
+    line-height: var(--type-countdown-size-wide);
+  }
+}
+
+@utility t-logo {
+  font-family: var(--font-display);
+  font-size: var(--type-logo-size);
+  line-height: var(--type-logo-size);
+  letter-spacing: var(--type-logo-letter-spacing);
+  font-weight: var(--type-logo-font-weight);
+
+  @variant wide {
+    font-size: var(--type-logo-size-wide);
+    line-height: var(--type-logo-size-wide);
+  }
+}

@@ -1,0 +1,177 @@
+/* Every design token of docs/design-system.md, declared once.
+   `static` keeps them all in the stylesheet even when no utility uses them: the arena renderer
+   reads the arena and player colours from these variables at startup (§2). */
+@theme static {
+  /* Only the values of docs/design-system.md may be used (§2). */
+  --color-*: initial;
+  --radius-*: initial;
+  --shadow-*: initial;
+
+  /* §3 — interface */
+  --color-page: #f4f5f2;
+  --color-surface: #ffffff;
+  --color-surface-2: #eceee8;
+  --color-ink: #16191a;
+  --color-ink-secondary: #5a6066;
+  --color-ink-disabled: #9ba29a;
+  --color-line: #dfe2db;
+  --color-line-strong: #c7ccc0;
+  --color-accent: #0e7c66;
+  --color-accent-hover: #0a6653;
+  --color-accent-soft: #e3f0ea;
+  --color-accent-soft-hover: #d3e8df;
+  --color-success: #0e7c66;
+  --color-warning: #7a5400;
+  --color-warning-soft: #f7eedc;
+  --color-danger: #b3261e;
+  --color-danger-hover: #8e1e18;
+  --color-danger-soft: #fbeae8;
+  --color-cursor-tag: #e2542b;
+  --color-cursor-tag-soft: #fbe9e3;
+  --color-swatch-edge: rgba(22, 25, 26, 0.14);
+  --color-on-accent: #ffffff;
+  --color-window-veil: rgba(22, 25, 26, 0.55);
+
+  /* §4.1 — arena */
+  --color-arena: #1e2422;
+  --color-arena-wall: #333b37;
+  --color-arena-veil: rgba(22, 25, 26, 0.72);
+  --color-arena-label: rgba(0, 0, 0, 0.45);
+  --color-arena-ink: #f2f5f1;
+  --color-arena-ink-secondary: #9ba6a0;
+  --color-portal: #c9d2cc;
+  --color-freeze-fill: rgba(142, 197, 232, 0.9);
+  --color-freeze-ring: rgba(142, 197, 232, 0.4);
+  --color-freeze-halo: rgba(142, 197, 232, 0.18);
+  --color-freeze-ink: #08324a;
+
+  /* §4.2 — players, fixed order c1 to c10 */
+  --color-player-1: #ff4d4d;
+  --color-player-2: #ff5fb0;
+  --color-player-3: #c77dff;
+  --color-player-4: #7c8cff;
+  --color-player-5: #2ba8ff;
+  --color-player-6: #22d3ee;
+  --color-player-7: #3ddc97;
+  --color-player-8: #a3e635;
+  --color-player-9: #f5d131;
+  --color-player-10: #ff9330;
+
+  /* §5 — families */
+  --font-display: "Nunito", ui-rounded, system-ui, sans-serif;
+  --font-body: "Work Sans", system-ui, sans-serif;
+
+  /* §5 — text styles. The `--type-` prefix is deliberate: Tailwind builds no utility from it,
+     so the `t-` classes of typography.css are the only way to apply a text style. */
+  --type-display-size: 56px;
+  --type-display-line-height: 57px;
+  --type-display-letter-spacing: -0.03em;
+  --type-display-font-weight: 800;
+
+  --type-title-1-size: 40px;
+  --type-title-1-line-height: 42px;
+  --type-title-1-letter-spacing: -0.03em;
+  --type-title-1-font-weight: 800;
+
+  --type-title-2-size: 28px;
+  --type-title-2-line-height: 32px;
+  --type-title-2-letter-spacing: -0.02em;
+  --type-title-2-font-weight: 800;
+
+  --type-title-3-size: 20px;
+  --type-title-3-line-height: 24px;
+  --type-title-3-letter-spacing: -0.01em;
+  --type-title-3-font-weight: 700;
+
+  --type-body-lg-size: 17px;
+  --type-body-lg-line-height: 27px;
+  --type-body-lg-font-weight: 400;
+
+  --type-body-size: 15px;
+  --type-body-line-height: 23px;
+  --type-body-font-weight: 400;
+
+  --type-body-strong-size: 15px;
+  --type-body-strong-line-height: 21px;
+  --type-body-strong-font-weight: 600;
+
+  --type-control-size: 16px;
+  --type-control-line-height: 24px;
+  --type-control-font-weight: 600;
+  --type-control-input-font-weight: 500;
+
+  --type-small-size: 13px;
+  --type-small-line-height: 19px;
+  --type-small-font-weight: 500;
+
+  --type-micro-size: 12px;
+  --type-micro-line-height: 16px;
+  --type-micro-letter-spacing: 0.06em;
+  --type-micro-font-weight: 600;
+
+  --type-timer-size: 40px;
+  --type-timer-line-height: 44px;
+  --type-timer-font-weight: 800;
+
+  --type-countdown-size: 120px;
+  --type-countdown-size-wide: 160px;
+  --type-countdown-font-weight: 800;
+
+  --type-logo-size: 23px;
+  --type-logo-size-wide: 26px;
+  --type-logo-letter-spacing: -0.03em;
+  --type-logo-font-weight: 800;
+
+  /* §7 — radii */
+  --radius-xs: 8px;
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-xl: 24px;
+  --radius-pill: 999px;
+
+  /* §8 — shadows and focus rings */
+  --shadow-1: 0 1px 2px rgba(22, 25, 26, 0.05);
+  --shadow-2: 0 1px 3px rgba(22, 25, 26, 0.06), 0 8px 20px -12px rgba(22, 25, 26, 0.18);
+  --shadow-3: 0 2px 6px rgba(22, 25, 26, 0.06), 0 24px 48px -24px rgba(22, 25, 26, 0.22);
+  --shadow-focus: 0 0 0 4px var(--color-accent-soft), 0 0 0 5px var(--color-accent);
+  --shadow-focus-danger: 0 0 0 4px var(--color-danger-soft), 0 0 0 5px var(--color-danger);
+
+  /* §9 — motion */
+  --ease-fast: cubic-bezier(0.4, 0, 1, 1);
+  --ease-standard: cubic-bezier(0.2, 0.8, 0.3, 1);
+  --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-celebrate: cubic-bezier(0.34, 1.3, 0.5, 1);
+  --ease-blink: ease-in-out;
+  --transition-duration-fast: 120ms;
+  --transition-duration-standard: 180ms;
+  --transition-duration-smooth: 280ms;
+  --transition-duration-celebrate: 600ms;
+  --transition-duration-portal-loop: 1600ms;
+  --transition-duration-blink: 1400ms;
+  --transition-duration-highlight: 1200ms;
+
+  /* §9 — named animations. Keyframes declared here are dropped when no `animate-` class uses them. */
+  --animate-appear: appear var(--transition-duration-smooth) var(--ease-smooth) both;
+  --animate-highlight: highlight var(--transition-duration-highlight) var(--ease-smooth) 1 forwards;
+
+  @keyframes appear {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes highlight {
+    from {
+      background-color: var(--color-accent-soft);
+    }
+    to {
+      background-color: transparent;
+    }
+  }
+}

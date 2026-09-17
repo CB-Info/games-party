@@ -1,0 +1,51 @@
+/* §2 — "wide" covers windows that are both wide and tall enough: the screens are limited
+   vertically (16:9 arena, ten ranking rows, podium). Written once, used everywhere. */
+@custom-variant wide (@media (width >= 1440px) and (height >= 850px));
+
+@layer base {
+  body {
+    background-color: var(--color-page);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    font-size: var(--type-body-size);
+    line-height: var(--type-body-line-height);
+    font-weight: var(--type-body-font-weight);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* §3 — links keep the Accent hover colour and only gain an underline. */
+  a {
+    color: var(--color-accent-hover);
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  /* §9 — reduced motion removes transitions, loops and celebrations. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 1ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 1ms !important;
+    }
+  }
+}
+
+/* §8 — the focus ring is an outer shadow: it never resizes the element nor moves its neighbours. */
+@utility focus-ring {
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-focus);
+  }
+}
+
+@utility focus-ring-danger {
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-focus-danger);
+  }
+}
