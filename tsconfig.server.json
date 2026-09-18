@@ -25,6 +25,10 @@
   "include": [
     "src/server",
     "src/shared",
+    "src/games/gameServer.types.ts",
+    "src/games/defineGame.ts",
+    "src/games/registry.server.ts",
+    "src/games/fakeGame.fixture.ts",
     "src/games/*/shared",
     "src/games/*/logic",
     "src/games/*/server",

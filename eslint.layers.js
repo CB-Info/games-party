@@ -59,6 +59,11 @@ const NO_TRANSPORT = {
   group: PACKAGES.server,
   message: "Room and game logic knows nothing about Socket.IO or Express.",
 };
+/** Server tests drive the server through a real client connection, but never through its code. */
+const NO_CLIENT_CODE = {
+  group: [...PATHS.client, ...PACKAGES.react],
+  message: "Server code never imports client code (CLAUDE.md, 'Sens des imports').",
+};
 const NO_NODE = {
   group: PACKAGES.node,
   message: "Pure layers have no side effects: no Node module here.",
@@ -160,8 +165,20 @@ export const layerRules = [
     },
   },
   {
+    // An integration test of the socket server needs a real client to connect with. It stays the
+    // only place where `socket.io-client` is allowed outside `client/services`.
+    name: "layers/server-socket-tests",
+    files: ["src/server/socket/*.test.ts", "src/server/socket/*.fixture.ts"],
+    rules: deny(NO_CLIENT_CODE, NO_PAGES),
+  },
+  {
     name: "layers/rooms-and-games-server",
-    files: ["src/server/rooms/**", "src/games/*/server/**"],
+    files: ["src/server/rooms/**", "src/server/sessions/**", "src/games/*/server/**"],
+    rules: deny(NO_CLIENT, NO_PAGES, NO_TRANSPORT),
+  },
+  {
+    name: "layers/games-root",
+    files: ["src/games/*.ts"],
     rules: deny(NO_CLIENT, NO_PAGES, NO_TRANSPORT),
   },
   {
