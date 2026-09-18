@@ -1,1 +1,6 @@
+/* The order matters: `@theme` resets only work once Tailwind's own theme is in place. */
 @import "tailwindcss";
+@import "./styles/fonts.css";
+@import "./styles/theme.css";
+@import "./styles/base.css";
+@import "./styles/typography.css";

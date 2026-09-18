@@ -1,0 +1,18 @@
+/* Self-hosted OFL fonts (docs/design-system.md, §2). Google Fonts ships one variable file per
+   family covering every weight, so each family is a single file with a weight range. */
+
+@font-face {
+  font-family: "Nunito";
+  font-style: normal;
+  font-weight: 700 800;
+  font-display: swap;
+  src: url("/fonts/nunito-latin.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Work Sans";
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url("/fonts/work-sans-latin.woff2") format("woff2");
+}

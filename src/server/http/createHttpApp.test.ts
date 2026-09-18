@@ -10,6 +10,7 @@ import { createHttpApp } from "./createHttpApp";
 
 const INDEX_HTML = '<!doctype html><html lang="fr"><body><div id="root"></div></body></html>';
 const ASSET_PATH = "assets/index-abc12345.js";
+const FONT_PATH = "fonts/work-sans-latin.woff2";
 
 /** Starts the application on a free port and returns its base URL. */
 async function startServer(clientDir: string | null): Promise<{
@@ -75,6 +76,8 @@ describe("createHttpApp with a built client", () => {
     await writeFile(join(clientDir, "index.html"), INDEX_HTML);
     await mkdir(join(clientDir, "assets"));
     await writeFile(join(clientDir, ASSET_PATH), "console.log('asset');");
+    await mkdir(join(clientDir, "fonts"));
+    await writeFile(join(clientDir, FONT_PATH), "not a real font");
     ({ baseUrl, stop } = await startServer(clientDir));
   });
 
@@ -111,5 +114,13 @@ describe("createHttpApp with a built client", () => {
     expect(response.headers.get("cache-control")).toBe(
       `public, max-age=${STATIC_ASSETS_MAX_AGE_S}, immutable`,
     );
+  });
+
+  it("does not cache files whose name has no hash, such as fonts", async () => {
+    const response = await fetch(`${baseUrl}/${FONT_PATH}`);
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get("cache-control")).not.toContain("immutable");
+    expect(response.headers.get("etag")).not.toBeNull();
   });
 });

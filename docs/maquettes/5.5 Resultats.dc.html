@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  body{margin:0;background:#E7E9E3;color:#16191A;-webkit-font-smoothing:antialiased;font-family:'Work Sans',system-ui,sans-serif}
+  a{color:#0A6653;text-decoration:none}
+  a:hover{color:#084F40;text-decoration:underline}
+  @keyframes gpConfetti{0%{transform:translateY(-60px) rotate(0deg) scale(.4);opacity:0}100%{transform:translateY(0) rotate(var(--r,20deg)) scale(1);opacity:1}}
+  @media (prefers-reduced-motion:reduce){*{animation:none !important}}
+</style>
+</helmet>
+
+<section style="padding:64px;display:flex;flex-direction:column;gap:40px">
+  <div style="display:flex;flex-direction:column;gap:12px;max-width:900px">
+    <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#5A6066">Tour 6 · écran 5.5</span>
+    <h1 style="margin:0;font-family:'Nunito',system-ui;font-size:44px;font-weight:800;line-height:1.05;letter-spacing:-.03em">Résultats</h1>
+    <p style="margin:0;font-size:17px;line-height:1.6;color:#5A6066;text-wrap:pretty">Deux cartes de même hauteur : la partie qui vient de finir, et le cumul de la soirée. Les points gagnés valent le nombre de joueurs classés moins la place. <a href="#6a">6a</a> hôte, <a href="#6b">6b</a> gagnant, <a href="#6c">6c</a> égalité en tête, <a href="#6d">6d</a> spectateur, <a href="#6e">6e</a> dix joueurs en 1366.</p>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:44px">
+
+    <div id="6a" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;flex-direction:column;gap:5px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:600;color:#FFFFFF;background:#16191A;border-radius:999px;padding:5px 11px">6a</span>
+          <span style="font-family:'Nunito',system-ui;font-size:22px;font-weight:800">Résultats · vue hôte</span>
+        </div>
+        <span style="font-size:13px;color:#5A6066;max-width:900px">Les confettis passent une seule fois à l'arrivée sur l'écran, en animation « célébration ». Seul l'hôte a le bouton « Retour au lobby » ; le retour automatique, lui, concerne tout le monde.</span>
+      </div>
+      <div data-screen-label="5.5 Résultats hôte" style="position:relative;width:1440px;height:900px;background:#F4F5F2;border-radius:24px;overflow:hidden;box-shadow:0 2px 6px rgba(22,25,26,.06),0 40px 80px -50px rgba(22,25,26,.45);display:flex;flex-direction:column;color:#16191A">
+        <div style="position:absolute;inset:0;pointer-events:none;z-index:1">
+          <sc-for list="{{ confettis }}" as="k" hint-placeholder-count="30">
+            <div style="position:absolute;left:{{ k.x }};top:{{ k.y }};width:{{ k.w }};height:{{ k.h }};border-radius:2px;background:{{ k.hex }};animation:gpConfetti .6s cubic-bezier(.34,1.3,.5,1) {{ k.delai }} both"></div>
+          </sc-for>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:32px 56px;position:relative;z-index:2">
+          <div style="display:flex;align-items:center;gap:13px">
+            <div style="position:relative;width:44px;height:44px;border-radius:16px;background:#0E7C66;flex:none">
+              <div style="position:absolute;left:9px;top:9px;width:10px;height:10px;border-radius:999px;background:#FFFFFF"></div>
+              <div style="position:absolute;right:8px;top:14px;width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.62)"></div>
+              <div style="position:absolute;left:16px;bottom:8px;width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.82)"></div>
+            </div>
+            <span style="font-family:'Nunito',system-ui;font-size:26px;font-weight:800;letter-spacing:-.03em">Games Party</span>
+          </div>
+          <button type="button" aria-label="Couper le son" style="width:48px;height:48px;border:1px solid #DFE2DB;border-radius:999px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .12s cubic-bezier(.4,0,1,1)" style-hover="background:#ECEEE8;border-color:#C7CCC0"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#16191A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3L11 6v12l-4-3.5H4z"></path><path d="M15 9.6a3.6 3.6 0 0 1 0 4.8"></path><path d="M17.6 7.2a7 7 0 0 1 0 9.6"></path></svg></button>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:20px;padding:0 56px 40px;min-height:0;position:relative;z-index:2">
+          <h2 style="margin:0;font-family:'Nunito',system-ui;font-size:40px;font-weight:800;line-height:1.05;letter-spacing:-.03em">Lulu gagne la partie !</h2>
+          <div style="display:flex;gap:20px;align-items:stretch">
+            <div style="flex:1;min-width:0;box-sizing:border-box;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:16px;box-shadow:0 1px 2px rgba(22,25,26,.05)">
+              <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em">Cette partie</span>
+              <div style="display:flex;align-items:flex-end;justify-content:center;gap:12px">
+                <sc-for list="{{ podium6 }}" as="m" hint-placeholder-count="3">
+                  <div style="display:flex;flex-direction:column;align-items:center;gap:10px;order:{{ m.ordre }}">
+                    <div style="display:flex;align-items:flex-end;gap:10px">
+                      <sc-for list="{{ m.joueurs }}" as="p" hint-placeholder-count="1">
+                        <div style="width:132px;display:flex;flex-direction:column;align-items:center;gap:5px">
+                          <div style="width:28px;height:28px;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:{{ p.hex }}"></div>
+                          <span style="max-width:100%;font-size:15px;font-weight:600;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ p.nom }}</span>
+                          <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em;font-variant-numeric:tabular-nums">{{ p.score }}</span>
+                          <span style="font-size:12px;font-weight:600;color:#0A6653;background:#E3F0EA;border-radius:999px;padding:4px 8px;font-variant-numeric:tabular-nums">{{ p.points }}</span>
+                        </div>
+                      </sc-for>
+                    </div>
+                    <div style="width:{{ m.largeur }};height:{{ m.hauteur }};background:#ECEEE8;border-radius:16px 16px 0 0;display:flex;align-items:flex-start;justify-content:center;padding-top:10px;box-sizing:border-box">
+                      <span style="font-family:'Nunito',system-ui;font-size:28px;font-weight:800;line-height:1.15;letter-spacing:-.02em;color:#5A6066;font-variant-numeric:tabular-nums">{{ m.place }}</span>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <sc-for list="{{ partie6 }}" as="j" hint-placeholder-count="6">
+                  <div style="display:flex;align-items:center;gap:10px;border:1px solid #DFE2DB;border-radius:16px;padding:0 12px;height:38px;box-sizing:border-box;background:{{ j.fond }}">
+                    <span style="width:20px;flex:none;font-size:13px;font-weight:600;line-height:1.45;font-variant-numeric:tabular-nums;color:{{ j.encre }}">{{ j.place }}</span>
+                    <div style="width:18px;height:18px;flex:none;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:{{ j.hex }};opacity:{{ j.opacite }}"></div>
+                    <span style="flex:1;min-width:0;font-size:15px;font-weight:600;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:{{ j.encre }}">{{ j.nom }}</span>
+                    <sc-if value="{{ j.off }}" hint-placeholder-val="{{ false }}">
+                      <span style="flex:none;font-size:12px;font-weight:600;color:#5A6066;background:#F4F5F2;border-radius:999px;padding:4px 8px">Déconnecté</span>
+                    </sc-if>
+                    <span style="flex:none;font-size:13px;font-weight:500;line-height:1.45;font-variant-numeric:tabular-nums;color:{{ j.encre }}">{{ j.score }}</span>
+                    <span style="flex:none;width:34px;text-align:right;font-size:13px;font-weight:600;line-height:1.45;font-variant-numeric:tabular-nums;color:#0A6653">{{ j.points }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="width:420px;box-sizing:border-box;flex:none;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:16px;box-shadow:0 1px 2px rgba(22,25,26,.05)">
+              <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em">La soirée</span>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <sc-for list="{{ soiree6 }}" as="j" hint-placeholder-count="6">
+                  <div style="display:flex;align-items:center;gap:10px;border:1px solid #DFE2DB;border-radius:16px;padding:0 12px;height:38px;box-sizing:border-box;background:{{ j.fond }}">
+                    <span style="width:20px;flex:none;font-size:13px;font-weight:600;line-height:1.45;font-variant-numeric:tabular-nums;color:{{ j.encre }}">{{ j.place }}</span>
+                    <span style="width:14px;flex:none;display:flex;align-items:center;justify-content:center;color:{{ j.flecheEncre }}">{{ j.fleche }}</span>
+                    <div style="width:18px;height:18px;flex:none;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:{{ j.hex }};opacity:{{ j.opacite }}"></div>
+                    <span style="flex:1;min-width:0;font-size:15px;font-weight:600;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:{{ j.encre }}">{{ j.nom }}</span>
+                    <sc-if value="{{ j.off }}" hint-placeholder-val="{{ false }}">
+                      <span style="flex:none;font-size:12px;font-weight:600;color:#5A6066;background:#F4F5F2;border-radius:999px;padding:4px 8px">Déconnecté</span>
+                    </sc-if>
+                    <span style="flex:none;font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em;font-variant-numeric:tabular-nums;color:{{ j.encre }}">{{ j.total }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:20px">
+            <button type="button" style="height:56px;flex:none;border:none;border-radius:999px;background:#0E7C66;color:#FFFFFF;padding:0 34px;font:inherit;font-size:17px;font-weight:600;cursor:pointer;transition:background .16s cubic-bezier(.2,.8,.3,1),transform .16s cubic-bezier(.2,.8,.3,1)" style-hover="background:#0A6653;transform:translateY(-1px)">Retour au lobby</button>
+            <span style="font-size:13px;font-weight:500;line-height:1.45;color:#5A6066">Retour automatique au lobby dans 14 s</span>
+            <div style="flex:1;min-width:0"></div>
+            <button type="button" style="flex:none;border:none;border-radius:999px;background:transparent;color:#5A6066;padding:8px 12px;font:inherit;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:8px;transition:background .12s cubic-bezier(.4,0,1,1),color .12s cubic-bezier(.4,0,1,1)" style-hover="background:#ECEEE8;color:#16191A"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4.5H6.8A1.8 1.8 0 0 0 5 6.3v11.4a1.8 1.8 0 0 0 1.8 1.8h7.7"></path><path d="M14.8 12H21"></path><path d="M18.2 8.8 21 12l-2.8 3.2"></path></svg>Quitter la room</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="6b" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;flex-direction:column;gap:5px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:600;color:#FFFFFF;background:#16191A;border-radius:999px;padding:5px 11px">6b</span>
+          <span style="font-family:'Nunito',system-ui;font-size:22px;font-weight:800">Résultats · vue du gagnant</span>
+        </div>
+        <span style="font-size:13px;color:#5A6066;max-width:900px">Le gagnant lit son titre à la deuxième personne. Pas hôte, donc pas de bouton de retour : seul le compte à rebours automatique reste.</span>
+      </div>
+      <div data-screen-label="5.5 Résultats gagnant" style="width:1440px;height:900px;background:#F4F5F2;border-radius:24px;overflow:hidden;box-shadow:0 2px 6px rgba(22,25,26,.06),0 40px 80px -50px rgba(22,25,26,.45);display:flex;flex-direction:column;color:#16191A">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:32px 56px">
+          <div style="display:flex;align-items:center;gap:13px">
+            <div style="position:relative;width:44px;height:44px;border-radius:16px;background:#0E7C66;flex:none">
+              <div style="position:absolute;left:9px;top:9px;width:10px;height:10px;border-radius:999px;background:#FFFFFF"></div>
+              <div style="position:absolute;right:8px;top:14px;width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.62)"></div>
+              <div style="position:absolute;left:16px;bottom:8px;width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.82)"></div>
+            </div>
+            <span style="font-family:'Nunito',system-ui;font-size:26px;font-weight:800;letter-spacing:-.03em">Games Party</span>
+          </div>
+          <button type="button" aria-label="Couper le son" style="width:48px;height:48px;border:1px solid #DFE2DB;border-radius:999px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .12s cubic-bezier(.4,0,1,1)" style-hover="background:#ECEEE8;border-color:#C7CCC0"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#16191A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3L11 6v12l-4-3.5H4z"></path><path d="M15 9.6a3.6 3.6 0 0 1 0 4.8"></path><path d="M17.6 7.2a7 7 0 0 1 0 9.6"></path></svg></button>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:20px;padding:0 56px 40px;min-height:0">
+          <h2 style="margin:0;font-family:'Nunito',system-ui;font-size:40px;font-weight:800;line-height:1.05;letter-spacing:-.03em">Tu gagnes la partie !</h2>
+          <div style="display:flex;gap:20px;align-items:stretch">
+            <div style="flex:1;min-width:0;box-sizing:border-box;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:16px;box-shadow:0 1px 2px rgba(22,25,26,.05)">
+              <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em">Cette partie</span>
+              <div style="display:flex;align-items:flex-end;justify-content:center;gap:12px">
+                <sc-for list="{{ podiumGagnant }}" as="m" hint-placeholder-count="3">
+                  <div style="display:flex;flex-direction:column;align-items:center;gap:10px;order:{{ m.ordre }}">
+                    <div style="display:flex;align-items:flex-end;gap:10px">
+                      <sc-for list="{{ m.joueurs }}" as="p" hint-placeholder-count="1">
+                        <div style="width:132px;display:flex;flex-direction:column;align-items:center;gap:5px">
+                          <div style="width:28px;height:28px;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:{{ p.hex }}"></div>
+                          <span style="max-width:100%;font-size:15px;font-weight:600;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ p.nom }}</span>
+                          <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em;font-variant-numeric:tabular-nums">{{ p.score }}</span>
+                          <span style="font-size:12px;font-weight:600;color:#0A6653;background:#E3F0EA;border-radius:999px;padding:4px 8px;font-variant-numeric:tabular-nums">{{ p.points }}</span>
+                        </div>
+                      </sc-for>
+                    </div>
+                    <div style="width:{{ m.largeur }};height:{{ m.hauteur }};background:#ECEEE8;border-radius:16px 16px 0 0;display:flex;align-items:flex-start;justify-content:center;padding-top:10px;box-sizing:border-box">
+                      <span style="font-family:'Nunito',system-ui;font-size:28px;font-weight:800;line-height:1.15;letter-spacing:-.02em;color:#5A6066;font-variant-numeric:tabular-nums">{{ m.place }}</span>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <sc-for list="{{ partieGagnant }}" as="j" hint-placeholder-count="6">
+                  <div style="display:flex;align-items:center;gap:10px;border:1px solid #DFE2DB;border-radius:16px;padding:0 12px;height:38px;box-sizing:border-box;background:{{ j.fond }}">
+                    <span style="width:20px;flex:none;font-size:13px;font-weight:600;line-height:1.45;font-variant-numeric:tabular-nums;color:{{ j.encre }}">{{ j.place }}</span>
+                    <div style="width:18px;height:18px;flex:none;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:{{ j.hex }};opacity:{{ j.opacite }}"></div>
+                    <span style="flex:1;min-width:0;font-size:15px;font-weight:600;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:{{ j.encre }}">{{ j.nom }}</span>
+                    <span style="flex:none;font-size:13px;font-weight:500;line-height:1.45;font-variant-numeric:tabular-nums;color:{{ j.encre }}">{{ j.score }}</span>
+                    <span style="flex:none;width:34px;text-align:right;font-size:13px;font-weight:600;line-height:1.45;font-variant-numeric:tabular-nums;color:#0A6653">{{ j.points }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="width:420px;box-sizing:border-box;flex:none;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:16px;box-shadow:0 1px 2px rgba(22,25,26,.05)">
+              <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em">La soirée</span>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <sc-for list="{{ soireeGagnant }}" as="j" hint-placeholder-count="6">
+                  <div style="display:flex;align-items:center;gap:10px;border:1px solid #DFE2DB;border-radius:16px;padding:0 12px;height:38px;box-sizing:border-box;background:{{ j.fond }}">
+                    <span style="width:20px;flex:none;font-size:13px;font-weight:600;line-height:1.45;font-variant-numeric:tabular-nums;color:{{ j.encre }}">{{ j.place }}</span>
+                    <span style="width:14px;flex:none;display:flex;align-items:center;justify-content:center;color:{{ j.flecheEncre }}">{{ j.fleche }}</span>
+                    <div style="width:18px;height:18px;flex:none;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:{{ j.hex }};opacity:{{ j.opacite }}"></div>
+                    <span style="flex:1;min-width:0;font-size:15px;font-weight:600;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:{{ j.encre }}">{{ j.nom }}</span>
+                    <sc-if value="{{ j.off }}" hint-placeholder-val="{{ false }}">
+                      <span style="flex:none;font-size:12px;font-weight:600;color:#5A6066;background:#F4F5F2;border-radius:999px;padding:4px 8px">Déconnecté</span>
+                    </sc-if>
+                    <span style="flex:none;font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em;font-variant-numeric:tabular-nums;color:{{ j.encre }}">{{ j.total }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:20px">
+            <span style="font-size:15px;font-weight:600;line-height:1.4;color:#5A6066">Retour automatique au lobby dans 14 s</span>
+            <div style="flex:1;min-width:0"></div>
+            <button type="button" style="flex:none;border:none;border-radius:999px;background:transparent;color:#5A6066;padding:8px 12px;font:inherit;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:8px;transition:background .12s cubic-bezier(.4,0,1,1),color .12s cubic-bezier(.4,0,1,1)" style-hover="background:#ECEEE8;color:#16191A"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4.5H6.8A1.8 1.8 0 0 0 5 6.3v11.4a1.8 1.8 0 0 0 1.8 1.8h7.7"></path><path d="M14.8 12H21"></path><path d="M18.2 8.8 21 12l-2.8 3.2"></path></svg>Quitter la room</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="6c" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;flex-direction:column;gap:5px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:600;color:#FFFFFF;background:#16191A;border-radius:999px;padding:5px 11px">6c</span>
+          <span style="font-family:'Nunito',system-ui;font-size:22px;font-weight:800">Égalité en tête · podium partagé</span>
+        </div>
+        <span style="font-size:13px;color:#5A6066;max-width:900px">Deux joueurs à 71 s partagent la première marche et les mêmes points. La place suivante est la 3e : personne n'est 2e.</span>
+      </div>
+      <div data-screen-label="5.5 Résultats égalité" style="width:1440px;height:900px;background:#F4F5F2;border-radius:24px;overflow:hidden;box-shadow:0 2px 6px rgba(22,25,26,.06),0 40px 80px -50px rgba(22,25,26,.45);display:flex;flex-direction:column;color:#16191A">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:32px 56px">
+          <div style="display:flex;align-items:center;gap:13px">
+            <div style="position:relative;width:44px;height:44px;border-radius:16px;background:#0E7C66;flex:none">
+              <div style="position:absolute;left:9px;top:9px;width:10px;height:10px;border-radius:999px;background:#FFFFFF"></div>
+              <div style="position:absolute;right:8px;top:14px;width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.62)"></div>
+              <div style="position:absolute;left:16px;bottom:8px;width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.82)"></div>
+            </div>
+            <span style="font-family:'Nunito',system-ui;font-size:26px;font-weight:800;letter-spacing:-.03em">Games Party</span>
+          </div>
+          <button type="button" aria-label="Couper le son" style="width:48px;height:48px;border:1px solid #DFE2DB;border-radius:999px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .12s cubic-bezier(.4,0,1,1)" style-hover="background:#ECEEE8;border-color:#C7CCC0"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#16191A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3L11 6v12l-4-3.5H4z"></path><path d="M15 9.6a3.6 3.6 0 0 1 0 4.8"></path><path d="M17.6 7.2a7 7 0 0 1 0 9.6"></path></svg></button>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:20px;padding:0 56px 40px;min-height:0">
+          <h2 style="margin:0;font-family:'Nunito',system-ui;font-size:40px;font-weight:800;line-height:1.05;letter-spacing:-.03em">Tu gagnes la partie, à égalité avec Lulu !</h2>
+          <div style="display:flex;gap:20px;align-items:stretch">
+            <div style="flex:1;min-width:0;box-sizing:border-box;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:16px;box-shadow:0 1px 2px rgba(22,25,26,.05)">
+              <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em">Cette partie</span>
+              <div style="display:flex;align-items:flex-end;justify-content:center;gap:12px">
+                <sc-for list="{{ podiumEgalite }}" as="m" hint-placeholder-count="2">
+                  <div style="display:flex;flex-direction:column;align-items:center;gap:10px;order:{{ m.ordre }}">
+                    <div style="display:flex;align-items:flex-end;gap:10px">
+                      <sc-for list="{{ m.joueurs }}" as="p" hint-placeholder-count="2">
+                        <div style="width:132px;display:flex;flex-direction:column;align-items:center;gap:5px">
+                          <div style="width:28px;height:28px;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:{{ p.hex }}"></div>
+                          <span style="max-width:100%;font-size:15px;font-weight:600;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ p.nom }}</span>
+                          <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em;font-variant-numeric:tabular-nums">{{ p.score }}</span>
+                          <span style="font-size:12px;font-weight:600;color:#0A6653;background:#E3F0EA;border-radius:999px;padding:4px 8px;font-variant-numeric:tabular-nums">{{ p.points }}</span>
+                        </div>
+                      </sc-for>
+                    </div>
+                    <div style="width:{{ m.largeur }};height:{{ m.hauteur }};background:#ECEEE8;border-radius:16px 16px 0 0;display:flex;align-items:flex-start;justify-content:center;padding-top:10px;box-sizing:border-box">
+                      <span style="font-family:'Nunito',system-ui;font-size:28px;font-weight:800;line-height:1.15;letter-spacing:-.02em;color:#5A6066;font-variant-numeric:tabular-nums">{{ m.place }}</span>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <sc-for list="{{ partieEgalite }}" as="j" hint-placeholder-count="6">
+                  <div style="display:flex;align-items:center;gap:10px;border:1px solid #DFE2DB;border-radius:16px;padding:0 12px;height:38px;box-sizing:border-box;background:{{ j.fond }}">
+                    <span style="width:20px;flex:none;font-size:13px;font-weight:600;line-height:1.45;font-variant-numeric:tabular-nums;color:{{ j.encre }}">{{ j.place }}</span>
+                    <div style="width:18px;height:18px;flex:none;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:{{ j.hex }};opacity:{{ j.opacite }}"></div>
+                    <span style="flex:1;min-width:0;font-size:15px;font-weight:600;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:{{ j.encre }}">{{ j.nom }}</span>
+                    <span style="flex:none;font-size:13px;font-weight:500;line-height:1.45;font-variant-numeric:tabular-nums;color:{{ j.encre }}">{{ j.score }}</span>
+                    <span style="flex:none;width:34px;text-align:right;font-size:13px;font-weight:600;line-height:1.45;font-variant-numeric:tabular-nums;color:#0A6653">{{ j.points }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="width:420px;box-sizing:border-box;flex:none;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:16px;box-shadow:0 1px 2px rgba(22,25,26,.05)">
+              <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em">La soirée</span>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <sc-for list="{{ soireeEgalite }}" as="j" hint-placeholder-count="6">
+                  <div style="display:flex;align-items:center;gap:10px;border:1px solid #DFE2DB;border-radius:16px;padding:0 12px;height:38px;box-sizing:border-box;background:{{ j.fond }}">
+                    <span style="width:20px;flex:none;font-size:13px;font-weight:600;line-height:1.45;font-variant-numeric:tabular-nums;color:{{ j.encre }}">{{ j.place }}</span>
+                    <span style="width:14px;flex:none;display:flex;align-items:center;justify-content:center;color:{{ j.flecheEncre }}">{{ j.fleche }}</span>
+                    <div style="width:18px;height:18px;flex:none;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:{{ j.hex }};opacity:{{ j.opacite }}"></div>
+                    <span style="flex:1;min-width:0;font-size:15px;font-weight:600;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:{{ j.encre }}">{{ j.nom }}</span>
+                    <sc-if value="{{ j.off }}" hint-placeholder-val="{{ false }}">
+                      <span style="flex:none;font-size:12px;font-weight:600;color:#5A6066;background:#F4F5F2;border-radius:999px;padding:4px 8px">Déconnecté</span>
+                    </sc-if>
+                    <span style="flex:none;font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em;font-variant-numeric:tabular-nums;color:{{ j.encre }}">{{ j.total }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:20px">
+            <span style="font-size:15px;font-weight:600;line-height:1.4;color:#5A6066">Retour automatique au lobby dans 14 s</span>
+            <div style="flex:1;min-width:0"></div>
+            <button type="button" style="flex:none;border:none;border-radius:999px;background:transparent;color:#5A6066;padding:8px 12px;font:inherit;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:8px;transition:background .12s cubic-bezier(.4,0,1,1),color .12s cubic-bezier(.4,0,1,1)" style-hover="background:#ECEEE8;color:#16191A"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4.5H6.8A1.8 1.8 0 0 0 5 6.3v11.4a1.8 1.8 0 0 0 1.8 1.8h7.7"></path><path d="M14.8 12H21"></path><path d="M18.2 8.8 21 12l-2.8 3.2"></path></svg>Quitter la room</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="6d" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;flex-direction:column;gap:5px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:600;color:#FFFFFF;background:#16191A;border-radius:999px;padding:5px 11px">6d</span>
+          <span style="font-family:'Nunito',system-ui;font-size:22px;font-weight:800">Résultats · vue spectateur</span>
+        </div>
+        <span style="font-size:13px;color:#5A6066;max-width:900px">Titre neutre, aucune ligne mise en évidence : le spectateur n'a joué aucune manche et n'apparaît dans aucun des deux classements.</span>
+      </div>
+      <div data-screen-label="5.5 Résultats spectateur" style="width:1440px;height:900px;background:#F4F5F2;border-radius:24px;overflow:hidden;box-shadow:0 2px 6px rgba(22,25,26,.06),0 40px 80px -50px rgba(22,25,26,.45);display:flex;flex-direction:column;color:#16191A">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:32px 56px">
+          <div style="display:flex;align-items:center;gap:13px">
+            <div style="position:relative;width:44px;height:44px;border-radius:16px;background:#0E7C66;flex:none">
+              <div style="position:absolute;left:9px;top:9px;width:10px;height:10px;border-radius:999px;background:#FFFFFF"></div>
+              <div style="position:absolute;right:8px;top:14px;width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.62)"></div>
+              <div style="position:absolute;left:16px;bottom:8px;width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.82)"></div>
+            </div>
+            <span style="font-family:'Nunito',system-ui;font-size:26px;font-weight:800;letter-spacing:-.03em">Games Party</span>
+          </div>
+          <button type="button" aria-label="Couper le son" style="width:48px;height:48px;border:1px solid #DFE2DB;border-radius:999px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .12s cubic-bezier(.4,0,1,1)" style-hover="background:#ECEEE8;border-color:#C7CCC0"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#16191A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3L11 6v12l-4-3.5H4z"></path><path d="M15 9.6a3.6 3.6 0 0 1 0 4.8"></path><path d="M17.6 7.2a7 7 0 0 1 0 9.6"></path></svg></button>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:20px;padding:0 56px 40px;min-height:0">
+          <h2 style="margin:0;font-family:'Nunito',system-ui;font-size:40px;font-weight:800;line-height:1.05;letter-spacing:-.03em">Mika gagne la partie !</h2>
+          <div style="display:flex;gap:20px;align-items:stretch">
+            <div style="flex:1;min-width:0;box-sizing:border-box;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:16px;box-shadow:0 1px 2px rgba(22,25,26,.05)">
+              <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em">Cette partie</span>
+              <div style="display:flex;align-items:flex-end;justify-content:center;gap:12px">
+                <sc-for list="{{ podiumSpectateur }}" as="m" hint-placeholder-count="3">
+                  <div style="display:flex;flex-direction:column;align-items:center;gap:10px;order:{{ m.ordre }}">
+                    <div style="display:flex;align-items:flex-end;gap:10px">
+                      <sc-for list="{{ m.joueurs }}" as="p" hint-placeholder-count="1">
+                        <div style="width:132px;display:flex;flex-direction:column;align-items:center;gap:5px">
+                          <div style="width:28px;height:28px;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:{{ p.hex }}"></div>
+                          <span style="max-width:100%;font-size:15px;font-weight:600;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ p.nom }}</span>
+                          <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em;font-variant-numeric:tabular-nums">{{ p.score }}</span>
+                          <span style="font-size:12px;font-weight:600;color:#0A6653;background:#E3F0EA;border-radius:999px;padding:4px 8px;font-variant-numeric:tabular-nums">{{ p.points }}</span>
+                        </div>
+                      </sc-for>
+                    </div>
+                    <div style="width:{{ m.largeur }};height:{{ m.hauteur }};background:#ECEEE8;border-radius:16px 16px 0 0;display:flex;align-items:flex-start;justify-content:center;padding-top:10px;box-sizing:border-box">
+                      <span style="font-family:'Nunito',system-ui;font-size:28px;font-weight:800;line-height:1.15;letter-spacing:-.02em;color:#5A6066;font-variant-numeric:tabular-nums">{{ m.place }}</span>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <sc-for list="{{ partieSpectateur }}" as="j" hint-placeholder-count="6">
+                  <div style="display:flex;align-items:center;gap:10px;border:1px solid #DFE2DB;border-radius:16px;padding:0 12px;height:38px;box-sizing:border-box;background:{{ j.fond }}">
+                    <span style="width:20px;flex:none;font-size:13px;font-weight:600;line-height:1.45;font-variant-numeric:tabular-nums;color:{{ j.encre }}">{{ j.place }}</span>
+                    <div style="width:18px;height:18px;flex:none;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:{{ j.hex }};opacity:{{ j.opacite }}"></div>
+                    <span style="flex:1;min-width:0;font-size:15px;font-weight:600;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:{{ j.encre }}">{{ j.nom }}</span>
+                    <span style="flex:none;font-size:13px;font-weight:500;line-height:1.45;font-variant-numeric:tabular-nums;color:{{ j.encre }}">{{ j.score }}</span>
+                    <span style="flex:none;width:34px;text-align:right;font-size:13px;font-weight:600;line-height:1.45;font-variant-numeric:tabular-nums;color:#0A6653">{{ j.points }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="width:420px;box-sizing:border-box;flex:none;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:16px;box-shadow:0 1px 2px rgba(22,25,26,.05)">
+              <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em">La soirée</span>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <sc-for list="{{ soireeSpectateur }}" as="j" hint-placeholder-count="6">
+                  <div style="display:flex;align-items:center;gap:10px;border:1px solid #DFE2DB;border-radius:16px;padding:0 12px;height:38px;box-sizing:border-box;background:{{ j.fond }}">
+                    <span style="width:20px;flex:none;font-size:13px;font-weight:600;line-height:1.45;font-variant-numeric:tabular-nums;color:{{ j.encre }}">{{ j.place }}</span>
+                    <span style="width:14px;flex:none;display:flex;align-items:center;justify-content:center;color:{{ j.flecheEncre }}">{{ j.fleche }}</span>
+                    <div style="width:18px;height:18px;flex:none;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:{{ j.hex }};opacity:{{ j.opacite }}"></div>
+                    <span style="flex:1;min-width:0;font-size:15px;font-weight:600;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:{{ j.encre }}">{{ j.nom }}</span>
+                    <sc-if value="{{ j.off }}" hint-placeholder-val="{{ false }}">
+                      <span style="flex:none;font-size:12px;font-weight:600;color:#5A6066;background:#F4F5F2;border-radius:999px;padding:4px 8px">Déconnecté</span>
+                    </sc-if>
+                    <span style="flex:none;font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em;font-variant-numeric:tabular-nums;color:{{ j.encre }}">{{ j.total }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:20px">
+            <span style="font-size:15px;font-weight:600;line-height:1.4;color:#5A6066">Retour automatique au lobby dans 14 s</span>
+            <div style="flex:1;min-width:0"></div>
+            <button type="button" style="flex:none;border:none;border-radius:999px;background:transparent;color:#5A6066;padding:8px 12px;font:inherit;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:8px;transition:background .12s cubic-bezier(.4,0,1,1),color .12s cubic-bezier(.4,0,1,1)" style-hover="background:#ECEEE8;color:#16191A"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4.5H6.8A1.8 1.8 0 0 0 5 6.3v11.4a1.8 1.8 0 0 0 1.8 1.8h7.7"></path><path d="M14.8 12H21"></path><path d="M18.2 8.8 21 12l-2.8 3.2"></path></svg>Quitter la room</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="6e" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;flex-direction:column;gap:5px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:600;color:#FFFFFF;background:#16191A;border-radius:999px;padding:5px 11px">6e</span>
+          <span style="font-family:'Nunito',system-ui;font-size:22px;font-weight:800">Dix joueurs dont un déconnecté · 1366 × 768</span>
+        </div>
+        <span style="font-size:13px;color:#5A6066;max-width:900px">Marges 48, podium réduit et lignes de 30 px : les dix joueurs tiennent dans les deux cartes sans défilement. Le déconnecté garde sa place et ses points, ligne grisée.</span>
+      </div>
+      <div data-screen-label="5.5 Résultats dix joueurs" style="width:1366px;height:768px;background:#F4F5F2;border-radius:24px;overflow:hidden;box-shadow:0 2px 6px rgba(22,25,26,.06),0 40px 80px -50px rgba(22,25,26,.45);display:flex;flex-direction:column;color:#16191A">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:24px 48px">
+          <div style="display:flex;align-items:center;gap:11px">
+            <div style="position:relative;width:38px;height:38px;border-radius:12px;background:#0E7C66;flex:none">
+              <div style="position:absolute;left:8px;top:8px;width:9px;height:9px;border-radius:999px;background:#FFFFFF"></div>
+              <div style="position:absolute;right:7px;top:12px;width:9px;height:9px;border-radius:999px;background:rgba(255,255,255,.62)"></div>
+              <div style="position:absolute;left:14px;bottom:7px;width:9px;height:9px;border-radius:999px;background:rgba(255,255,255,.82)"></div>
+            </div>
+            <span style="font-family:'Nunito',system-ui;font-size:23px;font-weight:800;letter-spacing:-.03em">Games Party</span>
+          </div>
+          <button type="button" aria-label="Couper le son" style="width:44px;height:44px;border:1px solid #DFE2DB;border-radius:999px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:#ECEEE8;border-color:#C7CCC0"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#16191A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3L11 6v12l-4-3.5H4z"></path><path d="M15 9.6a3.6 3.6 0 0 1 0 4.8"></path><path d="M17.6 7.2a7 7 0 0 1 0 9.6"></path></svg></button>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:16px;padding:0 48px 32px;min-height:0">
+          <h2 style="margin:0;font-family:'Nunito',system-ui;font-size:28px;font-weight:800;line-height:1.15;letter-spacing:-.02em">Mika gagne la partie !</h2>
+          <div style="display:flex;gap:16px;align-items:stretch">
+            <div style="flex:1;min-width:0;box-sizing:border-box;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:8px;box-shadow:0 1px 2px rgba(22,25,26,.05)">
+              <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em">Cette partie</span>
+              <div style="display:flex;align-items:flex-end;justify-content:center;gap:10px">
+                <sc-for list="{{ podiumDix }}" as="m" hint-placeholder-count="3">
+                  <div style="display:flex;flex-direction:column;align-items:center;gap:8px;order:{{ m.ordre }}">
+                    <div style="display:flex;align-items:flex-end;gap:8px">
+                      <sc-for list="{{ m.joueurs }}" as="p" hint-placeholder-count="1">
+                        <div style="width:112px;display:flex;flex-direction:column;align-items:center;gap:4px">
+                          <div style="width:22px;height:22px;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:{{ p.hex }}"></div>
+                          <span style="max-width:100%;font-size:13px;font-weight:600;line-height:1.45;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ p.nom }}</span>
+                          <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em;font-variant-numeric:tabular-nums">{{ p.score }}</span>
+                          <span style="font-size:12px;font-weight:600;color:#0A6653;background:#E3F0EA;border-radius:999px;padding:4px 8px;font-variant-numeric:tabular-nums">{{ p.points }}</span>
+                        </div>
+                      </sc-for>
+                    </div>
+                    <div style="width:{{ m.largeurDix }};height:{{ m.hauteurDix }};background:#ECEEE8;border-radius:16px 16px 0 0;display:flex;align-items:flex-start;justify-content:center;padding-top:6px;box-sizing:border-box">
+                      <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em;color:#5A6066;font-variant-numeric:tabular-nums">{{ m.place }}</span>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:4px">
+                <sc-for list="{{ partieDix }}" as="j" hint-placeholder-count="10">
+                  <div style="display:flex;align-items:center;gap:8px;border:1px solid #DFE2DB;border-radius:16px;padding:0 10px;height:30px;box-sizing:border-box;background:{{ j.fond }}">
+                    <span style="width:18px;flex:none;font-size:13px;font-weight:600;line-height:1.45;font-variant-numeric:tabular-nums;color:{{ j.encre }}">{{ j.place }}</span>
+                    <div style="width:16px;height:16px;flex:none;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:{{ j.hex }};opacity:{{ j.opacite }}"></div>
+                    <span style="flex:1;min-width:0;font-size:13px;font-weight:600;line-height:1.45;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:{{ j.encre }}">{{ j.nom }}</span>
+                    <sc-if value="{{ j.off }}" hint-placeholder-val="{{ false }}">
+                      <span style="flex:none;font-size:12px;font-weight:600;color:#5A6066;background:#F4F5F2;border-radius:999px;padding:4px 8px">Déconnecté</span>
+                    </sc-if>
+                    <span style="flex:none;font-size:13px;font-weight:500;line-height:1.45;font-variant-numeric:tabular-nums;color:{{ j.encre }}">{{ j.score }}</span>
+                    <span style="flex:none;width:30px;text-align:right;font-size:13px;font-weight:600;line-height:1.45;font-variant-numeric:tabular-nums;color:#0A6653">{{ j.points }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="width:360px;box-sizing:border-box;flex:none;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:12px;box-shadow:0 1px 2px rgba(22,25,26,.05)">
+              <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em">La soirée</span>
+              <div style="display:flex;flex-direction:column;gap:4px">
+                <sc-for list="{{ soireeDix }}" as="j" hint-placeholder-count="10">
+                  <div style="display:flex;align-items:center;gap:8px;border:1px solid #DFE2DB;border-radius:16px;padding:0 10px;height:30px;box-sizing:border-box;background:{{ j.fond }}">
+                    <span style="width:18px;flex:none;font-size:13px;font-weight:600;line-height:1.45;font-variant-numeric:tabular-nums;color:{{ j.encre }}">{{ j.place }}</span>
+                    <span style="width:12px;flex:none;display:flex;align-items:center;justify-content:center;font-size:13px;color:{{ j.flecheEncre }}">{{ j.fleche }}</span>
+                    <div style="width:16px;height:16px;flex:none;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:{{ j.hex }};opacity:{{ j.opacite }}"></div>
+                    <span style="flex:1;min-width:0;font-size:13px;font-weight:600;line-height:1.45;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:{{ j.encre }}">{{ j.nom }}</span>
+                    <sc-if value="{{ j.off }}" hint-placeholder-val="{{ false }}">
+                      <span style="flex:none;font-size:12px;font-weight:600;color:#5A6066;background:#F4F5F2;border-radius:999px;padding:4px 8px">Déconnecté</span>
+                    </sc-if>
+                    <span style="flex:none;font-size:15px;font-weight:600;line-height:1.4;font-variant-numeric:tabular-nums;color:{{ j.encre }}">{{ j.total }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:16px">
+            <span style="font-size:13px;font-weight:500;line-height:1.45;color:#5A6066">Retour automatique au lobby dans 14 s</span>
+            <div style="flex:1;min-width:0"></div>
+            <button type="button" style="flex:none;border:none;border-radius:999px;background:transparent;color:#5A6066;padding:8px 12px;font:inherit;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:8px;transition:background .12s cubic-bezier(.4,0,1,1),color .12s cubic-bezier(.4,0,1,1)" style-hover="background:#ECEEE8;color:#16191A"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4.5H6.8A1.8 1.8 0 0 0 5 6.3v11.4a1.8 1.8 0 0 0 1.8 1.8h7.7"></path><path d="M14.8 12H21"></path><path d="M18.2 8.8 21 12l-2.8 3.2"></path></svg>Quitter la room</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+class Component extends DCLogic {
+  // place = rang du premier score égal ; points = joueurs classés − place
+  classer(joueurs) {
+    const tri = joueurs.slice().sort((a, b) => b.score - a.score || a.nom.localeCompare(b.nom));
+    const n = tri.length;
+    return tri.map((p, i) => {
+      let place = i + 1;
+      for (let k = 0; k < i; k++) if (tri[k].score === p.score) { place = k + 1; break; }
+      return { ...p, place, points: n - place };
+    });
+  }
+  lignesPartie(joueurs, spectateur) {
+    return this.classer(joueurs).map((p) => ({
+      nom: p.nom,
+      hex: p.hex,
+      place: p.place,
+      score: p.score + " s",
+      points: "+" + p.points,
+      off: !!p.off,
+      opacite: p.off ? 0.35 : 1,
+      encre: p.off ? "#5A6066" : "#16191A",
+      fond: p.moi && !spectateur ? "#E3F0EA" : "#FFFFFF"
+    }));
+  }
+  // marches : les places 1 à 3 seulement, la première centrée et la plus haute
+  marches(joueurs) {
+    const classes = this.classer(joueurs);
+    const places = [];
+    classes.forEach((p) => { if (p.place <= 3 && places.indexOf(p.place) === -1) places.push(p.place); });
+    const geo = { 1: { h: 132, w: 152, o: 2 }, 2: { h: 104, w: 138, o: 1 }, 3: { h: 84, w: 138, o: 3 } };
+    return places.sort((a, b) => a - b).map((place) => {
+      const g = geo[place];
+      return {
+        place,
+        ordre: g.o,
+        hauteur: g.h + "px",
+        largeur: g.w + "px",
+        hauteurDix: Math.round(g.h * 0.42) + "px",
+        largeurDix: Math.round(g.w * 0.82) + "px",
+        joueurs: classes.filter((p) => p.place === place).map((p) => ({
+          nom: p.nom, hex: p.hex, score: p.score + " s", points: "+" + p.points
+        }))
+      };
+    });
+  }
+  // places d'un tableau déjà trié, ex æquo compris
+  places(tri, cle) {
+    return tri.map((p, i) => {
+      let place = i + 1;
+      for (let k = 0; k < i; k++) if (tri[k][cle] === p[cle]) { place = k + 1; break; }
+      return place;
+    });
+  }
+  // Le mouvement se déduit : total − points de cette partie = classement d'avant.
+  soiree(lignes, partie, spectateur) {
+    const pts = {};
+    this.classer(partie).forEach((p) => { pts[p.nom] = p.points; });
+    const avant = lignes.map((p) => ({ nom: p.nom, av: p.total - (pts[p.nom] || 0) })).sort((a, b) => b.av - a.av || a.nom.localeCompare(b.nom));
+    const placeAvant = {};
+    this.places(avant, "av").forEach((place, i) => { placeAvant[avant[i].nom] = place; });
+    const tri = lignes.slice().sort((a, b) => b.total - a.total || a.nom.localeCompare(b.nom));
+    const placesApres = this.places(tri, "total");
+    return tri.map((p, i) => {
+      const mv = placeAvant[p.nom] - placesApres[i];
+      return {
+        nom: p.nom,
+        hex: p.hex,
+        place: placesApres[i],
+        total: p.total,
+        off: !!p.off,
+        opacite: p.off ? 0.35 : 1,
+        encre: p.off ? "#5A6066" : "#16191A",
+        fond: p.moi && !spectateur ? "#E3F0EA" : "#FFFFFF",
+        fleche: mv > 0 ? "↑" : mv < 0 ? "↓" : "–",
+        flecheEncre: mv > 0 ? "#0E7C66" : "#5A6066"
+      };
+    });
+  }
+  renderVals() {
+    const six = [
+      { nom: "Mika", hex: "#FF5FB0", score: 71 },
+      { nom: "ClementLeBoss123", hex: "#2BA8FF", score: 58, moi: true },
+      { nom: "Lulu", hex: "#3DDC97", score: 54 },
+      { nom: "Tibo", hex: "#C77DFF", score: 42 },
+      { nom: "Sam", hex: "#FF4D4D", score: 33 },
+      { nom: "Nono", hex: "#F5D131", score: 21 }
+    ];
+    const sixGagnant = [
+      { nom: "ClementLeBoss123", hex: "#2BA8FF", score: 71, moi: true },
+      { nom: "Mika", hex: "#FF5FB0", score: 58 },
+      { nom: "Lulu", hex: "#3DDC97", score: 54 },
+      { nom: "Tibo", hex: "#C77DFF", score: 42 },
+      { nom: "Sam", hex: "#FF4D4D", score: 33 },
+      { nom: "Nono", hex: "#F5D131", score: 21 }
+    ];
+    const soireeGagnant = [
+      { nom: "Mika", hex: "#FF5FB0", total: 12 },
+      { nom: "ClementLeBoss123", hex: "#2BA8FF", total: 12, moi: true },
+      { nom: "Lulu", hex: "#3DDC97", total: 8 },
+      { nom: "Sam", hex: "#FF4D4D", total: 7 },
+      { nom: "Tibo", hex: "#C77DFF", total: 5 },
+      { nom: "Nono", hex: "#F5D131", total: 2 }
+    ];
+    const soireeEgalite = [
+      { nom: "ClementLeBoss123", hex: "#2BA8FF", total: 12, moi: true },
+      { nom: "Mika", hex: "#FF5FB0", total: 12 },
+      { nom: "Lulu", hex: "#3DDC97", total: 11 },
+      { nom: "Tibo", hex: "#C77DFF", total: 7 },
+      { nom: "Sam", hex: "#FF4D4D", total: 6 },
+      { nom: "Nono", hex: "#F5D131", total: 2 }
+    ];
+    const sixEgalite = [
+      { nom: "ClementLeBoss123", hex: "#2BA8FF", score: 71, moi: true },
+      { nom: "Lulu", hex: "#3DDC97", score: 71 },
+      { nom: "Mika", hex: "#FF5FB0", score: 62 },
+      { nom: "Tibo", hex: "#C77DFF", score: 42 },
+      { nom: "Sam", hex: "#FF4D4D", score: 33 },
+      { nom: "Nono", hex: "#F5D131", score: 21 }
+    ];
+    // 6a : vu par l'hôte Mika, qui ne gagne pas cette partie.
+    const sixHote = [
+      { nom: "Lulu", hex: "#3DDC97", score: 71 },
+      { nom: "Mika", hex: "#FF5FB0", score: 62, moi: true },
+      { nom: "ClementLeBoss123", hex: "#2BA8FF", score: 54 },
+      { nom: "Tibo", hex: "#C77DFF", score: 42 },
+      { nom: "Sam", hex: "#FF4D4D", score: 33 },
+      { nom: "Nono", hex: "#F5D131", score: 21 }
+    ];
+    const soireeHote = [
+      { nom: "Mika", hex: "#FF5FB0", total: 12, moi: true },
+      { nom: "Lulu", hex: "#3DDC97", total: 11 },
+      { nom: "ClementLeBoss123", hex: "#2BA8FF", total: 10 },
+      { nom: "Sam", hex: "#FF4D4D", total: 6 },
+      { nom: "Tibo", hex: "#C77DFF", total: 5 },
+      { nom: "Nono", hex: "#F5D131", total: 2 }
+    ];
+    // Totaux = classement d'avant-partie + points de cette partie.
+    const soireeSix = [
+      { nom: "ClementLeBoss123", hex: "#2BA8FF", total: 12, moi: true },
+      { nom: "Mika", hex: "#FF5FB0", total: 10 },
+      { nom: "Lulu", hex: "#3DDC97", total: 9 },
+      { nom: "Sam", hex: "#FF4D4D", total: 5 },
+      { nom: "Tibo", hex: "#C77DFF", total: 4 },
+      { nom: "Nono", hex: "#F5D131", total: 1 }
+    ];
+    const dix = [
+      { nom: "Mika", hex: "#FF5FB0", score: 88 },
+      { nom: "ClementLeBoss123", hex: "#2BA8FF", score: 66, moi: true },
+      { nom: "Lulu", hex: "#3DDC97", score: 61 },
+      { nom: "Tibo", hex: "#C77DFF", score: 57 },
+      { nom: "Sam", hex: "#FF4D4D", score: 49 },
+      { nom: "Zoé", hex: "#7C8CFF", score: 44 },
+      { nom: "Kev", hex: "#22D3EE", score: 38 },
+      { nom: "Manu", hex: "#A3E635", score: 30 },
+      { nom: "Chloé", hex: "#FF9330", score: 24 },
+      { nom: "Nono", hex: "#F5D131", score: 12, off: true }
+    ];
+    const soireeDix = [
+      { nom: "Mika", hex: "#FF5FB0", total: 20 },
+      { nom: "ClementLeBoss123", hex: "#2BA8FF", total: 20, moi: true },
+      { nom: "Lulu", hex: "#3DDC97", total: 16 },
+      { nom: "Tibo", hex: "#C77DFF", total: 13 },
+      { nom: "Zoé", hex: "#7C8CFF", total: 13 },
+      { nom: "Sam", hex: "#FF4D4D", total: 10 },
+      { nom: "Kev", hex: "#22D3EE", total: 9 },
+      { nom: "Manu", hex: "#A3E635", total: 6 },
+      { nom: "Chloé", hex: "#FF9330", total: 4 },
+      { nom: "Nono", hex: "#F5D131", total: 2, off: true }
+    ];
+
+    const teintes = ["#FF5FB0", "#2BA8FF", "#3DDC97", "#C77DFF", "#F5D131", "#FF9330", "#A3E635", "#22D3EE"];
+    const confettis = [];
+    for (let i = 0; i < 30; i++) {
+      confettis.push({
+        x: Math.round(((i * 37) % 100) * 100) / 100 + "%",
+        y: (6 + ((i * 53) % 74)) + "%",
+        w: (6 + (i % 4) * 2) + "px",
+        h: (10 + (i % 3) * 4) + "px",
+        hex: teintes[i % teintes.length],
+        delai: (i % 10) * 30 + "ms"
+      });
+    }
+
+    return {
+      confettis,
+      podium6: this.marches(sixHote),
+      partie6: this.lignesPartie(sixHote),
+      soiree6: this.soiree(soireeHote, sixHote),
+      podiumGagnant: this.marches(sixGagnant),
+      partieGagnant: this.lignesPartie(sixGagnant),
+      soireeGagnant: this.soiree(soireeGagnant, sixGagnant),
+      podiumEgalite: this.marches(sixEgalite),
+      partieEgalite: this.lignesPartie(sixEgalite),
+      soireeEgalite: this.soiree(soireeEgalite, sixEgalite),
+      podiumSpectateur: this.marches(six),
+      partieSpectateur: this.lignesPartie(six, true),
+      soireeSpectateur: this.soiree(soireeSix, six, true),
+      podiumDix: this.marches(dix),
+      partieDix: this.lignesPartie(dix),
+      soireeDix: this.soiree(soireeDix, dix)
+    };
+  }
+}
+
+</script>
+</body>
+</html>

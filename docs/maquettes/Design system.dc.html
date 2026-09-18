@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  body{margin:0;background:#E7E9E3;color:#16191A;-webkit-font-smoothing:antialiased;font-family:'Work Sans',system-ui,sans-serif}
+  a{color:#0A6653;text-decoration:none}
+  a:hover{color:#084F40;text-decoration:underline}
+  input{font:inherit;box-sizing:border-box;outline:none}
+  @keyframes gpPortal{0%{transform:scale(.9);opacity:.55}100%{transform:scale(1.5);opacity:0}}
+  @keyframes gpFreeze{0%,100%{opacity:.75}50%{opacity:1}}
+  @keyframes gpBlink{0%,100%{opacity:1}50%{opacity:.35}}
+  @keyframes gpFlash{0%{background:#E3F0EA;box-shadow:0 0 0 4px #E3F0EA}100%{background:transparent;box-shadow:0 0 0 4px transparent}}
+  @media (prefers-reduced-motion:reduce){*{animation:none !important}}
+</style>
+</helmet>
+
+<section style="padding:64px;display:flex;flex-direction:column;gap:28px;width:1568px;box-sizing:border-box">
+
+  <div style="display:flex;flex-direction:column;gap:12px;max-width:880px">
+    <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#5A6066">Tour 2 · livrable 2 — direction retenue : Studio Calme</span>
+    <h1 style="margin:0;font-family:'Nunito',system-ui;font-size:44px;font-weight:800;line-height:1.05;letter-spacing:-.03em">Planche du design system</h1>
+    <p style="margin:0;font-size:16px;line-height:1.6;color:#5A6066;text-wrap:pretty">Tout est exprimé en tokens nommés par rôle, prêts à devenir des variables Tailwind. Décisions actées : logo <a href="#2c">2c</a>, arène toujours sombre. Les 10 couleurs de joueurs sont saturées et recalibrées sur le fond d'arène #1E2422 — teintes espacées sur la roue, aucune grisée, aucune proche de l'accent vert ni du terracotta de Cursor Tag.</p>
+  </div>
+
+  <div style="background:#FFFFFF;border:1px solid #DFE2DB;border-radius:24px;padding:40px;display:flex;flex-direction:column;gap:28px">
+    <div style="display:flex;align-items:baseline;gap:14px">
+      <h2 style="margin:0;font-family:'Nunito',system-ui;font-size:28px;font-weight:800;letter-spacing:-.02em">Logo — 3 pistes</h2>
+      <span style="font-size:14px;color:#5A6066">Nom en Nunito 800, interlettrage −3%. L'icône du logo ne sert jamais à un jeu. Nom à 26 px en 1440, 23 px en 1366 ; icône 44 px puis 38 px.</span>
+    </div>
+    <div style="display:flex;gap:20px;flex-wrap:wrap">
+
+      <div id="2a" style="flex:1;min-width:380px;background:#F4F5F2;border:1px solid #DFE2DB;border-radius:20px;padding:28px;display:flex;flex-direction:column;gap:22px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-family:ui-monospace,Menlo,monospace;font-size:11px;font-weight:600;color:#fff;background:#16191A;border-radius:999px;padding:4px 8px">2a</span>
+          <span style="font-family:'Nunito',system-ui;font-size:17px;font-weight:800">La poursuite</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:13px">
+          <div style="width:44px;height:44px;border-radius:14px;background:#0E7C66;display:flex;align-items:center;justify-content:center;gap:3px">
+            <div style="width:12px;height:12px;border-radius:999px;background:#fff"></div>
+            <div style="width:12px;height:12px;border-radius:999px;border:2.5px solid rgba(255,255,255,.7);box-sizing:border-box"></div>
+          </div>
+          <span style="font-family:'Nunito',system-ui;font-size:27px;font-weight:800;letter-spacing:-.03em">Games Party</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px">
+          <div style="width:28px;height:28px;border-radius:9px;background:#0E7C66;display:flex;align-items:center;justify-content:center;gap:2px">
+            <div style="width:8px;height:8px;border-radius:999px;background:#fff"></div>
+            <div style="width:8px;height:8px;border-radius:999px;border:1.5px solid rgba(255,255,255,.7);box-sizing:border-box"></div>
+          </div>
+          <div style="width:28px;height:28px;border-radius:9px;background:#16191A;display:flex;align-items:center;justify-content:center;gap:2px">
+            <div style="width:8px;height:8px;border-radius:999px;background:#fff"></div>
+            <div style="width:8px;height:8px;border-radius:999px;border:1.5px solid rgba(255,255,255,.7);box-sizing:border-box"></div>
+          </div>
+          <span style="font-size:13px;color:#5A6066">Un curseur plein en poursuit un vide : le jeu du chat, littéralement.</span>
+        </div>
+      </div>
+
+      <div id="2b" style="flex:1;min-width:380px;background:#F4F5F2;border:1px solid #DFE2DB;border-radius:20px;padding:28px;display:flex;flex-direction:column;gap:22px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-family:ui-monospace,Menlo,monospace;font-size:11px;font-weight:600;color:#fff;background:#16191A;border-radius:999px;padding:4px 8px">2b</span>
+          <span style="font-family:'Nunito',system-ui;font-size:17px;font-weight:800">Le point de départ</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:11px">
+          <div style="position:relative;width:34px;height:34px;flex:none">
+            <div style="position:absolute;left:0;bottom:0;width:26px;height:26px;border-radius:999px;background:#0E7C66"></div>
+            <div style="position:absolute;right:0;top:0;width:15px;height:15px;border-radius:999px;border:3px solid #0E7C66;box-sizing:border-box;background:#F4F5F2"></div>
+          </div>
+          <span style="font-family:'Nunito',system-ui;font-size:27px;font-weight:800;letter-spacing:-.03em">Games Party</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px">
+          <div style="position:relative;width:24px;height:24px;flex:none">
+            <div style="position:absolute;left:0;bottom:0;width:18px;height:18px;border-radius:999px;background:#0E7C66"></div>
+            <div style="position:absolute;right:0;top:0;width:11px;height:11px;border-radius:999px;border:2px solid #0E7C66;box-sizing:border-box;background:#F4F5F2"></div>
+          </div>
+          <span style="font-size:13px;color:#5A6066">Sans cadre : deux points qui se croisent, plus léger dans une barre de nav.</span>
+        </div>
+      </div>
+
+      <div id="2c" style="flex:1;min-width:380px;background:#F4F5F2;border:1px solid #DFE2DB;border-radius:20px;padding:28px;display:flex;flex-direction:column;gap:22px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-family:ui-monospace,Menlo,monospace;font-size:11px;font-weight:600;color:#fff;background:#16191A;border-radius:999px;padding:4px 8px">2c</span>
+          <span style="font-family:'Nunito',system-ui;font-size:17px;font-weight:800">La bande de potes</span>
+          <span style="font-size:12px;font-weight:600;color:#0A6653;background:#E3F0EA;border-radius:999px;padding:4px 8px">Retenu</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:13px">
+          <div style="position:relative;width:44px;height:44px;border-radius:14px;background:#0E7C66;flex:none">
+            <div style="position:absolute;left:9px;top:9px;width:10px;height:10px;border-radius:999px;background:#fff"></div>
+            <div style="position:absolute;right:8px;top:14px;width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.62)"></div>
+            <div style="position:absolute;left:16px;bottom:8px;width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.82)"></div>
+          </div>
+          <span style="font-family:'Nunito',system-ui;font-size:27px;font-weight:800;letter-spacing:-.03em">Games Party</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px">
+          <div style="position:relative;width:28px;height:28px;border-radius:9px;background:#0E7C66;flex:none">
+            <div style="position:absolute;left:6px;top:6px;width:6px;height:6px;border-radius:999px;background:#fff"></div>
+            <div style="position:absolute;right:5px;top:9px;width:6px;height:6px;border-radius:999px;background:rgba(255,255,255,.62)"></div>
+            <div style="position:absolute;left:10px;bottom:5px;width:6px;height:6px;border-radius:999px;background:rgba(255,255,255,.82)"></div>
+          </div>
+          <span style="font-size:13px;color:#5A6066">Trois curseurs groupés : la soirée à plusieurs plutôt que la traque.</span>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:20px;border-top:1px solid #DFE2DB;padding-top:24px">
+      <span style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5A6066">Icône de jeu, volontairement distincte</span>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="position:relative;width:44px;height:44px;border-radius:14px;background:#E2542B;flex:none">
+          <div style="position:absolute;left:12px;top:11px;width:7px;height:7px;border-radius:2px;transform:rotate(45deg);background:#fff"></div>
+          <div style="position:absolute;right:12px;top:11px;width:7px;height:7px;border-radius:2px;transform:rotate(45deg);background:#fff"></div>
+          <div style="position:absolute;left:13px;top:16px;width:18px;height:18px;border-radius:999px;background:#fff"></div>
+        </div>
+        <span style="font-size:13px;color:#5A6066">Cursor Tag = le rond à oreilles, en terracotta. Chaque jeu aura sa forme et sa couleur.</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:#FFFFFF;border:1px solid #DFE2DB;border-radius:24px;padding:40px;display:flex;flex-direction:column;gap:30px">
+    <div style="display:flex;align-items:baseline;gap:14px">
+      <h2 style="margin:0;font-family:'Nunito',system-ui;font-size:28px;font-weight:800;letter-spacing:-.02em">Couleurs</h2>
+      <span style="font-size:14px;color:#5A6066">Nommées par rôle : passer en thème sombre ne demandera que de changer les valeurs. Règle de contraste : toute paire encre / fond est à 4,5:1 minimum — sur accent doux l'encre est l'accent survol, et la couleur d'un joueur ne sert jamais d'encre (elle reste dans le rond). Seule exception : le libellé d'un bouton désactivé peut descendre sous 4,5:1, à condition qu'un texte lisible explique pourquoi il est désactivé.</span>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <span style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5A6066">Interface</span>
+      <div style="display:flex;gap:14px;flex-wrap:wrap">
+        <sc-for list="{{ roles }}" as="sw" hint-placeholder-count="10">
+          <div style="width:170px">
+            <div style="height:64px;border-radius:12px;border:1px solid rgba(22,25,26,.12);background:{{ sw.hex }}"></div>
+            <div style="margin-top:10px;font-size:13px;font-weight:600">{{ sw.name }}</div>
+            <div style="font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#5A6066">{{ sw.code }}</div>
+            <div style="margin-top:3px;font-size:12px;line-height:1.35;color:#5A6066">{{ sw.usage }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:14px;border-top:1px solid #DFE2DB;padding-top:26px">
+      <div style="display:flex;align-items:baseline;gap:12px">
+        <span style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5A6066">Couleurs de joueurs · c1 → c10</span>
+        <span style="font-size:13px;color:#5A6066">Dix teintes saturées espacées sur la roue, calibrées pour l'arène sombre : contraste de 4,8:1 à 12:1 sur #1E2422, aucune teinte grisée. Sur les surfaces claires de l'interface, le rond porte un liseré interne.</span>
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <sc-for list="{{ players }}" as="p" hint-placeholder-count="10">
+          <div style="width:134px;display:flex;flex-direction:column;gap:7px">
+            <div style="height:48px;border-radius:12px;background:{{ p.hex }}"></div>
+            <div style="display:flex;align-items:baseline;gap:6px">
+              <span style="font-size:12px;font-weight:600">{{ p.id }}</span>
+              <span style="font-size:12px;color:#5A6066">{{ p.name }}</span>
+            </div>
+            <div style="font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#5A6066">{{ p.code }}</div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:flex;gap:16px;margin-top:6px">
+        <div style="flex:1;display:flex;flex-direction:column;gap:10px;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:16px;padding:18px">
+          <span style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5A6066">Sur surface claire · liseré interne rgba(22,25,26,.14)</span>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <sc-for list="{{ players }}" as="p" hint-placeholder-count="10">
+              <div style="display:flex;align-items:center;gap:6px;background:#F4F5F2;border-radius:999px;padding:4px 8px 4px 5px">
+                <div style="width:20px;height:20px;border-radius:999px;background:{{ p.hex }};box-shadow:inset 0 0 0 1px rgba(22,25,26,.14)"></div>
+                <span style="font-size:12px;font-weight:600">{{ p.id }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:10px;background:#1E2422;border:1px solid #333B37;border-radius:16px;padding:18px">
+          <span style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#9BA6A0">Sur arène sombre · #1E2422</span>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <sc-for list="{{ players }}" as="p" hint-placeholder-count="10">
+              <div style="display:flex;align-items:center;gap:6px;background:rgba(0,0,0,.35);border-radius:999px;padding:4px 8px 4px 5px">
+                <div style="width:20px;height:20px;border-radius:999px;background:{{ p.hex }};box-shadow:0 0 0 2px rgba(255,255,255,.28)"></div>
+                <span style="font-size:12px;font-weight:600;color:#F2F5F1">{{ p.id }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:#FFFFFF;border:1px solid #DFE2DB;border-radius:24px;padding:40px;display:flex;flex-direction:column;gap:26px">
+    <div style="display:flex;align-items:baseline;gap:14px">
+      <h2 style="margin:0;font-family:'Nunito',system-ui;font-size:28px;font-weight:800;letter-spacing:-.02em">Typographie</h2>
+      <span style="font-size:14px;color:#5A6066">Nunito (titres, 700/800) et Work Sans (texte, 400/500/600). Licence OFL, fichiers .woff2 hébergés par le site.</span>
+    </div>
+    <div style="display:flex;flex-direction:column">
+      <div style="display:flex;align-items:center;gap:32px;padding:16px 0;border-bottom:1px solid #DFE2DB">
+        <div style="flex:1;min-width:0;font-family:'Nunito',system-ui;font-size:56px;font-weight:800;line-height:1.02;letter-spacing:-.03em">Attrapé !</div>
+        <div style="width:330px;flex:none;font-size:13px;color:#5A6066">affiche · Nunito 800 · 56 / 57 · −3% — écrans de résultats, compte à rebours</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:32px;padding:16px 0;border-bottom:1px solid #DFE2DB">
+        <div style="flex:1;min-width:0;font-family:'Nunito',system-ui;font-size:40px;font-weight:800;line-height:1.05;letter-spacing:-.03em">Tout le monde est prêt ?</div>
+        <div style="width:330px;flex:none;font-size:13px;color:#5A6066">titre-1 · Nunito 800 · 40 / 42 · −3% — titre d'écran</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:32px;padding:16px 0;border-bottom:1px solid #DFE2DB">
+        <div style="flex:1;min-width:0;font-family:'Nunito',system-ui;font-size:28px;font-weight:800;line-height:1.15;letter-spacing:-.02em">Classement de la soirée</div>
+        <div style="width:330px;flex:none;font-size:13px;color:#5A6066">titre-2 · Nunito 800 · 28 / 32 · −2% — section, nom de jeu</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:32px;padding:16px 0;border-bottom:1px solid #DFE2DB">
+        <div style="flex:1;min-width:0;font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em">Joueurs · 6 / 10</div>
+        <div style="width:330px;flex:none;font-size:13px;color:#5A6066">titre-3 · Nunito 700 · 20 / 24 · −1% — en-tête de carte</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:32px;padding:16px 0;border-bottom:1px solid #DFE2DB">
+        <div style="flex:1;min-width:0;font-size:17px;font-weight:400;line-height:1.6;color:#16191A">Crée une room, colle le lien dans ton salon Discord, tes potes arrivent en un clic.</div>
+        <div style="width:330px;flex:none;font-size:13px;color:#5A6066">corps-l · Work Sans 400 · 17 / 27 — accroche, texte d'intro</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:32px;padding:16px 0;border-bottom:1px solid #DFE2DB">
+        <div style="flex:1;min-width:0;font-size:15px;font-weight:400;line-height:1.55;color:#16191A">Le score, c'est le temps passé en Coureur. Se faire attraper gèle 3 secondes.</div>
+        <div style="width:330px;flex:none;font-size:13px;color:#5A6066">corps · Work Sans 400 · 15 / 23 — texte courant</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:32px;padding:16px 0;border-bottom:1px solid #DFE2DB">
+        <div style="flex:1;min-width:0;font-size:15px;font-weight:600;line-height:1.4;color:#16191A">ClementLeBoss123</div>
+        <div style="width:330px;flex:none;font-size:13px;color:#5A6066">corps-fort · Work Sans 600 · 15 / 21 — pseudo, libellé de champ</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:32px;padding:16px 0;border-bottom:1px solid #DFE2DB">
+        <div style="flex:1;min-width:0;font-size:13px;font-weight:500;line-height:1.45;color:#5A6066">2 à 16 caractères. Tu pourras changer ta couleur dans le lobby.</div>
+        <div style="width:330px;flex:none;font-size:13px;color:#5A6066">petit · Work Sans 500 · 13 / 19 — aide, légende (plancher UI)</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:32px;padding:16px 0;border-bottom:1px solid #DFE2DB">
+        <div style="flex:1;min-width:0;font-size:12px;font-weight:600;line-height:1.3;letter-spacing:.06em;text-transform:uppercase;color:#5A6066">Manche 2 sur 3</div>
+        <div style="width:330px;flex:none;font-size:13px;color:#5A6066">micro · Work Sans 600 · 12 / 16 · +6% capitales — étiquette de section</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:32px;padding:16px 0;border-bottom:1px solid #DFE2DB">
+        <div style="flex:1;min-width:0;font-family:'Nunito',system-ui;font-size:40px;font-weight:800;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums">0:47</div>
+        <div style="width:330px;flex:none;font-size:13px;color:#5A6066">chrono · Nunito 800 · 40 · chiffres tabulaires — temps, scores en direct</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:32px;padding:16px 0">
+        <div style="flex:1;min-width:0;font-family:'Nunito',system-ui;font-size:160px;font-weight:800;line-height:.9;letter-spacing:-.04em;font-variant-numeric:tabular-nums">3</div>
+        <div style="width:330px;flex:none;font-size:13px;color:#5A6066">compte à rebours · Nunito 800 · 160 en 1440 × 900, 120 en 1366 × 768 — uniquement le chiffre du compte à rebours avant une manche</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:28px;align-items:stretch">
+    <div style="flex:1;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:24px;padding:40px;display:flex;flex-direction:column;gap:24px">
+      <h2 style="margin:0;font-family:'Nunito',system-ui;font-size:28px;font-weight:800;letter-spacing:-.02em">Rayons</h2>
+      <div style="display:flex;gap:16px;flex-wrap:wrap">
+        <div style="display:flex;flex-direction:column;gap:8px"><div style="width:84px;height:62px;background:#ECEEE8;border:1px solid #DFE2DB;border-radius:8px"></div><span style="font-size:12px;font-weight:600">xs · 8</span><span style="font-size:11px;color:#5A6066">puces, murs</span></div>
+        <div style="display:flex;flex-direction:column;gap:8px"><div style="width:84px;height:62px;background:#ECEEE8;border:1px solid #DFE2DB;border-radius:12px"></div><span style="font-size:12px;font-weight:600">sm · 12</span><span style="font-size:11px;color:#5A6066">swatch, avatar</span></div>
+        <div style="display:flex;flex-direction:column;gap:8px"><div style="width:84px;height:62px;background:#ECEEE8;border:1px solid #DFE2DB;border-radius:16px"></div><span style="font-size:12px;font-weight:600">md · 16</span><span style="font-size:11px;color:#5A6066">ligne, encart</span></div>
+        <div style="display:flex;flex-direction:column;gap:8px"><div style="width:84px;height:62px;background:#ECEEE8;border:1px solid #DFE2DB;border-radius:20px"></div><span style="font-size:12px;font-weight:600">lg · 20</span><span style="font-size:11px;color:#5A6066">carte de jeu</span></div>
+        <div style="display:flex;flex-direction:column;gap:8px"><div style="width:84px;height:62px;background:#ECEEE8;border:1px solid #DFE2DB;border-radius:24px"></div><span style="font-size:12px;font-weight:600">xl · 24</span><span style="font-size:11px;color:#5A6066">carte, panneau</span></div>
+        <div style="display:flex;flex-direction:column;gap:8px"><div style="width:84px;height:62px;background:#ECEEE8;border:1px solid #DFE2DB;border-radius:999px"></div><span style="font-size:12px;font-weight:600">pilule · 999</span><span style="font-size:11px;color:#5A6066">boutons, champs</span></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px;border-top:1px solid #DFE2DB;padding-top:24px">
+        <h2 style="margin:0;font-family:'Nunito',system-ui;font-size:28px;font-weight:800;letter-spacing:-.02em">Espacements</h2>
+        <span style="font-size:13px;color:#5A6066">Échelle de 4. Gouttière de grille 24, marge d'écran 56 (48 en 1366 px).</span>
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <sc-for list="{{ spacing }}" as="sp" hint-placeholder-count="9">
+            <div style="display:flex;align-items:center;gap:12px">
+              <span style="width:78px;flex:none;white-space:nowrap;font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#5A6066">{{ sp.name }}</span>
+              <div style="height:12px;border-radius:4px;background:#0E7C66;width:{{ sp.px }}px"></div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+    <div style="flex:1;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:24px;padding:40px;display:flex;flex-direction:column;gap:24px">
+      <h2 style="margin:0;font-family:'Nunito',system-ui;font-size:28px;font-weight:800;letter-spacing:-.02em">Ombres</h2>
+      <div style="display:flex;gap:18px;flex-wrap:wrap">
+        <div style="display:flex;flex-direction:column;gap:10px;width:180px"><div style="height:74px;background:#fff;border:1px solid #DFE2DB;border-radius:16px;box-shadow:0 1px 2px rgba(22,25,26,.05)"></div><span style="font-size:12px;font-weight:600">ombre-1</span><span style="font-size:11px;line-height:1.4;color:#5A6066">0 1px 2px rgba(22,25,26,.05) — cartes au repos</span></div>
+        <div style="display:flex;flex-direction:column;gap:10px;width:180px"><div style="height:74px;background:#fff;border:1px solid #DFE2DB;border-radius:16px;box-shadow:0 1px 3px rgba(22,25,26,.06),0 8px 20px -12px rgba(22,25,26,.18)"></div><span style="font-size:12px;font-weight:600">ombre-2</span><span style="font-size:11px;line-height:1.4;color:#5A6066">survol de carte, menu</span></div>
+        <div style="display:flex;flex-direction:column;gap:10px;width:180px"><div style="height:74px;background:#fff;border:1px solid #DFE2DB;border-radius:16px;box-shadow:0 2px 6px rgba(22,25,26,.06),0 24px 48px -24px rgba(22,25,26,.22)"></div><span style="font-size:12px;font-weight:600">ombre-3</span><span style="font-size:11px;line-height:1.4;color:#5A6066">overlay, notification</span></div>
+        <div style="display:flex;flex-direction:column;gap:10px;width:180px"><div style="height:74px;background:#fff;border:1px solid #0E7C66;border-radius:16px;box-shadow:0 0 0 4px #E3F0EA"></div><span style="font-size:12px;font-weight:600">anneau-focus</span><span style="font-size:11px;line-height:1.4;color:#5A6066">0 0 0 4px accent-doux + bordure accent</span></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:16px;border-top:1px solid #DFE2DB;padding-top:24px">
+        <h2 style="margin:0;font-family:'Nunito',system-ui;font-size:28px;font-weight:800;letter-spacing:-.02em">Animations</h2>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <sc-for list="{{ motion }}" as="m" hint-placeholder-count="5">
+            <div style="display:flex;gap:14px;align-items:baseline;border-bottom:1px solid #ECEEE8;padding-bottom:10px">
+              <span style="width:112px;flex:none;font-size:13px;font-weight:600">{{ m.name }}</span>
+              <span style="width:66px;flex:none;font-family:ui-monospace,Menlo,monospace;font-size:12px;color:#0E7C66">{{ m.dur }}</span>
+              <span style="flex:1;min-width:0;font-family:ui-monospace,Menlo,monospace;font-size:11px;color:#5A6066">{{ m.curve }}</span>
+              <span style="width:180px;flex:none;font-size:12px;color:#5A6066">{{ m.usage }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <span style="font-size:13px;line-height:1.55;color:#5A6066">Règles : rien au-delà de 300 ms sauf la célébration ; on n'anime que <code style="font-family:ui-monospace,Menlo,monospace;font-size:12px">transform</code> et <code style="font-family:ui-monospace,Menlo,monospace;font-size:12px">opacity</code> ; les curseurs de l'arène ne sont jamais animés en CSS (60 fps piloté par le jeu) ; <code style="font-family:ui-monospace,Menlo,monospace;font-size:12px">prefers-reduced-motion</code> coupe confettis et boucles : le clignotement d'attente devient un point fixe, l'illumination d'une valeur modifiée un fond accent doux affiché 1,2 s sans transition.</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:#FFFFFF;border:1px solid #DFE2DB;border-radius:24px;padding:40px;display:flex;flex-direction:column;gap:32px">
+    <div style="display:flex;align-items:baseline;gap:14px">
+      <h2 style="margin:0;font-family:'Nunito',system-ui;font-size:28px;font-weight:800;letter-spacing:-.02em">Composants et états</h2>
+      <span style="font-size:14px;color:#5A6066">Normal · survol · focus clavier · désactivé. Les états sont figés ici pour la référence ; les vrais composants réagissent à la souris.</span>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div style="display:flex;flex-direction:column;gap:6px;background:#F4F5F2;border:1px solid #DFE2DB;border-radius:16px;padding:16px 20px">
+        <span style="font-size:13px;font-weight:600;line-height:1.5">Règle de dimensions · aucun état ne redimensionne un bouton</span>
+        <span style="font-size:13px;line-height:1.55;color:#5A6066;text-wrap:pretty">Survol, focus clavier, désactivé et « Lien copié » gardent exactement la largeur et la hauteur de l'état normal : seules la couleur, l'encre et le décalage de 1 px du survol changent. L'anneau de focus est une ombre portée dessinée à l'extérieur du bouton — 4 px d'accent doux puis 1 px d'accent — donc il ne prend aucune place et ne décale aucun voisin. Un bouton dont le libellé change au clic est figé à la largeur du libellé le plus long.</span>
+      </div>
+      <span style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5A6066">Bouton principal · pilule, 54 px, Work Sans 600</span>
+      <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-end">
+        <div style="display:flex;flex-direction:column;gap:9px;align-items:flex-start"><button type="button" style="height:54px;border:none;border-radius:999px;background:#0E7C66;color:#fff;padding:0 30px;font:inherit;font-size:16px;font-weight:600;cursor:pointer;transition:background .16s cubic-bezier(.2,.8,.3,1),transform .16s cubic-bezier(.2,.8,.3,1)" style-hover="background:#0A6653;transform:translateY(-1px)">Créer une room</button><span style="font-size:12px;color:#5A6066">normal · (survolable)</span></div>
+        <div style="display:flex;flex-direction:column;gap:9px;align-items:flex-start"><div style="height:54px;border-radius:999px;background:#0A6653;color:#fff;padding:0 30px;display:flex;align-items:center;font-size:16px;font-weight:600;transform:translateY(-1px)">Créer une room</div><span style="font-size:12px;color:#5A6066">survol · −1 px</span></div>
+        <div style="display:flex;flex-direction:column;gap:9px;align-items:flex-start"><div style="height:54px;border-radius:999px;background:#0E7C66;color:#fff;padding:0 30px;display:flex;align-items:center;font-size:16px;font-weight:600;box-shadow:0 0 0 4px #E3F0EA,0 0 0 5px #0E7C66">Créer une room</div><span style="font-size:12px;color:#5A6066">focus clavier</span></div>
+        <div style="display:flex;flex-direction:column;gap:9px;align-items:flex-start"><div style="height:54px;border-radius:999px;background:#ECEEE8;color:#9BA29A;padding:0 30px;display:flex;align-items:center;font-size:16px;font-weight:600;cursor:not-allowed">Lancer la partie</div><span style="font-size:12px;color:#5A6066">désactivé</span></div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:16px;border-top:1px solid #ECEEE8;padding-top:26px">
+      <span style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5A6066">Bouton secondaire · contour</span>
+      <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-end">
+        <div style="display:flex;flex-direction:column;gap:9px;align-items:flex-start"><button type="button" style="height:54px;border:1px solid #DFE2DB;border-radius:999px;background:#fff;color:#16191A;padding:0 26px;font:inherit;font-size:16px;font-weight:600;cursor:pointer;transition:background .16s cubic-bezier(.2,.8,.3,1),border-color .16s cubic-bezier(.2,.8,.3,1)" style-hover="background:#ECEEE8;border-color:#C7CCC0">Copier le lien</button><span style="font-size:12px;color:#5A6066">normal · (survolable)</span></div>
+        <div style="display:flex;flex-direction:column;gap:9px;align-items:flex-start"><div style="height:54px;box-sizing:border-box;border:1px solid #C7CCC0;border-radius:999px;background:#ECEEE8;color:#16191A;padding:0 26px;display:flex;align-items:center;font-size:16px;font-weight:600">Copier le lien</div><span style="font-size:12px;color:#5A6066">survol</span></div>
+        <div style="display:flex;flex-direction:column;gap:9px;align-items:flex-start"><div style="height:54px;box-sizing:border-box;border:1px solid #0E7C66;border-radius:999px;background:#fff;color:#16191A;padding:0 26px;display:flex;align-items:center;font-size:16px;font-weight:600;box-shadow:0 0 0 4px #E3F0EA">Copier le lien</div><span style="font-size:12px;color:#5A6066">focus clavier</span></div>
+        <div style="display:flex;flex-direction:column;gap:9px;align-items:flex-start"><div style="height:54px;box-sizing:border-box;border:1px solid #ECEEE8;border-radius:999px;background:#fff;color:#9BA29A;padding:0 26px;display:flex;align-items:center;font-size:16px;font-weight:600">Copier le lien</div><span style="font-size:12px;color:#5A6066">désactivé</span></div>
+        <div style="display:flex;flex-direction:column;gap:9px;align-items:flex-start"><div style="display:flex;gap:10px"><div style="width:48px;height:48px;border:1px solid #DFE2DB;border-radius:999px;background:#fff;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#16191A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3L11 6v12l-4-3.5H4z"></path><path d="M15 9.6a3.6 3.6 0 0 1 0 4.8"></path><path d="M17.6 7.2a7 7 0 0 1 0 9.6"></path></svg></div><div style="width:48px;height:48px;border:1px solid #DFE2DB;border-radius:999px;background:#ECEEE8;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#5A6066" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3L11 6v12l-4-3.5H4z"></path><path d="M16 10l4 4"></path><path d="M20 10l-4 4"></path></svg></div></div><span style="font-size:12px;color:#5A6066">icône son · actif / coupé (barre du haut, tous les écrans)</span></div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:16px;border-top:1px solid #ECEEE8;padding-top:26px">
+      <span style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5A6066">Bouton doux · fond accent doux, encre accent survol — actions secondaires utiles comme « Copier le lien »</span>
+      <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-end">
+        <div style="display:flex;flex-direction:column;gap:9px;align-items:flex-start"><button type="button" style="height:54px;border:none;border-radius:999px;background:#E3F0EA;color:#0A6653;width:176px;box-sizing:border-box;padding:0 22px;font:inherit;font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:background .16s cubic-bezier(.2,.8,.3,1)" style-hover="background:#D3E8DF"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#0A6653" stroke-width="1.9" stroke-linecap="round"><path d="M10.4 13.6a3.6 3.6 0 0 1 0-5.1l2.5-2.5a3.6 3.6 0 0 1 5.1 5.1l-1.3 1.3"></path><path d="M13.6 10.4a3.6 3.6 0 0 1 0 5.1l-2.5 2.5a3.6 3.6 0 0 1-5.1-5.1l1.3-1.3"></path></svg>Copier le lien</button><span style="font-size:12px;color:#5A6066">normal · (survolable)</span></div>
+        <div style="display:flex;flex-direction:column;gap:9px;align-items:flex-start"><div style="height:54px;border-radius:999px;background:#D3E8DF;color:#0A6653;width:176px;box-sizing:border-box;padding:0 22px;display:flex;align-items:center;justify-content:center;gap:10px;font-size:15px;font-weight:600"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#0A6653" stroke-width="1.9" stroke-linecap="round"><path d="M10.4 13.6a3.6 3.6 0 0 1 0-5.1l2.5-2.5a3.6 3.6 0 0 1 5.1 5.1l-1.3 1.3"></path><path d="M13.6 10.4a3.6 3.6 0 0 1 0 5.1l-2.5 2.5a3.6 3.6 0 0 1-5.1-5.1l1.3-1.3"></path></svg>Copier le lien</div><span style="font-size:12px;color:#5A6066">survol</span></div>
+        <div style="display:flex;flex-direction:column;gap:9px;align-items:flex-start"><div style="height:54px;border-radius:999px;background:#E3F0EA;color:#0A6653;width:176px;box-sizing:border-box;padding:0 22px;display:flex;align-items:center;justify-content:center;gap:10px;font-size:15px;font-weight:600;box-shadow:0 0 0 4px #E3F0EA,0 0 0 5px #0E7C66"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#0A6653" stroke-width="1.9" stroke-linecap="round"><path d="M10.4 13.6a3.6 3.6 0 0 1 0-5.1l2.5-2.5a3.6 3.6 0 0 1 5.1 5.1l-1.3 1.3"></path><path d="M13.6 10.4a3.6 3.6 0 0 1 0 5.1l-2.5 2.5a3.6 3.6 0 0 1-5.1-5.1l1.3-1.3"></path></svg>Copier le lien</div><span style="font-size:12px;color:#5A6066">focus clavier</span></div>
+        <div style="display:flex;flex-direction:column;gap:9px;align-items:flex-start"><div style="height:54px;border-radius:999px;background:#ECEEE8;color:#9BA29A;width:176px;box-sizing:border-box;padding:0 22px;display:flex;align-items:center;justify-content:center;gap:10px;font-size:15px;font-weight:600;cursor:not-allowed"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#9BA29A" stroke-width="1.9" stroke-linecap="round"><path d="M10.4 13.6a3.6 3.6 0 0 1 0-5.1l2.5-2.5a3.6 3.6 0 0 1 5.1 5.1l-1.3 1.3"></path><path d="M13.6 10.4a3.6 3.6 0 0 1 0 5.1l-2.5 2.5a3.6 3.6 0 0 1-5.1-5.1l1.3-1.3"></path></svg>Copier le lien</div><span style="font-size:12px;color:#5A6066">désactivé</span></div>
+        <div style="display:flex;flex-direction:column;gap:9px;align-items:flex-start"><div style="height:54px;border-radius:999px;background:#E3F0EA;color:#0A6653;width:176px;box-sizing:border-box;padding:0 22px;display:flex;align-items:center;justify-content:center;gap:10px;font-size:15px;font-weight:600"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#0A6653" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Lien copié</div><span style="font-size:12px;color:#5A6066">après le clic · 2 s, puis retour au libellé</span></div>
+      </div>
+
+      <span style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5A6066;margin-top:8px">Bouton destructif · token Erreur, encre blanche — 5,5:1 ; jamais l'action par défaut d'un écran</span>
+      <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-end">
+        <div style="display:flex;flex-direction:column;gap:9px;align-items:flex-start"><button type="button" style="height:54px;border:none;border-radius:999px;background:#B3261E;color:#FFFFFF;padding:0 30px;font:inherit;font-size:16px;font-weight:600;cursor:pointer;transition:background .16s cubic-bezier(.2,.8,.3,1)" style-hover="background:#8E1E18">Quitter</button><span style="font-size:12px;color:#5A6066">normal · (survolable)</span></div>
+        <div style="display:flex;flex-direction:column;gap:9px;align-items:flex-start"><div style="height:54px;border-radius:999px;background:#8E1E18;color:#FFFFFF;padding:0 30px;display:flex;align-items:center;font-size:16px;font-weight:600">Quitter</div><span style="font-size:12px;color:#5A6066">survol</span></div>
+        <div style="display:flex;flex-direction:column;gap:9px;align-items:flex-start"><div style="height:54px;border-radius:999px;background:#B3261E;color:#FFFFFF;padding:0 30px;display:flex;align-items:center;font-size:16px;font-weight:600;box-shadow:0 0 0 4px #FBEAE8,0 0 0 5px #B3261E">Quitter</div><span style="font-size:12px;color:#5A6066">focus clavier · anneau erreur doux</span></div>
+        <div style="display:flex;flex-direction:column;gap:9px;align-items:flex-start"><div style="height:54px;border-radius:999px;background:#ECEEE8;color:#9BA29A;padding:0 30px;display:flex;align-items:center;font-size:16px;font-weight:600;cursor:not-allowed">Quitter</div><span style="font-size:12px;color:#5A6066">désactivé</span></div>
+      </div>
+
+      <span style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5A6066;margin-top:8px">Bouton discret · fond transparent, icône, fond surface 2 au survol — sortie de room, actions de second plan</span>
+      <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-end">
+        <div style="display:flex;flex-direction:column;gap:9px;align-items:flex-start"><button type="button" style="border:none;border-radius:999px;background:transparent;color:#5A6066;padding:8px 12px;font:inherit;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:8px;transition:background .12s cubic-bezier(.4,0,1,1),color .12s cubic-bezier(.4,0,1,1)" style-hover="background:#ECEEE8;color:#16191A"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4.5H6.8A1.8 1.8 0 0 0 5 6.3v11.4a1.8 1.8 0 0 0 1.8 1.8h7.7"></path><path d="M14.8 12H21"></path><path d="M18.2 8.8 21 12l-2.8 3.2"></path></svg>Quitter la room</button><span style="font-size:12px;color:#5A6066">normal · (survolable)</span></div>
+        <div style="display:flex;flex-direction:column;gap:9px;align-items:flex-start"><div style="border-radius:999px;background:#ECEEE8;color:#16191A;padding:8px 12px;font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#16191A" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4.5H6.8A1.8 1.8 0 0 0 5 6.3v11.4a1.8 1.8 0 0 0 1.8 1.8h7.7"></path><path d="M14.8 12H21"></path><path d="M18.2 8.8 21 12l-2.8 3.2"></path></svg>Quitter la room</div><span style="font-size:12px;color:#5A6066">survol</span></div>
+        <div style="display:flex;flex-direction:column;gap:9px;align-items:flex-start"><div style="border-radius:999px;background:transparent;color:#5A6066;padding:8px 12px;font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px;box-shadow:0 0 0 4px #E3F0EA,0 0 0 5px #0E7C66"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#5A6066" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4.5H6.8A1.8 1.8 0 0 0 5 6.3v11.4a1.8 1.8 0 0 0 1.8 1.8h7.7"></path><path d="M14.8 12H21"></path><path d="M18.2 8.8 21 12l-2.8 3.2"></path></svg>Quitter la room</div><span style="font-size:12px;color:#5A6066">focus clavier</span></div>
+        <div style="display:flex;flex-direction:column;gap:9px;align-items:flex-start"><div style="border-radius:999px;background:transparent;color:#C7CCC0;padding:8px 12px;font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px;cursor:not-allowed"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#C7CCC0" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4.5H6.8A1.8 1.8 0 0 0 5 6.3v11.4a1.8 1.8 0 0 0 1.8 1.8h7.7"></path><path d="M14.8 12H21"></path><path d="M18.2 8.8 21 12l-2.8 3.2"></path></svg>Quitter la room</div><span style="font-size:12px;color:#5A6066">désactivé</span></div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:16px;border-top:1px solid #ECEEE8;padding-top:26px">
+      <span style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5A6066">Bouton bascule « Tu es prêt » · variante du bouton doux, bordure accent + ligne d'aide</span>
+      <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start">
+        <div style="display:flex;flex-direction:column;gap:9px;width:280px"><button type="button" style="height:54px;border:none;border-radius:999px;background:#0E7C66;color:#fff;padding:0 30px;font:inherit;font-size:16px;font-weight:600;cursor:pointer;transition:background .16s cubic-bezier(.2,.8,.3,1)" style-hover="background:#0A6653">Je suis prêt</button><span style="font-size:12px;color:#5A6066">non prêt · bouton principal</span></div>
+        <div style="display:flex;flex-direction:column;gap:9px;width:280px"><div style="display:flex;flex-direction:column;gap:8px"><div style="height:54px;border:1px solid #0E7C66;border-radius:999px;background:#E3F0EA;color:#0A6653;display:flex;align-items:center;justify-content:center;gap:10px;font-size:16px;font-weight:600"><span style="width:9px;height:9px;border-radius:999px;background:#0E7C66"></span>Tu es prêt</div><span style="text-align:center;font-size:13px;font-weight:500;line-height:1.45;color:#5A6066">Clique à nouveau pour annuler</span></div><span style="font-size:12px;color:#5A6066">prêt · bascule + aide en petit</span></div>
+      </div>
+
+      <span style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5A6066;margin-top:8px">Stepper de réglage · valeur 52 px à largeur fixe, unité dans la valeur, alignée à droite</span>
+      <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start">
+        <div style="display:flex;flex-direction:column;gap:9px;width:330px">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;background:#F4F5F2;border-radius:16px;padding:8px 12px">
+            <span style="font-size:15px;font-weight:600;white-space:nowrap">Durée d'une manche</span>
+            <div style="display:flex;align-items:center;gap:8px;border:1px solid #DFE2DB;border-radius:999px;background:#FFFFFF;padding:4px 5px;flex:none">
+              <div style="width:32px;height:32px;border-radius:999px;background:#ECEEE8;color:#16191A;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600;cursor:pointer">−</div>
+              <span style="width:52px;flex:none;text-align:center;font-family:'Nunito',system-ui;font-size:20px;font-weight:700;font-variant-numeric:tabular-nums">60 s</span>
+              <div style="width:32px;height:32px;border-radius:999px;background:#ECEEE8;color:#16191A;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600;cursor:pointer">+</div>
+            </div>
+          </div>
+          <span style="font-size:12px;color:#5A6066">hôte · normal — bornes 30 à 120 s par pas de 15</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:9px;width:330px">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;background:#F4F5F2;border-radius:16px;padding:8px 12px">
+            <span style="font-size:15px;font-weight:600;white-space:nowrap">Nombre de Chats</span>
+            <div style="display:flex;align-items:center;gap:8px;border:1px solid #DFE2DB;border-radius:999px;background:#FFFFFF;padding:4px 5px;flex:none">
+              <div style="width:32px;height:32px;border-radius:999px;background:#F4F5F2;color:#C7CCC0;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600;cursor:not-allowed">−</div>
+              <span style="width:52px;flex:none;text-align:center;font-family:'Nunito',system-ui;font-size:20px;font-weight:700;font-variant-numeric:tabular-nums">1</span>
+              <div style="width:32px;height:32px;border-radius:999px;background:#F4F5F2;color:#C7CCC0;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600;cursor:not-allowed">+</div>
+            </div>
+          </div>
+          <span style="font-size:12px;color:#5A6066">− et + désactivés · limite atteinte (1 à joueurs − 1)</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:9px;width:330px">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;background:#F4F5F2;border-radius:16px;padding:12px">
+            <span style="font-size:15px;font-weight:600;white-space:nowrap">Durée du gel</span>
+            <span style="flex:none;width:52px;text-align:center;font-family:'Nunito',system-ui;font-size:20px;font-weight:700;font-variant-numeric:tabular-nums;border-radius:8px;padding:2px 0;animation:gpFlash 1.2s cubic-bezier(.16,1,.3,1) 1 forwards">3 s</span>
+          </div>
+          <span style="font-size:12px;color:#5A6066">joueur · lecture seule, illumination à la modification</span>
+        </div>
+      </div>
+
+      <span style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5A6066;margin-top:8px">Ligne de joueur · pastille cliquable, palette ouverte, ligne d'attente</span>
+      <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start">
+        <div style="display:flex;flex-direction:column;gap:9px;width:330px">
+          <div style="display:flex;align-items:center;gap:12px;background:#F4F5F2;border:1px solid #DFE2DB;border-radius:16px;padding:0 16px;height:38px;box-sizing:border-box">
+            <div style="width:22px;height:22px;flex:none;border-radius:999px;background:#3DDC97;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14),0 0 0 3px #ECEEE8;cursor:pointer"></div>
+            <span style="flex:1;min-width:0;font-size:15px;font-weight:600">Lulu</span>
+            <span style="font-size:12px;font-weight:600;background:#ECEEE8;border-radius:999px;padding:4px 8px">Toi</span>
+          </div>
+          <span style="font-size:12px;color:#5A6066">pastille cliquable · anneau #ECEEE8, #C7CCC0 au survol</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:9px;width:330px">
+          <div style="border:1px solid #DFE2DB;border-radius:16px;padding:12px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;justify-items:center">
+            <sc-for list="{{ paletteRef }}" as="c" hint-placeholder-count="10">
+              <div title="{{ c.titre }}" style="position:relative;width:38px;height:38px;border-radius:12px;background:{{ c.hex }};box-shadow:{{ c.ring }};cursor:{{ c.curseur }}">
+                <sc-if value="{{ c.estPrise }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center"><div style="width:32px;height:3px;border-radius:2px;background:#FFFFFF;box-shadow:0 0 0 1px rgba(22,25,26,.5);transform:rotate(-45deg)"></div></div>
+                </sc-if>
+                <sc-if value="{{ c.estMienne }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center"><div style="width:10px;height:10px;border-radius:999px;background:#FFFFFF;box-shadow:0 0 0 1px rgba(22,25,26,.3)"></div></div>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+          <span style="font-size:12px;color:#5A6066">palette ouverte · grille 5 × 2, ordre c1 → c10 fixe, prise = teinte réelle barrée + pseudo au survol</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:9px;width:330px">
+          <div style="display:flex;align-items:center;gap:12px;border:1px dashed #C7CCC0;border-radius:16px;padding:0 16px;height:38px;box-sizing:border-box">
+            <div style="width:22px;height:22px;flex:none;border-radius:999px;border:1px dashed #C7CCC0;box-sizing:border-box"></div>
+            <span style="flex:1;min-width:0;font-size:15px;color:#5A6066">Il manque un joueur</span>
+          </div>
+          <span style="font-size:12px;color:#5A6066">ligne d'attente · attente normale, jamais une erreur</span>
+        </div>
+      </div>
+
+      <span style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5A6066;margin-top:8px">Attente, compteur et grille de jeux</span>
+      <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start">
+        <div style="display:flex;flex-direction:column;gap:9px;width:330px">
+          <div style="display:flex;align-items:center;justify-content:center;gap:12px;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:24px;padding:24px">
+            <span style="width:10px;height:10px;flex:none;border-radius:999px;background:#7A5400;animation:gpBlink 1.4s ease-in-out infinite"></span>
+            <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em;color:#5A6066">Mika choisit un jeu…</span>
+          </div>
+          <span style="font-size:12px;color:#5A6066">message d'attente · titre-3, point en clignotement d'attente</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:9px;width:330px">
+          <div style="display:flex;flex-direction:column;gap:8px;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:24px;padding:16px">
+            <span style="font-size:13px;font-weight:500;line-height:1.45;color:#5A6066">3 joueurs sur 4 prêts</span>
+            <span style="font-size:13px;font-weight:500;line-height:1.45;color:#0A6653">4 joueurs sur 4 prêts</span>
+          </div>
+          <span style="font-size:12px;color:#5A6066">compteur de prêts · petit (13/500), accent survol quand tout le monde est prêt — hôte et déconnectés hors du compte</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:9px;width:330px">
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(266px,1fr));gap:16px;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:24px;padding:16px">
+            <div style="border:1px solid #DFE2DB;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:12px;cursor:pointer;transition:border-color .16s cubic-bezier(.2,.8,.3,1),box-shadow .16s cubic-bezier(.2,.8,.3,1)" style-hover="border-color:#0E7C66;box-shadow:0 0 0 3px #E3F0EA">
+              <div style="position:relative;width:48px;height:48px;border-radius:16px;background:#E2542B">
+                <div style="position:absolute;left:14px;top:12px;width:7px;height:7px;border-radius:2px;transform:rotate(45deg);background:#FFFFFF"></div>
+                <div style="position:absolute;right:14px;top:12px;width:7px;height:7px;border-radius:2px;transform:rotate(45deg);background:#FFFFFF"></div>
+                <div style="position:absolute;left:15px;top:18px;width:18px;height:18px;border-radius:999px;background:#FFFFFF"></div>
+              </div>
+              <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em">Cursor Tag</span>
+              <span style="align-self:flex-start;font-size:12px;font-weight:600;background:#ECEEE8;border-radius:999px;padding:4px 8px">3 à 10 joueurs</span>
+            </div>
+          </div>
+          <span style="font-size:12px;color:#5A6066">grille « Choisis un jeu » · auto-remplissage à partir de 266 px, une carte par jeu existant — jamais de carte « Bientôt »</span>
+        </div>
+      </div>
+
+      <span style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5A6066;margin-top:8px">Icônes · trait 1,9 px, extrémités arrondies, jamais de remplissage</span>
+      <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start">
+        <div style="display:flex;flex-direction:column;gap:9px;align-items:center;width:150px"><div style="width:48px;height:48px;border:1px solid #DFE2DB;border-radius:999px;background:#FFFFFF;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#16191A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3L11 6v12l-4-3.5H4z"></path><path d="M15 9.6a3.6 3.6 0 0 1 0 4.8"></path><path d="M17.6 7.2a7 7 0 0 1 0 9.6"></path></svg></div><span style="font-size:12px;text-align:center;color:#5A6066">son · 22 px, trait 1,8 — dans un bouton rond 48</span></div>
+        <div style="display:flex;flex-direction:column;gap:9px;align-items:center;width:150px"><div style="width:48px;height:48px;border-radius:999px;background:#E3F0EA;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#0A6653" stroke-width="1.9" stroke-linecap="round"><path d="M10.4 13.6a3.6 3.6 0 0 1 0-5.1l2.5-2.5a3.6 3.6 0 0 1 5.1 5.1l-1.3 1.3"></path><path d="M13.6 10.4a3.6 3.6 0 0 1 0 5.1l-2.5 2.5a3.6 3.6 0 0 1-5.1-5.1l1.3-1.3"></path></svg></div><span style="font-size:12px;text-align:center;color:#5A6066">lien · 18 px, trait 1,9 — bouton doux</span></div>
+        <div style="display:flex;flex-direction:column;gap:9px;align-items:center;width:150px"><div style="width:48px;height:48px;border-radius:999px;background:#E3F0EA;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#0A6653" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg></div><span style="font-size:12px;text-align:center;color:#5A6066">coche · 18 px, trait 2,1 — confirmation</span></div>
+        <div style="display:flex;flex-direction:column;gap:9px;align-items:center;width:150px"><div style="width:48px;height:48px;border:1px solid #DFE2DB;border-radius:999px;background:#FFFFFF;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#5A6066" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4.5H6.8A1.8 1.8 0 0 0 5 6.3v11.4a1.8 1.8 0 0 0 1.8 1.8h7.7"></path><path d="M14.8 12H21"></path><path d="M18.2 8.8 21 12l-2.8 3.2"></path></svg></div><span style="font-size:12px;text-align:center;color:#5A6066">sortie · 18 px, trait 1,9 — quitter la room</span></div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:28px;flex-wrap:wrap;border-top:1px solid #ECEEE8;padding-top:26px">
+      <div style="flex:1;min-width:520px;display:flex;flex-direction:column;gap:16px">
+        <span style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5A6066">Champ texte</span>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;align-items:center;gap:14px"><input type="text" value="Mika" maxlength="16" style="width:250px;height:54px;border-radius:999px;border:1px solid #DFE2DB;background:#fff;padding:0 20px;font-size:16px;font-weight:500" style-focus="border-color:#0E7C66;box-shadow:0 0 0 4px #E3F0EA"><span style="font-size:12px;color:#5A6066">normal · (cliquable pour voir le focus)</span></div>
+          <div style="display:flex;align-items:center;gap:14px"><div style="width:250px;height:54px;border-radius:999px;border:1px solid #C7CCC0;background:#fff;padding:0 20px;display:flex;align-items:center;font-size:16px;font-weight:500">Mika</div><span style="font-size:12px;color:#5A6066">survol</span></div>
+          <div style="display:flex;align-items:center;gap:14px"><div style="width:250px;height:54px;border-radius:999px;border:1px solid #0E7C66;background:#fff;padding:0 20px;display:flex;align-items:center;font-size:16px;font-weight:500;box-shadow:0 0 0 4px #E3F0EA">Mika<span style="width:1.5px;height:22px;background:#0E7C66;margin-left:2px"></span></div><span style="font-size:12px;color:#5A6066">focus</span></div>
+          <div style="display:flex;align-items:center;gap:14px"><div style="width:250px;height:54px;border-radius:999px;border:1px solid #B3261E;background:#fff;padding:0 20px;display:flex;align-items:center;font-size:16px;font-weight:500;box-shadow:0 0 0 4px #FBEAE8">Mika</div><span style="font-size:12px;font-weight:600;color:#B3261E">erreur · message sous le champ</span></div>
+          <div style="display:flex;align-items:center;gap:14px"><div style="width:250px;height:54px;border-radius:999px;border:1px solid #ECEEE8;background:#F4F5F2;padding:0 20px;display:flex;align-items:center;font-size:16px;font-weight:500;color:#9BA29A">Mika</div><span style="font-size:12px;color:#5A6066">désactivé</span></div>
+        </div>
+      </div>
+      <div style="flex:1;min-width:420px;display:flex;flex-direction:column;gap:16px">
+        <span style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5A6066">Champ numérique · nombre de Chats</span>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;align-items:center;gap:14px">
+            <div style="display:flex;align-items:center;gap:8px;border:1px solid #DFE2DB;border-radius:999px;background:#fff;padding:5px 6px">
+              <button type="button" style="width:42px;height:42px;border:none;border-radius:999px;background:#ECEEE8;color:#16191A;font:inherit;font-size:20px;font-weight:600;cursor:pointer;transition:background .12s cubic-bezier(.4,0,1,1)" style-hover="background:#DFE2DB">−</button>
+              <span style="min-width:44px;text-align:center;font-family:'Nunito',system-ui;font-size:20px;font-weight:800;font-variant-numeric:tabular-nums">2</span>
+              <button type="button" style="width:42px;height:42px;border:none;border-radius:999px;background:#ECEEE8;color:#16191A;font:inherit;font-size:20px;font-weight:600;cursor:pointer;transition:background .12s cubic-bezier(.4,0,1,1)" style-hover="background:#DFE2DB">+</button>
+            </div>
+            <span style="font-size:12px;color:#5A6066">hôte · 1 à 5 (joueurs − 1)</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:14px">
+            <div style="display:flex;align-items:center;gap:8px;border:1px solid #DFE2DB;border-radius:999px;background:#F4F5F2;padding:5px 6px">
+              <div style="width:42px;height:42px;border-radius:999px;background:#ECEEE8;color:#9BA29A;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:600">−</div>
+              <span style="min-width:44px;text-align:center;font-family:'Nunito',system-ui;font-size:20px;font-weight:800;color:#5A6066;font-variant-numeric:tabular-nums">2</span>
+              <div style="width:42px;height:42px;border-radius:999px;background:#ECEEE8;color:#9BA29A;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:600">+</div>
+            </div>
+            <span style="font-size:12px;color:#5A6066">lecture seule · vue joueur</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:14px">
+            <div style="display:flex;align-items:center;gap:8px;border:1px solid #0E7C66;border-radius:999px;background:#fff;padding:5px 6px;box-shadow:0 0 0 4px #E3F0EA">
+              <div style="width:42px;height:42px;border-radius:999px;background:#ECEEE8;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:600">−</div>
+              <span style="min-width:44px;text-align:center;font-family:'Nunito',system-ui;font-size:20px;font-weight:800;font-variant-numeric:tabular-nums">2</span>
+              <div style="width:42px;height:42px;border-radius:999px;background:#ECEEE8;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:600">+</div>
+            </div>
+            <span style="font-size:12px;color:#5A6066">focus clavier · ↑ ↓ modifient</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:28px;flex-wrap:wrap;border-top:1px solid #ECEEE8;padding-top:26px">
+      <div style="flex:1;min-width:480px;display:flex;flex-direction:column;gap:16px">
+        <span style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5A6066">Carte · surface, rayon 24, ombre-1</span>
+        <div style="background:#fff;border:1px solid #DFE2DB;border-radius:24px;padding:24px;box-shadow:0 1px 2px rgba(22,25,26,.05);display:flex;flex-direction:column;gap:10px">
+          <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700">Joueurs · 6 / 10</span>
+          <span style="font-size:15px;line-height:1.55;color:#5A6066">Contenu de la carte. Padding 24, titre en titre-3, texte en corps.</span>
+        </div>
+        <span style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5A6066;margin-top:8px">Carte de jeu · au repos, survol, sélectionnée</span>
+        <div style="display:flex;gap:16px;flex-wrap:wrap">
+          <div style="width:280px;background:#fff;border:1px solid #DFE2DB;border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:14px">
+            <div style="position:relative;width:44px;height:44px;border-radius:14px;background:#E2542B">
+              <div style="position:absolute;left:12px;top:11px;width:7px;height:7px;border-radius:2px;transform:rotate(45deg);background:#fff"></div>
+              <div style="position:absolute;right:12px;top:11px;width:7px;height:7px;border-radius:2px;transform:rotate(45deg);background:#fff"></div>
+              <div style="position:absolute;left:13px;top:16px;width:18px;height:18px;border-radius:999px;background:#fff"></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:5px">
+              <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:800">Cursor Tag</span>
+              <span style="font-size:13px;line-height:1.5;color:#5A6066">Un jeu du chat à la souris. Esquive, prends les portails.</span>
+            </div>
+            <span style="align-self:flex-start;font-size:12px;font-weight:600;background:#ECEEE8;border-radius:999px;padding:4px 8px">3 à 10 joueurs</span>
+          </div>
+          <div style="width:280px;background:#fff;border:1px solid #0E7C66;border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:14px;box-shadow:0 0 0 3px #E3F0EA">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between">
+              <div style="position:relative;width:44px;height:44px;border-radius:14px;background:#E2542B">
+                <div style="position:absolute;left:12px;top:11px;width:7px;height:7px;border-radius:2px;transform:rotate(45deg);background:#fff"></div>
+                <div style="position:absolute;right:12px;top:11px;width:7px;height:7px;border-radius:2px;transform:rotate(45deg);background:#fff"></div>
+                <div style="position:absolute;left:13px;top:16px;width:18px;height:18px;border-radius:999px;background:#fff"></div>
+              </div>
+              <span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#0A6653;background:#E3F0EA;border-radius:999px;padding:4px 8px"><span style="width:7px;height:7px;border-radius:999px;background:#0E7C66"></span>Choisi</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:5px">
+              <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:800">Cursor Tag</span>
+              <span style="font-size:13px;line-height:1.5;color:#5A6066">Un jeu du chat à la souris. Esquive, prends les portails.</span>
+            </div>
+            <span style="align-self:flex-start;font-size:12px;font-weight:600;background:#ECEEE8;border-radius:999px;padding:4px 8px">3 à 10 joueurs</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="flex:1;min-width:460px;display:flex;flex-direction:column;gap:16px">
+        <span style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5A6066">Badges</span>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <span style="font-size:12px;font-weight:600;color:#0A6653;background:#E3F0EA;border-radius:999px;padding:4px 8px">Hôte</span>
+          <span style="font-size:12px;font-weight:600;color:#16191A;background:#ECEEE8;border-radius:999px;padding:4px 8px">Toi</span>
+          <span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#5A6066;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:999px;padding:4px 8px"><span style="width:7px;height:7px;border-radius:999px;background:#9BA29A"></span>Déconnecté</span>
+          <span style="font-size:12px;font-weight:600;color:#5A6066;background:#F4F5F2;border-radius:999px;padding:4px 8px">Déconnecté</span>
+          <span style="font-size:12px;font-weight:600;color:#16191A;background:#FBE9E3;border-radius:999px;padding:4px 8px">Chat</span>
+          <span style="font-size:12px;font-weight:600;color:#fff;background:#16191A;border-radius:999px;padding:4px 8px">Manche 2/3</span>
+          <span style="font-size:12px;font-weight:600;color:#5A6066;background:#F7EEDC;border-radius:999px;padding:4px 8px">En attente</span>
+          <span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#0A6653;background:#E3F0EA;border-radius:999px;padding:4px 8px"><span style="width:7px;height:7px;border-radius:999px;background:#0E7C66"></span>Prêt</span>
+        </div>
+        <span style="font-size:12px;line-height:1.55;color:#5A6066">Tous à 12 / 600, marge intérieure 4 × 8. « Déconnecté » a deux variantes, choisies d'après le fond qui les porte : <strong style="font-weight:600;color:#16191A">à point</strong> (surface 1 + bordure) sur une ligne de joueur, elle-même posée sur surface 2 ; <strong style="font-weight:600;color:#16191A">plate</strong> (surface 2, sans bordure) sur une ligne de classement, posée sur du blanc.</span>
+
+        <span style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5A6066;margin-top:8px">Ligne de joueur · 10 lignes, pseudo jusqu'à 16 caractères</span>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #DFE2DB;border-radius:16px;padding:12px 16px">
+            <div style="width:26px;height:26px;flex:none;border-radius:999px;background:#FF5FB0;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14)"></div>
+            <span style="flex:1;min-width:0;font-size:15px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">ClementLeBoss123</span>
+            <span style="font-size:12px;font-weight:600;color:#0A6653;background:#E3F0EA;border-radius:999px;padding:4px 8px">Hôte</span>
+            <span style="font-size:12px;font-weight:600;color:#16191A;background:#ECEEE8;border-radius:999px;padding:4px 8px">Toi</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;background:#ECEEE8;border:1px solid #C7CCC0;border-radius:16px;padding:12px 16px">
+            <div style="width:26px;height:26px;flex:none;border-radius:999px;background:#2BA8FF;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14)"></div>
+            <span style="flex:1;min-width:0;font-size:15px;font-weight:600">Lulu</span>
+            <span style="font-size:12px;color:#5A6066">survol</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;background:#F4F5F2;border:1px dashed #C7CCC0;border-radius:16px;padding:12px 16px">
+            <div style="width:26px;height:26px;flex:none;border-radius:999px;background:#FF9330;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);opacity:.35"></div>
+            <span style="flex:1;min-width:0;font-size:15px;font-weight:600;color:#5A6066">Nono</span>
+            <span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#5A6066;background:#fff;border:1px solid #DFE2DB;border-radius:999px;padding:4px 8px"><span style="width:7px;height:7px;border-radius:999px;background:#9BA29A"></span>Déconnecté</span>
+          </div>
+        </div>
+
+        <span style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5A6066;margin-top:8px">Notifications · ombre-3, entrée « ample », sortie après 4 s</span>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #DFE2DB;border-radius:16px;padding:14px 18px;box-shadow:0 2px 6px rgba(22,25,26,.06),0 24px 48px -24px rgba(22,25,26,.22)">
+            <span style="width:9px;height:9px;flex:none;border-radius:999px;background:#0E7C66"></span>
+            <span style="flex:1;min-width:0;font-size:14px;font-weight:500">Lien copié, envoie-le à tes potes !</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #DFE2DB;border-radius:16px;padding:14px 18px;box-shadow:0 2px 6px rgba(22,25,26,.06),0 24px 48px -24px rgba(22,25,26,.22)">
+            <span style="width:9px;height:9px;flex:none;border-radius:999px;background:#B3261E"></span>
+            <span style="flex:1;min-width:0;font-size:14px;font-weight:500;color:#16191A">La room est pleine : 10 joueurs, c'est le max.</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #DFE2DB;border-radius:16px;padding:14px 18px;box-shadow:0 2px 6px rgba(22,25,26,.06),0 24px 48px -24px rgba(22,25,26,.22)">
+            <span style="width:9px;height:9px;flex:none;border-radius:999px;background:#7A5400"></span>
+            <span style="flex:1;min-width:0;font-size:14px;font-weight:500;color:#16191A">Connexion perdue, reconnexion…</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:#FFFFFF;border:1px solid #DFE2DB;border-radius:24px;padding:40px;display:flex;flex-direction:column;gap:26px">
+    <div style="display:flex;align-items:baseline;gap:14px">
+      <h2 style="margin:0;font-family:'Nunito',system-ui;font-size:28px;font-weight:800;letter-spacing:-.02em">Éléments de jeu</h2>
+      <span style="font-size:14px;color:#5A6066">Curseurs, murs et portails sont définis en coordonnées 1600 × 900 (curseur r14, portail r36) et suivent la taille d'affichage de l'arène. Les étiquettes de pseudo restent à 12 px à l'écran, quelle que soit la taille de l'arène. L'arène reste sombre même quand le site passera en thème sombre. Les portails sont neutres et se distinguent par la forme de l'anneau et leur lettre, jamais par une teinte de joueur.</span>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <span style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5A6066">Arène · fond #1E2422, murs #333B37 — sombre en permanence</span>
+      <div style="display:flex;align-items:center;gap:36px;flex-wrap:wrap;background:#1E2422;border:1px solid #333B37;border-radius:20px;padding:30px 34px">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="width:28px;height:28px;border-radius:999px;background:#2BA8FF;box-shadow:0 0 0 2.5px rgba(255,255,255,.3)"></div>
+            <span style="font-size:12px;font-weight:600;color:#F2F5F1;background:rgba(0,0,0,.45);border-radius:6px;padding:3px 8px">Lulu</span>
+          </div>
+          <span style="font-size:12px;color:#9BA6A0">Coureur</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="position:relative;width:28px;height:28px;border-radius:999px;background:#FF5FB0;box-shadow:0 0 0 4px rgba(255,95,176,.3),0 0 0 9px rgba(255,95,176,.14)">
+              <div style="position:absolute;left:1px;top:-6px;width:9px;height:9px;border-radius:2px;transform:rotate(45deg);background:#FF5FB0"></div>
+              <div style="position:absolute;right:1px;top:-6px;width:9px;height:9px;border-radius:2px;transform:rotate(45deg);background:#FF5FB0"></div>
+            </div>
+            <span style="font-size:12px;font-weight:600;color:#F2F5F1;background:rgba(0,0,0,.45);border-radius:6px;padding:3px 8px">Mika <span style="color:#9BA6A0">· chat</span></span>
+          </div>
+          <span style="font-size:12px;color:#9BA6A0">Chat · oreilles + halo</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="position:relative;width:28px;height:28px;border-radius:999px;background:#A3E635;box-shadow:0 0 0 3px rgba(142,197,232,.4),0 0 0 7px rgba(142,197,232,.18)">
+              <div style="position:absolute;inset:0;border-radius:999px;background:rgba(142,197,232,.9);display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:14px;font-weight:800;color:#08324A;animation:gpFreeze 1.2s ease-in-out infinite">3</div>
+            </div>
+            <span style="font-size:12px;font-weight:600;color:#F2F5F1;background:rgba(0,0,0,.45);border-radius:6px;padding:3px 8px">Nono <span style="color:#9BA6A0">· gelé</span></span>
+          </div>
+          <span style="font-size:12px;color:#9BA6A0">Gelé · décompte 3 s</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+          <div style="position:relative;width:72px;height:72px">
+            <div style="position:absolute;inset:0;border-radius:999px;border:4px solid #C9D2CC;box-sizing:border-box;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:22px;font-weight:800;color:#C9D2CC">A</div>
+            <div style="position:absolute;inset:8px;border-radius:999px;border:2px solid rgba(201,210,204,.45);box-sizing:border-box;animation:gpPortal 1.6s cubic-bezier(.16,1,.3,1) infinite"></div>
+          </div>
+          <span style="font-size:12px;color:#9BA6A0">Portail · paire A, anneau plein</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+          <div style="position:relative;width:72px;height:72px">
+            <div style="position:absolute;inset:0;border-radius:999px;border:4px dashed #C9D2CC;box-sizing:border-box;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:22px;font-weight:800;color:#C9D2CC">B</div>
+            <div style="position:absolute;inset:8px;border-radius:999px;border:2px dashed rgba(201,210,204,.45);box-sizing:border-box;animation:gpPortal 1.6s cubic-bezier(.16,1,.3,1) infinite"></div>
+          </div>
+          <span style="font-size:12px;color:#9BA6A0">Portail · paire B, anneau pointillé</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+          <div style="width:120px;height:56px;border-radius:8px;background:#333B37"></div>
+          <span style="font-size:12px;color:#9BA6A0">Mur · rayon 8</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div style="background:#FFFFFF;border:1px solid #DFE2DB;border-radius:24px;padding:40px;display:flex;flex-direction:column;gap:32px">
+    <div style="display:flex;align-items:baseline;gap:14px">
+      <h2 style="margin:0;font-family:'Nunito',system-ui;font-size:28px;font-weight:800;letter-spacing:-.02em">Partie et résultats</h2>
+      <span style="font-size:14px;color:#5A6066">Composants propres à l'écran de jeu, à la préparation et aux résultats. Dimensions données pour 1440 × 900 ; en 1366 × 768 les lignes passent à 30 px et les marches à 42 % de leur hauteur.</span>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <span style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5A6066">Bande d'informations · pilule pleine largeur, 54 px, surface 1, bordure, rayon pilule</span>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:32px;background:#F4F5F2;border:1px solid #DFE2DB;border-radius:999px;padding:12px 28px">
+          <span style="font-size:12px;font-weight:600;line-height:1.3;letter-spacing:.06em;text-transform:uppercase;color:#5A6066">Manche 2 / 3</span>
+          <span style="font-family:'Nunito',system-ui;font-size:40px;font-weight:800;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums">0:47</span>
+          <div style="flex:1;min-width:0"></div>
+          <span style="display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:600;line-height:1.4;color:#0A6653;background:#E3F0EA;border-radius:999px;padding:8px 16px"><span style="width:9px;height:9px;border-radius:999px;background:#0E7C66"></span>Coureur</span>
+          <div style="display:flex;align-items:baseline;gap:8px">
+            <span style="font-size:12px;font-weight:600;line-height:1.3;letter-spacing:.06em;text-transform:uppercase;color:#5A6066">Ton score</span>
+            <span style="font-family:'Nunito',system-ui;font-size:28px;font-weight:800;line-height:1.15;letter-spacing:-.02em;font-variant-numeric:tabular-nums">42 s</span>
+          </div>
+        </div>
+        <span style="font-size:12px;color:#5A6066">variante partie · pastille de rôle à droite du vide, trois états documentés plus bas ; le chrono sous 10 s passe en avertissement</span>
+        <div style="display:flex;align-items:center;gap:32px;background:#F4F5F2;border:1px solid #DFE2DB;border-radius:999px;padding:12px 28px">
+          <span style="font-size:12px;font-weight:600;line-height:1.3;letter-spacing:.06em;text-transform:uppercase;color:#5A6066">Manche 1 / 3</span>
+          <span style="font-size:15px;font-weight:600;line-height:1.4;color:#5A6066">Départ automatique dans 12 s</span>
+          <div style="flex:1;min-width:0"></div>
+        </div>
+        <span style="font-size:12px;color:#5A6066">variante préparation · pas de chrono de manche ; le score personnel n'apparaît qu'à partir de la manche 2</span>
+        <div style="display:flex;align-items:center;gap:32px;background:#F4F5F2;border:1px solid #DFE2DB;border-radius:999px;padding:12px 28px">
+          <span style="font-size:12px;font-weight:600;line-height:1.3;letter-spacing:.06em;text-transform:uppercase;color:#5A6066">Manche 2 / 3</span>
+          <span style="font-family:'Nunito',system-ui;font-size:40px;font-weight:800;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums">0:47</span>
+          <div style="flex:1;min-width:0"></div>
+          <span style="font-size:12px;font-weight:600;background:#ECEEE8;border-radius:999px;padding:4px 8px">Spectateur</span>
+          <span style="font-size:15px;font-weight:600;line-height:1.4;color:#5A6066">Tu joueras à la prochaine partie</span>
+        </div>
+        <span style="font-size:12px;color:#5A6066">variante spectateur · badge neutre au gabarit commun, ni rôle ni score personnel</span>
+        <div style="display:flex;flex-direction:column;gap:12px;border-top:1px solid #ECEEE8;padding-top:20px">
+          <span style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5A6066">Pastille de rôle · 8 × 16, point de 9 px, corps 15 / 600 — trois états, un seul visible à la fois</span>
+          <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start">
+          <div style="display:flex;flex-direction:column;gap:9px;align-items:flex-start"><span style="display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:600;line-height:1.4;color:#0A6653;background:#E3F0EA;border-radius:999px;padding:8px 16px"><span style="width:9px;height:9px;border-radius:999px;background:#0E7C66"></span>Coureur</span><span style="font-size:12px;line-height:1.5;color:#5A6066">Coureur · accent doux, point accent — état par défaut, ton score monte</span></div>
+          <div style="display:flex;flex-direction:column;gap:9px;align-items:flex-start"><span style="display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:600;line-height:1.4;color:#16191A;background:#FBE9E3;border-radius:999px;padding:8px 16px"><span style="width:9px;height:9px;border-radius:999px;background:#E2542B"></span>Chat</span><span style="font-size:12px;line-height:1.5;color:#5A6066">Chat · jeu doux, point jeu — tu poursuis, ton score est arrêté</span></div>
+          <div style="display:flex;flex-direction:column;gap:9px;align-items:flex-start"><span style="display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:600;line-height:1.4;color:#16191A;background:#FBE9E3;border-radius:999px;padding:8px 16px"><span style="width:9px;height:9px;border-radius:999px;background:#08324A"></span>Gelé 2 s</span><span style="font-size:12px;line-height:1.5;color:#5A6066">Gelé · même fond que le Chat, point gel encre, décompte dans le libellé</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:16px;border-top:1px solid #ECEEE8;padding-top:26px">
+      <span style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5A6066">Lignes de classement · 38 px, rayon 16, bordure ; la ligne du joueur passe en accent doux</span>
+      <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start">
+        <div style="display:flex;flex-direction:column;gap:9px;width:330px">
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;align-items:center;gap:10px;border:1px solid #DFE2DB;border-radius:16px;padding:0 12px;height:38px;box-sizing:border-box;background:#E3F0EA">
+              <div style="width:18px;height:18px;flex:none;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:#2BA8FF"></div>
+              <span style="flex:1;min-width:0;font-size:15px;font-weight:600;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">ClementLeBoss123</span>
+              <span style="flex:none;font-size:13px;font-weight:500;line-height:1.45;font-variant-numeric:tabular-nums">58 s</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;border:1px solid #DFE2DB;border-radius:16px;padding:0 12px;height:38px;box-sizing:border-box;background:#FFFFFF">
+              <div style="width:18px;height:18px;flex:none;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:#FF5FB0"></div>
+              <span style="flex:1;min-width:0;font-size:15px;font-weight:600;line-height:1.4">Mika</span>
+              <span style="flex:none;font-size:13px;font-weight:500;line-height:1.45;font-variant-numeric:tabular-nums">71 s</span>
+              <span style="flex:none;font-size:12px;font-weight:600;color:#16191A;background:#FBE9E3;border-radius:999px;padding:4px 8px">Chat</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;border:1px solid #DFE2DB;border-radius:16px;padding:0 12px;height:38px;box-sizing:border-box;background:#FFFFFF">
+              <div style="width:18px;height:18px;flex:none;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:#F5D131;opacity:.35"></div>
+              <span style="flex:1;min-width:0;font-size:15px;font-weight:600;line-height:1.4;color:#5A6066">Nono</span>
+              <span style="flex:none;font-size:13px;font-weight:500;line-height:1.45;font-variant-numeric:tabular-nums;color:#5A6066">21 s</span>
+              <span style="flex:none;font-size:12px;font-weight:600;color:#5A6066;background:#F4F5F2;border-radius:999px;padding:4px 8px">Déconnecté</span>
+            </div>
+          </div>
+          <span style="font-size:12px;color:#5A6066">classement en direct · pastille, pseudo coupé en « … », score ; badge seulement pour un Chat ou un déconnecté, jamais pour un Coureur. Les ex æquo sont rangés par ordre alphabétique.</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:9px;width:330px">
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;align-items:center;gap:10px;border:1px solid #DFE2DB;border-radius:16px;padding:0 12px;height:38px;box-sizing:border-box;background:#FFFFFF">
+              <span style="width:20px;flex:none;font-size:13px;font-weight:600;line-height:1.45;font-variant-numeric:tabular-nums">1</span>
+              <div style="width:18px;height:18px;flex:none;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:#FF5FB0"></div>
+              <span style="flex:1;min-width:0;font-size:15px;font-weight:600;line-height:1.4">Mika</span>
+              <span style="flex:none;font-size:13px;font-weight:500;line-height:1.45;font-variant-numeric:tabular-nums">71 s</span>
+              <span style="flex:none;width:34px;text-align:right;font-size:13px;font-weight:600;line-height:1.45;font-variant-numeric:tabular-nums;color:#0A6653">+5</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;border:1px solid #DFE2DB;border-radius:16px;padding:0 12px;height:38px;box-sizing:border-box;background:#E3F0EA">
+              <span style="width:20px;flex:none;font-size:13px;font-weight:600;line-height:1.45;font-variant-numeric:tabular-nums">2</span>
+              <div style="width:18px;height:18px;flex:none;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:#2BA8FF"></div>
+              <span style="flex:1;min-width:0;font-size:15px;font-weight:600;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">ClementLeBoss123</span>
+              <span style="flex:none;font-size:13px;font-weight:500;line-height:1.45;font-variant-numeric:tabular-nums">58 s</span>
+              <span style="flex:none;width:34px;text-align:right;font-size:13px;font-weight:600;line-height:1.45;font-variant-numeric:tabular-nums;color:#0A6653">+4</span>
+            </div>
+          </div>
+          <span style="font-size:12px;color:#5A6066">résultats de partie · place, pastille, pseudo, score, points gagnés = joueurs classés − place</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:9px;width:330px">
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;align-items:center;gap:10px;border:1px solid #DFE2DB;border-radius:16px;padding:0 12px;height:38px;box-sizing:border-box;background:#FFFFFF">
+              <span style="width:20px;flex:none;font-size:13px;font-weight:600;line-height:1.45;font-variant-numeric:tabular-nums">1</span>
+              <span style="width:14px;flex:none;display:flex;align-items:center;justify-content:center;color:#0E7C66">↑</span>
+              <div style="width:18px;height:18px;flex:none;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:#3DDC97"></div>
+              <span style="flex:1;min-width:0;font-size:15px;font-weight:600;line-height:1.4">Lulu</span>
+              <span style="flex:none;font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em;font-variant-numeric:tabular-nums">12</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;border:1px solid #DFE2DB;border-radius:16px;padding:0 12px;height:38px;box-sizing:border-box;background:#FFFFFF">
+              <span style="width:20px;flex:none;font-size:13px;font-weight:600;line-height:1.45;font-variant-numeric:tabular-nums">2</span>
+              <span style="width:14px;flex:none;display:flex;align-items:center;justify-content:center;color:#5A6066">↓</span>
+              <div style="width:18px;height:18px;flex:none;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:#FF5FB0"></div>
+              <span style="flex:1;min-width:0;font-size:15px;font-weight:600;line-height:1.4">Mika</span>
+              <span style="flex:none;font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em;font-variant-numeric:tabular-nums">11</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;border:1px solid #DFE2DB;border-radius:16px;padding:0 12px;height:38px;box-sizing:border-box;background:#FFFFFF">
+              <span style="width:20px;flex:none;font-size:13px;font-weight:600;line-height:1.45;font-variant-numeric:tabular-nums">3</span>
+              <span style="width:14px;flex:none;display:flex;align-items:center;justify-content:center;color:#5A6066">–</span>
+              <div style="width:18px;height:18px;flex:none;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:#C77DFF"></div>
+              <span style="flex:1;min-width:0;font-size:15px;font-weight:600;line-height:1.4">Tibo</span>
+              <span style="flex:none;font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em;font-variant-numeric:tabular-nums">7</span>
+            </div>
+          </div>
+          <span style="font-size:12px;color:#5A6066">soirée · flèche déduite du classement d'avant-partie : ↑ succès, ↓ texte secondaire, tiret si la place n'a pas bougé</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:16px;border-top:1px solid #ECEEE8;padding-top:26px">
+      <span style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5A6066">Podium · marches 152 / 138 px de large, 132 / 104 / 84 px de haut, surface 2, rayon 16 en haut</span>
+      <div style="display:flex;gap:40px;flex-wrap:wrap;align-items:flex-start">
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <div style="display:flex;align-items:flex-end;justify-content:center;gap:12px">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:10px;order:1">
+              <div style="width:138px;display:flex;flex-direction:column;align-items:center;gap:5px">
+                <div style="width:28px;height:28px;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:#2BA8FF"></div>
+                <span style="max-width:100%;font-size:15px;font-weight:600;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">ClementLeBoss123</span>
+                <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em;font-variant-numeric:tabular-nums">58 s</span>
+                <span style="font-size:12px;font-weight:600;color:#0A6653;background:#E3F0EA;border-radius:999px;padding:4px 8px">+4</span>
+              </div>
+              <div style="width:138px;height:104px;background:#ECEEE8;border-radius:16px 16px 0 0;display:flex;align-items:flex-start;justify-content:center;padding-top:10px;box-sizing:border-box"><span style="font-family:'Nunito',system-ui;font-size:28px;font-weight:800;line-height:1.15;letter-spacing:-.02em;color:#5A6066">2</span></div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:10px;order:2">
+              <div style="width:152px;display:flex;flex-direction:column;align-items:center;gap:5px">
+                <div style="width:28px;height:28px;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:#FF5FB0"></div>
+                <span style="font-size:15px;font-weight:600;line-height:1.4">Mika</span>
+                <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em;font-variant-numeric:tabular-nums">71 s</span>
+                <span style="font-size:12px;font-weight:600;color:#0A6653;background:#E3F0EA;border-radius:999px;padding:4px 8px">+5</span>
+              </div>
+              <div style="width:152px;height:132px;background:#ECEEE8;border-radius:16px 16px 0 0;display:flex;align-items:flex-start;justify-content:center;padding-top:10px;box-sizing:border-box"><span style="font-family:'Nunito',system-ui;font-size:28px;font-weight:800;line-height:1.15;letter-spacing:-.02em;color:#5A6066">1</span></div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:10px;order:3">
+              <div style="width:138px;display:flex;flex-direction:column;align-items:center;gap:5px">
+                <div style="width:28px;height:28px;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:#3DDC97"></div>
+                <span style="font-size:15px;font-weight:600;line-height:1.4">Lulu</span>
+                <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em;font-variant-numeric:tabular-nums">54 s</span>
+                <span style="font-size:12px;font-weight:600;color:#0A6653;background:#E3F0EA;border-radius:999px;padding:4px 8px">+3</span>
+              </div>
+              <div style="width:138px;height:84px;background:#ECEEE8;border-radius:16px 16px 0 0;display:flex;align-items:flex-start;justify-content:center;padding-top:10px;box-sizing:border-box"><span style="font-family:'Nunito',system-ui;font-size:28px;font-weight:800;line-height:1.15;letter-spacing:-.02em;color:#5A6066">3</span></div>
+            </div>
+          </div>
+          <span style="font-size:12px;color:#5A6066">normal · la première place est centrée et la plus haute</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <div style="display:flex;align-items:flex-end;justify-content:center;gap:12px">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:10px;order:2">
+              <div style="display:flex;align-items:flex-end;gap:10px">
+                <div style="width:138px;display:flex;flex-direction:column;align-items:center;gap:5px">
+                  <div style="width:28px;height:28px;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:#2BA8FF"></div>
+                  <span style="max-width:100%;font-size:15px;font-weight:600;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">ClementLeBoss123</span>
+                  <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em;font-variant-numeric:tabular-nums">71 s</span>
+                  <span style="font-size:12px;font-weight:600;color:#0A6653;background:#E3F0EA;border-radius:999px;padding:4px 8px">+5</span>
+                </div>
+                <div style="width:138px;display:flex;flex-direction:column;align-items:center;gap:5px">
+                  <div style="width:28px;height:28px;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:#3DDC97"></div>
+                  <span style="font-size:15px;font-weight:600;line-height:1.4">Lulu</span>
+                  <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em;font-variant-numeric:tabular-nums">71 s</span>
+                  <span style="font-size:12px;font-weight:600;color:#0A6653;background:#E3F0EA;border-radius:999px;padding:4px 8px">+5</span>
+                </div>
+              </div>
+              <div style="width:290px;height:132px;background:#ECEEE8;border-radius:16px 16px 0 0;display:flex;align-items:flex-start;justify-content:center;padding-top:10px;box-sizing:border-box"><span style="font-family:'Nunito',system-ui;font-size:28px;font-weight:800;line-height:1.15;letter-spacing:-.02em;color:#5A6066">1</span></div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:10px;order:3">
+              <div style="width:138px;display:flex;flex-direction:column;align-items:center;gap:5px">
+                <div style="width:28px;height:28px;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:#FF5FB0"></div>
+                <span style="font-size:15px;font-weight:600;line-height:1.4">Mika</span>
+                <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em;font-variant-numeric:tabular-nums">62 s</span>
+                <span style="font-size:12px;font-weight:600;color:#0A6653;background:#E3F0EA;border-radius:999px;padding:4px 8px">+3</span>
+              </div>
+              <div style="width:138px;height:84px;background:#ECEEE8;border-radius:16px 16px 0 0;display:flex;align-items:flex-start;justify-content:center;padding-top:10px;box-sizing:border-box"><span style="font-family:'Nunito',system-ui;font-size:28px;font-weight:800;line-height:1.15;letter-spacing:-.02em;color:#5A6066">3</span></div>
+            </div>
+          </div>
+          <span style="font-size:12px;color:#5A6066">égalité · marche partagée, mêmes points, et la place suivante saute à 3 : personne n'est 2e</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:16px;border-top:1px solid #ECEEE8;padding-top:26px">
+      <span style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5A6066">Boîte de confirmation · 520 px, rayon 24, ombre 3, sur « Voile de fenêtre »</span>
+      <div style="display:flex;gap:24px;flex-wrap:wrap">
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <div style="width:560px;box-sizing:border-box;background:rgba(22,25,26,.55);border-radius:24px;padding:20px;display:flex;align-items:center;justify-content:center">
+            <div style="width:520px;box-sizing:border-box;background:#FFFFFF;border-radius:24px;padding:40px;display:flex;flex-direction:column;gap:24px;box-shadow:0 2px 6px rgba(22,25,26,.06),0 24px 48px -24px rgba(22,25,26,.22)">
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <span style="font-family:'Nunito',system-ui;font-size:28px;font-weight:800;line-height:1.15;letter-spacing:-.02em">Quitter la room ?</span>
+                <span style="font-size:15px;line-height:1.55;color:#5A6066">Tu pourras revenir avec le lien, mais ton score de la soirée repartira de zéro.</span>
+              </div>
+              <div style="display:flex;gap:12px">
+                <div style="flex:1;height:54px;box-sizing:border-box;border:1px solid #DFE2DB;border-radius:999px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600">Rester</div>
+                <div style="flex:1;height:54px;border-radius:999px;background:#B3261E;color:#FFFFFF;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600">Quitter</div>
+              </div>
+            </div>
+          </div>
+          <span style="font-size:12px;color:#5A6066">variante joueur · « Rester » reste l'issue par défaut</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <div style="width:560px;box-sizing:border-box;background:rgba(22,25,26,.55);border-radius:24px;padding:20px;display:flex;align-items:center;justify-content:center">
+            <div style="width:520px;box-sizing:border-box;background:#FFFFFF;border-radius:24px;padding:40px;display:flex;flex-direction:column;gap:24px;box-shadow:0 2px 6px rgba(22,25,26,.06),0 24px 48px -24px rgba(22,25,26,.22)">
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <span style="font-family:'Nunito',system-ui;font-size:28px;font-weight:800;line-height:1.15;letter-spacing:-.02em">Quitter la room ?</span>
+                <span style="font-size:15px;line-height:1.55;color:#5A6066">Tu pourras revenir avec le lien, mais ton score de la soirée repartira de zéro. ClementLeBoss123 deviendra l'hôte.</span>
+              </div>
+              <div style="display:flex;gap:12px">
+                <div style="flex:1;height:54px;box-sizing:border-box;border:1px solid #DFE2DB;border-radius:999px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600">Rester</div>
+                <div style="flex:1;height:54px;border-radius:999px;background:#B3261E;color:#FFFFFF;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600">Quitter</div>
+              </div>
+            </div>
+          </div>
+          <span style="font-size:12px;color:#5A6066">variante hôte · une phrase de plus : le premier joueur arrivé reprend la room</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:16px;border-top:1px solid #ECEEE8;padding-top:26px">
+      <span style="font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#5A6066">Motif « voile d'arène » · le seul moyen de poser un texte sur l'arène</span>
+      <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start">
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <div style="position:relative;width:520px;height:292px;border-radius:24px;background:#1E2422;overflow:hidden">
+            <div style="position:absolute;left:46%;top:43%;width:8%;height:13%;border-radius:8px;background:#333B37"></div>
+            <div style="position:absolute;left:18%;top:22%;width:19%;height:4%;border-radius:8px;background:#333B37"></div>
+            <div style="position:absolute;left:62%;top:73%;width:19%;height:4%;border-radius:8px;background:#333B37"></div>
+            <div style="position:absolute;left:8%;top:60%;display:flex;align-items:center;gap:6px">
+              <div style="width:20px;height:20px;border-radius:999px;background:#2BA8FF;box-shadow:0 0 0 2.5px rgba(255,255,255,.3)"></div>
+              <span style="font-size:12px;font-weight:600;color:#F2F5F1;background:rgba(0,0,0,.45);border-radius:6px;padding:3px 8px">Nova</span>
+            </div>
+            <div style="position:absolute;inset:0;background:rgba(22,25,26,.72);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px">
+              <span style="font-size:17px;line-height:1.6;color:#F2F5F1;text-align:center">3 manches de 60 s · 2 Chats · gel de 3 s</span>
+              <div style="height:56px;border-radius:999px;background:#0E7C66;color:#FFFFFF;padding:0 34px;display:flex;align-items:center;font-size:17px;font-weight:600">Je suis prêt</div>
+              <span style="font-size:13px;font-weight:500;line-height:1.45;color:#9BA6A0">Clique pour capturer ta souris</span>
+            </div>
+          </div>
+          <span style="font-size:12px;color:#5A6066">Le voile couvre toute l'arène et rien d'autre ; le contenu se centre au-dessus, sans assombrissement. Jamais de panneau posé derrière un texte : l'arène doit rester lisible d'un bord à l'autre.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;showHex&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Planche&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    const hex = this.props.showHex ?? true;
+    const role = (name, val, usage) => ({ name, hex: val, code: hex ? val : "", usage });
+    const pl = (id, name, val) => ({ id, name, hex: val, code: hex ? val : "" });
+    return {
+      roles: [
+        role("Fond", "#F4F5F2", "fond d'application"),
+        role("Surface", "#FFFFFF", "cartes, champs"),
+        role("Surface 2", "#ECEEE8", "lignes, boutons doux"),
+        role("Texte", "#16191A", "titres et texte courant"),
+        role("Texte secondaire", "#5A6066", "aides, légendes — 5,9:1"),
+        role("Texte désactivé", "#9BA29A", "libellés inactifs, jamais porteur d'info"),
+        role("Bordure", "#DFE2DB", "contour au repos"),
+        role("Bordure forte", "#C7CCC0", "survol, séparateur marqué"),
+        role("Accent", "#0E7C66", "bouton principal, liens, actif — 5,1:1 sur blanc"),
+        role("Accent survol", "#0A6653", "état pressé, et encre sur accent doux — 5,8:1"),
+        role("Accent doux", "#E3F0EA", "fond de badge, de bouton doux et anneau de focus"),
+        role("Accent doux survol", "#D3E8DF", "survol du bouton doux"),
+        role("Succès", "#0E7C66", "reprend l'accent : pas de second vert"),
+        role("Avertissement", "#7A5400", "reconnexion, attente — 5,9:1 sur fond et sur avertissement doux"),
+        role("Avertissement doux", "#F7EEDC", "fond d'avertissement"),
+        role("Erreur", "#B3261E", "pseudo pris, room pleine — 6,3:1"),
+        role("Erreur doux", "#FBEAE8", "fond d'erreur"),
+        role("Jeu · Cursor Tag", "#E2542B", "icône et identité du jeu, jamais dans l'arène"),
+        role("Jeu doux", "#FBE9E3", "badge Chat"),
+        role("Arène fond", "#1E2422", "toujours sombre, quel que soit le thème du site"),
+        role("Arène mur", "#333B37", "obstacles de l'arène"),
+        role("Arène voile", "rgba(22,25,26,.72)", "couvre toute l'arène quand un texte ou un bouton s'y pose : l'arène reste visible, assombrie, et le contenu passe au-dessus sans être assombri"),
+        role("Voile de fenêtre", "rgba(22,25,26,.55)", "fond d'une boîte de confirmation posée sur un écran entier — jamais sur l'arène"),
+        role("Arène étiquette", "rgba(0,0,0,.45)", "fond des étiquettes de pseudo sur l'arène"),
+        role("Gel remplissage", "rgba(142,197,232,.9)", "disque du curseur gelé, par-dessus la couleur du joueur"),
+        role("Gel anneau", "rgba(142,197,232,.4)", "anneau intérieur du gel"),
+        role("Gel halo", "rgba(142,197,232,.18)", "halo extérieur du gel"),
+        role("Gel encre", "#08324A", "décompte du gel — 8,1:1 sur le remplissage"),
+        role("Arène texte", "#F2F5F1", "pseudos sur l'arène — 12,4:1 sur le fond d'arène"),
+        role("Arène texte secondaire", "#9BA6A0", "mention « chat » sur l'arène — 5,1:1"),
+        role("Portail", "#C9D2CC", "neutre : aucune couleur de joueur — A plein, B pointillé")
+      ],
+      players: [
+        pl("c1", "rouge", "#FF4D4D"),
+        pl("c2", "rose", "#FF5FB0"),
+        pl("c3", "violet", "#C77DFF"),
+        pl("c4", "indigo", "#7C8CFF"),
+        pl("c5", "bleu", "#2BA8FF"),
+        pl("c6", "cyan", "#22D3EE"),
+        pl("c7", "menthe", "#3DDC97"),
+        pl("c8", "lime", "#A3E635"),
+        pl("c9", "jaune", "#F5D131"),
+        pl("c10", "orange", "#FF9330")
+      ],
+      paletteRef: [
+        { hex: "#FF4D4D", par: "Sam" }, { hex: "#FF5FB0", par: "Mika" }, { hex: "#C77DFF", par: "Tibo" },
+        { hex: "#7C8CFF", par: null }, { hex: "#2BA8FF", par: "ClementLeBoss123" }, { hex: "#22D3EE", par: null },
+        { hex: "#3DDC97", par: "Lulu", mienne: true }, { hex: "#A3E635", par: null }, { hex: "#F5D131", par: "Nono" }, { hex: "#FF9330", par: null }
+      ].map((c) => ({
+        hex: c.hex,
+        estPrise: !!c.par && !c.mienne,
+        estMienne: !!c.mienne,
+        titre: c.mienne ? "Ta couleur" : c.par ? "Prise par " + c.par : "Libre",
+        ring: c.mienne ? "inset 0 0 0 1px rgba(22,25,26,.14),0 0 0 2px #fff,0 0 0 4px #0E7C66" : "inset 0 0 0 1px rgba(22,25,26,.14)",
+        curseur: c.par && !c.mienne ? "not-allowed" : "pointer"
+      })),
+      spacing: [
+        { name: "esp-1 · 4", px: 4 },
+        { name: "esp-2 · 8", px: 8 },
+        { name: "esp-3 · 12", px: 12 },
+        { name: "esp-4 · 16", px: 16 },
+        { name: "esp-5 · 24", px: 24 },
+        { name: "esp-6 · 32", px: 32 },
+        { name: "esp-7 · 40", px: 40 },
+        { name: "esp-8 · 56", px: 56 },
+        { name: "esp-9 · 72", px: 72 }
+      ],
+      motion: [
+        { name: "rapide", dur: "120 ms", curve: "cubic-bezier(.4,0,1,1)", usage: "survol, pression, bascule" },
+        { name: "standard", dur: "180 ms", curve: "cubic-bezier(.2,.8,.3,1)", usage: "apparition de carte, badge" },
+        { name: "ample", dur: "280 ms", curve: "cubic-bezier(.16,1,.3,1)", usage: "overlay, panneau, notification" },
+        { name: "célébration", dur: "600 ms", curve: "cubic-bezier(.34,1.3,.5,1)", usage: "podium, confettis (léger rebond)" },
+        { name: "boucle portail", dur: "1,6 s", curve: "cubic-bezier(.16,1,.3,1) infinite", usage: "anneau de portail, halo du Chat" },
+        { name: "clignotement d'attente", dur: "1,4 s", curve: "ease-in-out infinite", usage: "point d'attente · réduit : point fixe" },
+        { name: "illumination", dur: "1,2 s", curve: "cubic-bezier(.16,1,.3,1) 1", usage: "valeur de réglage modifiée · réduit : fond 1,2 s sans transition" },
+        { name: "confettis", dur: "600 ms", curve: "cubic-bezier(.34,1.3,.5,1) both", usage: "30 éclats aux couleurs des joueurs, une seule passe à l'arrivée sur les résultats · réduit : coupés" }
+      ]
+    };
+  }
+}
+
+</script>
+</body>
+</html>

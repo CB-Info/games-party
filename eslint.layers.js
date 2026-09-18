@@ -117,6 +117,11 @@ export const layerRules = [
     rules: deny(NO_CLIENT, NO_PAGES),
   },
   {
+    name: "layers/assets",
+    files: ["src/client/assets/**"],
+    rules: deny(NO_SERVER, NO_PAGES, NO_SERVICES, NO_ENGINE, NO_FEATURES),
+  },
+  {
     name: "layers/client-app",
     files: ["src/client/main.tsx", "src/client/app/**"],
     rules: deny(NO_SERVER, NO_SERVICES, NO_ENGINE),

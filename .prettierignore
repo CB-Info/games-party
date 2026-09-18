@@ -2,3 +2,5 @@ dist/
 coverage/
 package-lock.json
 *.md
+# Reference material shipped with the maquettes, kept exactly as generated.
+docs/

@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  body{margin:0;background:#E7E9E3;color:#16191A;-webkit-font-smoothing:antialiased;font-family:'Work Sans',system-ui,sans-serif}
+  a{color:#0A6653;text-decoration:none}
+  a:hover{color:#084F40;text-decoration:underline}
+  @keyframes gpFreeze{0%,100%{opacity:.75}50%{opacity:1}}
+  @keyframes gpPortal{0%{transform:scale(.9);opacity:.55}100%{transform:scale(1.5);opacity:0}}
+  @media (prefers-reduced-motion:reduce){*{animation:none !important}}
+</style>
+</helmet>
+
+<section style="padding:64px;display:flex;flex-direction:column;gap:40px">
+  <div style="display:flex;flex-direction:column;gap:12px;max-width:900px">
+    <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#5A6066">Tour 5 · écran 5.3</span>
+    <h1 style="margin:0;font-family:'Nunito',system-ui;font-size:44px;font-weight:800;line-height:1.05;letter-spacing:-.03em">Cursor Tag en partie</h1>
+    <p style="margin:0;font-size:17px;line-height:1.6;color:#5A6066;text-wrap:pretty">La souris est capturée pendant la manche : tout ce qui entoure l'arène se lit, rien ne se clique. Seuls « Clique pour reprendre » et la confirmation de départ acceptent un clic. <a href="#5a">5a</a> coureur, <a href="#5b">5b</a> devenu Chat, <a href="#5c">5c</a> redevenu coureur, <a href="#5d">5d</a> préparation, <a href="#5dbis">5d bis</a> prêt, <a href="#5dter">5d ter</a> compte à rebours, <a href="#5i">5i</a> manche 2, <a href="#5dquater">5d quater</a> spectateur en préparation, <a href="#5e">5e</a> reprise, <a href="#5f">5f</a> quitter, <a href="#5g">5g</a> spectateur, <a href="#5h">5h</a> 10 joueurs en 1366.</p>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:44px">
+
+    <div id="5a" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;flex-direction:column;gap:5px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:600;color:#FFFFFF;background:#16191A;border-radius:999px;padding:5px 11px">5a</span>
+          <span style="font-family:'Nunito',system-ui;font-size:22px;font-weight:800">Coureur en partie</span>
+        </div>
+        <span style="font-size:13px;color:#5A6066;max-width:900px">Six joueurs, deux Chats, un gelé. Ton curseur porte un anneau blanc en plus de son pseudo. Rien n'est posé par-dessus l'arène.</span>
+      </div>
+      <div data-screen-label="5.3 Coureur" style="width:1440px;height:900px;background:#F4F5F2;border-radius:24px;overflow:hidden;box-shadow:0 2px 6px rgba(22,25,26,.06),0 40px 80px -50px rgba(22,25,26,.45);display:flex;flex-direction:column;color:#16191A">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:32px 56px">
+          <div style="display:flex;align-items:center;gap:13px">
+            <div style="position:relative;width:44px;height:44px;border-radius:16px;background:#0E7C66;flex:none">
+              <div style="position:absolute;left:9px;top:9px;width:10px;height:10px;border-radius:999px;background:#FFFFFF"></div>
+              <div style="position:absolute;right:8px;top:14px;width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.62)"></div>
+              <div style="position:absolute;left:16px;bottom:8px;width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.82)"></div>
+            </div>
+            <span style="font-family:'Nunito',system-ui;font-size:26px;font-weight:800;letter-spacing:-.03em">Games Party</span>
+          </div>
+          <div style="width:48px;height:48px;border:1px solid #DFE2DB;border-radius:999px;background:#FFFFFF;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#16191A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3L11 6v12l-4-3.5H4z"></path><path d="M15 9.6a3.6 3.6 0 0 1 0 4.8"></path><path d="M17.6 7.2a7 7 0 0 1 0 9.6"></path></svg></div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:20px;padding:0 56px 40px;min-height:0">
+          <div style="display:flex;align-items:center;gap:32px;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:999px;padding:12px 28px">
+            <span style="font-size:12px;font-weight:600;line-height:1.3;letter-spacing:.06em;text-transform:uppercase;color:#5A6066">Manche 2 / 3</span>
+            <span style="font-family:'Nunito',system-ui;font-size:40px;font-weight:800;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums">0:47</span>
+            <div style="flex:1;min-width:0"></div>
+            <span style="display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:600;line-height:1.4;color:#0A6653;background:#E3F0EA;border-radius:999px;padding:8px 16px"><span style="width:9px;height:9px;border-radius:999px;background:#0E7C66"></span>Coureur</span>
+            <div style="display:flex;align-items:baseline;gap:8px">
+              <span style="font-size:12px;font-weight:600;line-height:1.3;letter-spacing:.06em;text-transform:uppercase;color:#5A6066">Ton score</span>
+              <span style="font-family:'Nunito',system-ui;font-size:28px;font-weight:800;line-height:1.15;letter-spacing:-.02em;font-variant-numeric:tabular-nums">42 s</span>
+            </div>
+          </div>
+          <div style="flex:1;display:flex;gap:24px;align-items:flex-start;min-height:0">
+            <div style="flex:1;min-width:0;position:relative;aspect-ratio:16 / 9;border-radius:24px;background:#1E2422;overflow:hidden">
+              <div style="position:absolute;left:46.26%;top:43.36%;width:7.48%;height:13.29%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:18.7%;top:22.03%;width:18.7%;height:4.2%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:62.4%;top:73.43%;width:18.7%;height:4.2%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:73.62%;top:13.29%;width:2.36%;height:29.02%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:23.62%;top:57.69%;width:2.36%;height:29.02%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:4.5%;top:8%;width:30px;height:30px;box-sizing:border-box;border-radius:999px;border:3px solid #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">A</div>
+              <div style="position:absolute;left:91.4%;top:84%;width:30px;height:30px;box-sizing:border-box;border-radius:999px;border:3px solid #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">A</div>
+              <div style="position:absolute;left:91.4%;top:8%;width:30px;height:30px;box-sizing:border-box;border-radius:999px;border:3px dashed #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">B</div>
+              <div style="position:absolute;left:4.5%;top:84%;width:30px;height:30px;box-sizing:border-box;border-radius:999px;border:3px dashed #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">B</div>
+              <sc-for list="{{ areneJeu }}" as="c" hint-placeholder-count="6">
+                <div style="position:absolute;display:flex;align-items:center;gap:8px;left:{{ c.x }};top:{{ c.y }}">
+                  <sc-if value="{{ c.estChat }}" hint-placeholder-val="{{ false }}">
+                    <div style="position:relative;width:26px;height:26px;flex:none;border-radius:999px;background:{{ c.hex }};box-shadow:{{ c.halo }}">
+                      <div style="position:absolute;left:1px;top:-5px;width:8px;height:8px;border-radius:2px;transform:rotate(45deg);background:{{ c.hex }}"></div>
+                      <div style="position:absolute;right:1px;top:-5px;width:8px;height:8px;border-radius:2px;transform:rotate(45deg);background:{{ c.hex }}"></div>
+                      <sc-if value="{{ c.gelChat }}" hint-placeholder-val="{{ false }}">
+                        <div style="position:absolute;inset:0;border-radius:999px;background:rgba(142,197,232,.9);display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:13px;font-weight:800;color:#08324A;animation:gpFreeze 1.2s ease-in-out infinite">{{ c.gel }}</div>
+                      </sc-if>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ c.estGele }}" hint-placeholder-val="{{ false }}">
+                    <div style="position:relative;width:26px;height:26px;flex:none;border-radius:999px;background:{{ c.hex }};box-shadow:0 0 0 3px rgba(142,197,232,.4),0 0 0 7px rgba(142,197,232,.18)">
+                      <div style="position:absolute;inset:0;border-radius:999px;background:rgba(142,197,232,.9);display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:13px;font-weight:800;color:#08324A;animation:gpFreeze 1.2s ease-in-out infinite">{{ c.gel }}</div>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ c.estCoureur }}" hint-placeholder-val="{{ true }}">
+                    <div style="width:22px;height:22px;flex:none;border-radius:999px;background:{{ c.hex }};box-shadow:{{ c.halo }}"></div>
+                  </sc-if>
+                  <span style="font-size:12px;font-weight:600;color:#F2F5F1;background:rgba(0,0,0,.45);border-radius:6px;padding:3px 8px;white-space:nowrap">{{ c.nom }}{{ c.suffixe }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="width:300px;box-sizing:border-box;flex:none;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:12px;box-shadow:0 1px 2px rgba(22,25,26,.05)">
+              <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em">Classement</span>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <sc-for list="{{ classementJeu }}" as="j" hint-placeholder-count="6">
+                  <div style="display:flex;align-items:center;gap:10px;border:1px solid #DFE2DB;border-radius:16px;padding:0 12px;height:38px;box-sizing:border-box;background:{{ j.fond }};transition:transform .18s cubic-bezier(.2,.8,.3,1)">
+                    <div style="width:18px;height:18px;flex:none;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:{{ j.hex }};opacity:{{ j.opacite }}"></div>
+                    <span style="flex:1;min-width:0;font-size:15px;font-weight:600;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:{{ j.encre }}">{{ j.nom }}</span>
+                    <span style="flex:none;font-size:13px;font-weight:500;line-height:1.45;font-variant-numeric:tabular-nums;color:{{ j.encre }}">{{ j.score }}</span>
+                    <sc-if value="{{ j.aRole }}" hint-placeholder-val="{{ false }}">
+                      <span style="flex:none;font-size:12px;font-weight:600;border-radius:999px;padding:4px 8px;color:{{ j.roleEncre }};background:{{ j.roleFond }}">{{ j.role }}</span>
+                    </sc-if>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="5b" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;flex-direction:column;gap:5px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:600;color:#FFFFFF;background:#16191A;border-radius:999px;padding:5px 11px">5b</span>
+          <span style="font-family:'Nunito',system-ui;font-size:22px;font-weight:800">Tu deviens Chat</span>
+        </div>
+        <span style="font-size:13px;color:#5A6066;max-width:900px">Seule chose jamais posée par-dessus l'arène : cette annonce, visible de toi seul, le temps du gel. Elle disparaît quand le décompte atteint zéro.</span>
+      </div>
+      <div data-screen-label="5.3 Devenu Chat" style="width:1440px;height:900px;background:#F4F5F2;border-radius:24px;overflow:hidden;box-shadow:0 2px 6px rgba(22,25,26,.06),0 40px 80px -50px rgba(22,25,26,.45);display:flex;flex-direction:column;color:#16191A">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:32px 56px">
+          <div style="display:flex;align-items:center;gap:13px">
+            <div style="position:relative;width:44px;height:44px;border-radius:16px;background:#0E7C66;flex:none">
+              <div style="position:absolute;left:9px;top:9px;width:10px;height:10px;border-radius:999px;background:#FFFFFF"></div>
+              <div style="position:absolute;right:8px;top:14px;width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.62)"></div>
+              <div style="position:absolute;left:16px;bottom:8px;width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.82)"></div>
+            </div>
+            <span style="font-family:'Nunito',system-ui;font-size:26px;font-weight:800;letter-spacing:-.03em">Games Party</span>
+          </div>
+          <div style="width:48px;height:48px;border:1px solid #DFE2DB;border-radius:999px;background:#FFFFFF;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#16191A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3L11 6v12l-4-3.5H4z"></path><path d="M15 9.6a3.6 3.6 0 0 1 0 4.8"></path><path d="M17.6 7.2a7 7 0 0 1 0 9.6"></path></svg></div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:20px;padding:0 56px 40px;min-height:0">
+          <div style="display:flex;align-items:center;gap:32px;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:999px;padding:12px 28px">
+            <span style="font-size:12px;font-weight:600;line-height:1.3;letter-spacing:.06em;text-transform:uppercase;color:#5A6066">Manche 2 / 3</span>
+            <span style="font-family:'Nunito',system-ui;font-size:40px;font-weight:800;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums">0:38</span>
+            <div style="flex:1;min-width:0"></div>
+            <span style="display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:600;line-height:1.4;color:#16191A;background:#FBE9E3;border-radius:999px;padding:8px 16px"><span style="width:9px;height:9px;border-radius:999px;background:#08324A"></span>Gelé 2 s</span>
+            <div style="display:flex;align-items:baseline;gap:8px">
+              <span style="font-size:12px;font-weight:600;line-height:1.3;letter-spacing:.06em;text-transform:uppercase;color:#5A6066">Ton score</span>
+              <span style="font-family:'Nunito',system-ui;font-size:28px;font-weight:800;line-height:1.15;letter-spacing:-.02em;font-variant-numeric:tabular-nums">51 s</span>
+            </div>
+          </div>
+          <div style="flex:1;display:flex;gap:24px;align-items:flex-start;min-height:0">
+            <div style="flex:1;min-width:0;position:relative;aspect-ratio:16 / 9;border-radius:24px;background:#1E2422;overflow:hidden">
+              <div style="position:absolute;left:46.26%;top:43.36%;width:7.48%;height:13.29%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:18.7%;top:22.03%;width:18.7%;height:4.2%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:62.4%;top:73.43%;width:18.7%;height:4.2%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:73.62%;top:13.29%;width:2.36%;height:29.02%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:23.62%;top:57.69%;width:2.36%;height:29.02%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:4.5%;top:8%;width:30px;height:30px;box-sizing:border-box;border-radius:999px;border:3px solid #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">A</div>
+              <div style="position:absolute;left:91.4%;top:84%;width:30px;height:30px;box-sizing:border-box;border-radius:999px;border:3px solid #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">A</div>
+              <div style="position:absolute;left:91.4%;top:8%;width:30px;height:30px;box-sizing:border-box;border-radius:999px;border:3px dashed #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">B</div>
+              <div style="position:absolute;left:4.5%;top:84%;width:30px;height:30px;box-sizing:border-box;border-radius:999px;border:3px dashed #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">B</div>
+              <sc-for list="{{ areneChat }}" as="c" hint-placeholder-count="6">
+                <div style="position:absolute;display:flex;align-items:center;gap:8px;left:{{ c.x }};top:{{ c.y }}">
+                  <sc-if value="{{ c.estChat }}" hint-placeholder-val="{{ false }}">
+                    <div style="position:relative;width:26px;height:26px;flex:none;border-radius:999px;background:{{ c.hex }};box-shadow:{{ c.halo }}">
+                      <div style="position:absolute;left:1px;top:-5px;width:8px;height:8px;border-radius:2px;transform:rotate(45deg);background:{{ c.hex }}"></div>
+                      <div style="position:absolute;right:1px;top:-5px;width:8px;height:8px;border-radius:2px;transform:rotate(45deg);background:{{ c.hex }}"></div>
+                      <sc-if value="{{ c.gelChat }}" hint-placeholder-val="{{ false }}">
+                        <div style="position:absolute;inset:0;border-radius:999px;background:rgba(142,197,232,.9);display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:13px;font-weight:800;color:#08324A;animation:gpFreeze 1.2s ease-in-out infinite">{{ c.gel }}</div>
+                      </sc-if>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ c.estGele }}" hint-placeholder-val="{{ false }}">
+                    <div style="position:relative;width:26px;height:26px;flex:none;border-radius:999px;background:{{ c.hex }};box-shadow:0 0 0 3px rgba(142,197,232,.4),0 0 0 7px rgba(142,197,232,.18)">
+                      <div style="position:absolute;inset:0;border-radius:999px;background:rgba(142,197,232,.9);display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:13px;font-weight:800;color:#08324A;animation:gpFreeze 1.2s ease-in-out infinite">{{ c.gel }}</div>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ c.estCoureur }}" hint-placeholder-val="{{ true }}">
+                    <div style="width:22px;height:22px;flex:none;border-radius:999px;background:{{ c.hex }};box-shadow:{{ c.halo }}"></div>
+                  </sc-if>
+                  <span style="font-size:12px;font-weight:600;color:#F2F5F1;background:rgba(0,0,0,.45);border-radius:6px;padding:3px 8px;white-space:nowrap">{{ c.nom }}{{ c.suffixe }}</span>
+                </div>
+              </sc-for>
+              <div style="position:absolute;inset:0;background:rgba(22,25,26,.72);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px">
+                  <span style="font-family:'Nunito',system-ui;font-size:56px;font-weight:800;line-height:1.02;letter-spacing:-.03em;color:#F2F5F1;text-align:center">Tu es le Chat !</span>
+                  <span style="font-size:17px;line-height:1.6;color:#F2F5F1;text-align:center">Attrape un Coureur pour lui passer le rôle</span>
+              </div>
+            </div>
+            <div style="width:300px;box-sizing:border-box;flex:none;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:12px;box-shadow:0 1px 2px rgba(22,25,26,.05)">
+              <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em">Classement</span>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <sc-for list="{{ classementChat }}" as="j" hint-placeholder-count="6">
+                  <div style="display:flex;align-items:center;gap:10px;border:1px solid #DFE2DB;border-radius:16px;padding:0 12px;height:38px;box-sizing:border-box;background:{{ j.fond }};transition:transform .18s cubic-bezier(.2,.8,.3,1)">
+                    <div style="width:18px;height:18px;flex:none;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:{{ j.hex }};opacity:{{ j.opacite }}"></div>
+                    <span style="flex:1;min-width:0;font-size:15px;font-weight:600;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:{{ j.encre }}">{{ j.nom }}</span>
+                    <span style="flex:none;font-size:13px;font-weight:500;line-height:1.45;font-variant-numeric:tabular-nums;color:{{ j.encre }}">{{ j.score }}</span>
+                    <sc-if value="{{ j.aRole }}" hint-placeholder-val="{{ false }}">
+                      <span style="flex:none;font-size:12px;font-weight:600;border-radius:999px;padding:4px 8px;color:{{ j.roleEncre }};background:{{ j.roleFond }}">{{ j.role }}</span>
+                    </sc-if>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="5c" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;flex-direction:column;gap:5px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:600;color:#FFFFFF;background:#16191A;border-radius:999px;padding:5px 11px">5c</span>
+          <span style="font-family:'Nunito',system-ui;font-size:22px;font-weight:800">Tu redeviens Coureur · dernières secondes</span>
+        </div>
+        <span style="font-size:13px;color:#5A6066;max-width:900px">Le retour au rôle de Coureur ne s'annonce que dans la bande : rien sur l'arène. Sous 10 secondes, le chrono passe en Avertissement.</span>
+      </div>
+      <div data-screen-label="5.3 Redevenu coureur" style="width:1440px;height:900px;background:#F4F5F2;border-radius:24px;overflow:hidden;box-shadow:0 2px 6px rgba(22,25,26,.06),0 40px 80px -50px rgba(22,25,26,.45);display:flex;flex-direction:column;color:#16191A">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:32px 56px">
+          <div style="display:flex;align-items:center;gap:13px">
+            <div style="position:relative;width:44px;height:44px;border-radius:16px;background:#0E7C66;flex:none">
+              <div style="position:absolute;left:9px;top:9px;width:10px;height:10px;border-radius:999px;background:#FFFFFF"></div>
+              <div style="position:absolute;right:8px;top:14px;width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.62)"></div>
+              <div style="position:absolute;left:16px;bottom:8px;width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.82)"></div>
+            </div>
+            <span style="font-family:'Nunito',system-ui;font-size:26px;font-weight:800;letter-spacing:-.03em">Games Party</span>
+          </div>
+          <div style="width:48px;height:48px;border:1px solid #DFE2DB;border-radius:999px;background:#FFFFFF;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#16191A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3L11 6v12l-4-3.5H4z"></path><path d="M15 9.6a3.6 3.6 0 0 1 0 4.8"></path><path d="M17.6 7.2a7 7 0 0 1 0 9.6"></path></svg></div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:20px;padding:0 56px 40px;min-height:0">
+          <div style="display:flex;align-items:center;gap:24px;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:999px;padding:12px 28px">
+            <span style="font-size:12px;font-weight:600;line-height:1.3;letter-spacing:.06em;text-transform:uppercase;color:#5A6066">Manche 2 / 3</span>
+            <span style="font-family:'Nunito',system-ui;font-size:40px;font-weight:800;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:#7A5400">0:08</span>
+            <span style="font-size:15px;font-weight:600;line-height:1.4;color:#0A6653">Tu n'es plus le Chat, ton score repart</span>
+            <div style="flex:1;min-width:0"></div>
+            <span style="display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:600;line-height:1.4;color:#0A6653;background:#E3F0EA;border-radius:999px;padding:8px 16px"><span style="width:9px;height:9px;border-radius:999px;background:#0E7C66"></span>Coureur</span>
+            <div style="display:flex;align-items:baseline;gap:8px">
+              <span style="font-size:12px;font-weight:600;line-height:1.3;letter-spacing:.06em;text-transform:uppercase;color:#5A6066">Ton score</span>
+              <span style="font-family:'Nunito',system-ui;font-size:28px;font-weight:800;line-height:1.15;letter-spacing:-.02em;font-variant-numeric:tabular-nums">54 s</span>
+            </div>
+          </div>
+          <div style="flex:1;display:flex;gap:24px;align-items:flex-start;min-height:0">
+            <div style="flex:1;min-width:0;position:relative;aspect-ratio:16 / 9;border-radius:24px;background:#1E2422;overflow:hidden">
+              <div style="position:absolute;left:46.26%;top:43.36%;width:7.48%;height:13.29%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:18.7%;top:22.03%;width:18.7%;height:4.2%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:62.4%;top:73.43%;width:18.7%;height:4.2%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:73.62%;top:13.29%;width:2.36%;height:29.02%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:23.62%;top:57.69%;width:2.36%;height:29.02%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:4.5%;top:8%;width:30px;height:30px;box-sizing:border-box;border-radius:999px;border:3px solid #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">A</div>
+              <div style="position:absolute;left:91.4%;top:84%;width:30px;height:30px;box-sizing:border-box;border-radius:999px;border:3px solid #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">A</div>
+              <div style="position:absolute;left:91.4%;top:8%;width:30px;height:30px;box-sizing:border-box;border-radius:999px;border:3px dashed #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">B</div>
+              <div style="position:absolute;left:4.5%;top:84%;width:30px;height:30px;box-sizing:border-box;border-radius:999px;border:3px dashed #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">B</div>
+              <sc-for list="{{ areneRetour }}" as="c" hint-placeholder-count="6">
+                <div style="position:absolute;display:flex;align-items:center;gap:8px;left:{{ c.x }};top:{{ c.y }}">
+                  <sc-if value="{{ c.estChat }}" hint-placeholder-val="{{ false }}">
+                    <div style="position:relative;width:26px;height:26px;flex:none;border-radius:999px;background:{{ c.hex }};box-shadow:{{ c.halo }}">
+                      <div style="position:absolute;left:1px;top:-5px;width:8px;height:8px;border-radius:2px;transform:rotate(45deg);background:{{ c.hex }}"></div>
+                      <div style="position:absolute;right:1px;top:-5px;width:8px;height:8px;border-radius:2px;transform:rotate(45deg);background:{{ c.hex }}"></div>
+                      <sc-if value="{{ c.gelChat }}" hint-placeholder-val="{{ false }}">
+                        <div style="position:absolute;inset:0;border-radius:999px;background:rgba(142,197,232,.9);display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:13px;font-weight:800;color:#08324A;animation:gpFreeze 1.2s ease-in-out infinite">{{ c.gel }}</div>
+                      </sc-if>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ c.estGele }}" hint-placeholder-val="{{ false }}">
+                    <div style="position:relative;width:26px;height:26px;flex:none;border-radius:999px;background:{{ c.hex }};box-shadow:0 0 0 3px rgba(142,197,232,.4),0 0 0 7px rgba(142,197,232,.18)">
+                      <div style="position:absolute;inset:0;border-radius:999px;background:rgba(142,197,232,.9);display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:13px;font-weight:800;color:#08324A;animation:gpFreeze 1.2s ease-in-out infinite">{{ c.gel }}</div>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ c.estCoureur }}" hint-placeholder-val="{{ true }}">
+                    <div style="width:22px;height:22px;flex:none;border-radius:999px;background:{{ c.hex }};box-shadow:{{ c.halo }}"></div>
+                  </sc-if>
+                  <span style="font-size:12px;font-weight:600;color:#F2F5F1;background:rgba(0,0,0,.45);border-radius:6px;padding:3px 8px;white-space:nowrap">{{ c.nom }}{{ c.suffixe }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="width:300px;box-sizing:border-box;flex:none;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:12px;box-shadow:0 1px 2px rgba(22,25,26,.05)">
+              <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em">Classement</span>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <sc-for list="{{ classementRetour }}" as="j" hint-placeholder-count="6">
+                  <div style="display:flex;align-items:center;gap:10px;border:1px solid #DFE2DB;border-radius:16px;padding:0 12px;height:38px;box-sizing:border-box;background:{{ j.fond }};transition:transform .18s cubic-bezier(.2,.8,.3,1)">
+                    <div style="width:18px;height:18px;flex:none;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:{{ j.hex }};opacity:{{ j.opacite }}"></div>
+                    <span style="flex:1;min-width:0;font-size:15px;font-weight:600;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:{{ j.encre }}">{{ j.nom }}</span>
+                    <span style="flex:none;font-size:13px;font-weight:500;line-height:1.45;font-variant-numeric:tabular-nums;color:{{ j.encre }}">{{ j.score }}</span>
+                    <sc-if value="{{ j.aRole }}" hint-placeholder-val="{{ false }}">
+                      <span style="flex:none;font-size:12px;font-weight:600;border-radius:999px;padding:4px 8px;color:{{ j.roleEncre }};background:{{ j.roleFond }}">{{ j.role }}</span>
+                    </sc-if>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="5d" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;flex-direction:column;gap:5px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:600;color:#FFFFFF;background:#16191A;border-radius:999px;padding:5px 11px">5d</span>
+          <span style="font-family:'Nunito',system-ui;font-size:22px;font-weight:800">Préparation de la manche 1 · en attente</span>
+        </div>
+        <span style="font-size:13px;color:#5A6066;max-width:900px">Plus de compte à rebours immédiat : chaque manche commence par une préparation. Le rappel des réglages ne répète aucun chiffre que la bande affiche déjà, et il n'y a pas de « Lancer quand même ».</span>
+      </div>
+      <div data-screen-label="5.3 Préparation manche 1" style="width:1440px;height:900px;background:#F4F5F2;border-radius:24px;overflow:hidden;box-shadow:0 2px 6px rgba(22,25,26,.06),0 40px 80px -50px rgba(22,25,26,.45);display:flex;flex-direction:column;color:#16191A">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:32px 56px">
+          <div style="display:flex;align-items:center;gap:13px">
+            <div style="position:relative;width:44px;height:44px;border-radius:16px;background:#0E7C66;flex:none">
+              <div style="position:absolute;left:9px;top:9px;width:10px;height:10px;border-radius:999px;background:#FFFFFF"></div>
+              <div style="position:absolute;right:8px;top:14px;width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.62)"></div>
+              <div style="position:absolute;left:16px;bottom:8px;width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.82)"></div>
+            </div>
+            <span style="font-family:'Nunito',system-ui;font-size:26px;font-weight:800;letter-spacing:-.03em">Games Party</span>
+          </div>
+          <button type="button" aria-label="Couper le son" style="width:48px;height:48px;border:1px solid #DFE2DB;border-radius:999px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .12s cubic-bezier(.4,0,1,1)" style-hover="background:#ECEEE8;border-color:#C7CCC0"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#16191A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3L11 6v12l-4-3.5H4z"></path><path d="M15 9.6a3.6 3.6 0 0 1 0 4.8"></path><path d="M17.6 7.2a7 7 0 0 1 0 9.6"></path></svg></button>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:20px;padding:0 56px 40px;min-height:0">
+          <div style="display:flex;align-items:center;gap:32px;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:999px;padding:12px 28px">
+            <span style="font-size:12px;font-weight:600;line-height:1.3;letter-spacing:.06em;text-transform:uppercase;color:#5A6066">Manche 1 / 3</span>
+            <span style="font-size:15px;font-weight:600;line-height:1.4;color:#5A6066">Départ automatique dans 12 s</span>
+            <div style="flex:1;min-width:0"></div>
+          </div>
+          <div style="flex:1;display:flex;gap:24px;align-items:flex-start;min-height:0">
+            <div style="flex:1;min-width:0;position:relative;aspect-ratio:16 / 9;border-radius:24px;background:#1E2422;overflow:hidden">
+              <div style="position:absolute;left:46.26%;top:43.36%;width:7.48%;height:13.29%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:18.7%;top:22.03%;width:18.7%;height:4.2%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:62.4%;top:73.43%;width:18.7%;height:4.2%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:73.62%;top:13.29%;width:2.36%;height:29.02%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:23.62%;top:57.69%;width:2.36%;height:29.02%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:4.5%;top:8%;width:30px;height:30px;box-sizing:border-box;border-radius:999px;border:3px solid #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">A</div>
+              <div style="position:absolute;left:91.4%;top:84%;width:30px;height:30px;box-sizing:border-box;border-radius:999px;border:3px solid #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">A</div>
+              <div style="position:absolute;left:91.4%;top:8%;width:30px;height:30px;box-sizing:border-box;border-radius:999px;border:3px dashed #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">B</div>
+              <div style="position:absolute;left:4.5%;top:84%;width:30px;height:30px;box-sizing:border-box;border-radius:999px;border:3px dashed #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">B</div>
+              <div style="position:absolute;inset:0;background:rgba(22,25,26,.72);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px">
+                  <span style="font-size:17px;line-height:1.6;color:#F2F5F1;text-align:center">3 manches de 60 s · 2 Chats · gel de 3 s</span>
+                  <button type="button" style="height:56px;border:none;border-radius:999px;background:#0E7C66;color:#FFFFFF;padding:0 34px;font:inherit;font-size:17px;font-weight:600;cursor:pointer;transition:background .16s cubic-bezier(.2,.8,.3,1),transform .16s cubic-bezier(.2,.8,.3,1)" style-hover="background:#0A6653;transform:translateY(-1px)">Je suis prêt</button>
+                  <span style="font-size:13px;font-weight:500;line-height:1.45;color:#9BA6A0">Clique pour capturer ta souris</span>
+              </div>
+            </div>
+            <div style="width:300px;box-sizing:border-box;flex:none;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:12px;box-shadow:0 1px 2px rgba(22,25,26,.05)">
+              <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em">Classement</span>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <sc-for list="{{ prepAttente }}" as="j" hint-placeholder-count="6">
+                  <div style="display:flex;align-items:center;gap:10px;border:1px solid #DFE2DB;border-radius:16px;padding:0 12px;height:38px;box-sizing:border-box;background:{{ j.fond }};transition:transform .18s cubic-bezier(.2,.8,.3,1)">
+                    <div style="width:18px;height:18px;flex:none;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:{{ j.hex }};opacity:{{ j.opacite }}"></div>
+                    <span style="flex:1;min-width:0;font-size:15px;font-weight:600;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:{{ j.encre }}">{{ j.nom }}</span>
+                    <span style="flex:none;font-size:13px;font-weight:500;line-height:1.45;font-variant-numeric:tabular-nums;color:{{ j.encre }}">{{ j.score }}</span>
+                    <sc-if value="{{ j.aRole }}" hint-placeholder-val="{{ false }}">
+                      <span style="flex:none;font-size:12px;font-weight:600;border-radius:999px;padding:4px 8px;color:{{ j.roleEncre }};background:{{ j.roleFond }}">{{ j.role }}</span>
+                    </sc-if>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="5dbis" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;flex-direction:column;gap:5px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:600;color:#FFFFFF;background:#16191A;border-radius:999px;padding:5px 11px">5d bis</span>
+          <span style="font-family:'Nunito',system-ui;font-size:22px;font-weight:800">Préparation · après ton clic</span>
+        </div>
+        <span style="font-size:13px;color:#5A6066;max-width:900px">Le bouton laisse place à l'état « Tu es prêt » et l'aide confirme la capture. Ton badge Prêt apparaît au classement ; on attend les autres.</span>
+      </div>
+      <div data-screen-label="5.3 Préparation prêt" style="width:1440px;height:900px;background:#F4F5F2;border-radius:24px;overflow:hidden;box-shadow:0 2px 6px rgba(22,25,26,.06),0 40px 80px -50px rgba(22,25,26,.45);display:flex;flex-direction:column;color:#16191A">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:32px 56px">
+          <div style="display:flex;align-items:center;gap:13px">
+            <div style="position:relative;width:44px;height:44px;border-radius:16px;background:#0E7C66;flex:none">
+              <div style="position:absolute;left:9px;top:9px;width:10px;height:10px;border-radius:999px;background:#FFFFFF"></div>
+              <div style="position:absolute;right:8px;top:14px;width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.62)"></div>
+              <div style="position:absolute;left:16px;bottom:8px;width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.82)"></div>
+            </div>
+            <span style="font-family:'Nunito',system-ui;font-size:26px;font-weight:800;letter-spacing:-.03em">Games Party</span>
+          </div>
+          <button type="button" aria-label="Couper le son" style="width:48px;height:48px;border:1px solid #DFE2DB;border-radius:999px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .12s cubic-bezier(.4,0,1,1)" style-hover="background:#ECEEE8;border-color:#C7CCC0"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#16191A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3L11 6v12l-4-3.5H4z"></path><path d="M15 9.6a3.6 3.6 0 0 1 0 4.8"></path><path d="M17.6 7.2a7 7 0 0 1 0 9.6"></path></svg></button>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:20px;padding:0 56px 40px;min-height:0">
+          <div style="display:flex;align-items:center;gap:32px;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:999px;padding:12px 28px">
+            <span style="font-size:12px;font-weight:600;line-height:1.3;letter-spacing:.06em;text-transform:uppercase;color:#5A6066">Manche 1 / 3</span>
+            <span style="font-size:15px;font-weight:600;line-height:1.4;color:#5A6066">Départ automatique dans 9 s</span>
+            <div style="flex:1;min-width:0"></div>
+          </div>
+          <div style="flex:1;display:flex;gap:24px;align-items:flex-start;min-height:0">
+            <div style="flex:1;min-width:0;position:relative;aspect-ratio:16 / 9;border-radius:24px;background:#1E2422;overflow:hidden">
+              <div style="position:absolute;left:46.26%;top:43.36%;width:7.48%;height:13.29%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:18.7%;top:22.03%;width:18.7%;height:4.2%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:62.4%;top:73.43%;width:18.7%;height:4.2%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:73.62%;top:13.29%;width:2.36%;height:29.02%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:23.62%;top:57.69%;width:2.36%;height:29.02%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:4.5%;top:8%;width:30px;height:30px;box-sizing:border-box;border-radius:999px;border:3px solid #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">A</div>
+              <div style="position:absolute;left:91.4%;top:84%;width:30px;height:30px;box-sizing:border-box;border-radius:999px;border:3px solid #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">A</div>
+              <div style="position:absolute;left:91.4%;top:8%;width:30px;height:30px;box-sizing:border-box;border-radius:999px;border:3px dashed #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">B</div>
+              <div style="position:absolute;left:4.5%;top:84%;width:30px;height:30px;box-sizing:border-box;border-radius:999px;border:3px dashed #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">B</div>
+              <div style="position:absolute;inset:0;background:rgba(22,25,26,.72);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px">
+                  <span style="font-size:17px;line-height:1.6;color:#F2F5F1;text-align:center">3 manches de 60 s · 2 Chats · gel de 3 s</span>
+                  <div style="height:56px;box-sizing:border-box;border:1px solid #0E7C66;border-radius:999px;background:#E3F0EA;color:#0A6653;padding:0 34px;display:flex;align-items:center;gap:12px;font-size:17px;font-weight:600"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#0A6653" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>Tu es prêt</div>
+                  <span style="font-size:13px;font-weight:500;line-height:1.45;color:#9BA6A0">Souris capturée, on attend les autres</span>
+              </div>
+            </div>
+            <div style="width:300px;box-sizing:border-box;flex:none;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:12px;box-shadow:0 1px 2px rgba(22,25,26,.05)">
+              <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em">Classement</span>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <sc-for list="{{ prepPret }}" as="j" hint-placeholder-count="6">
+                  <div style="display:flex;align-items:center;gap:10px;border:1px solid #DFE2DB;border-radius:16px;padding:0 12px;height:38px;box-sizing:border-box;background:{{ j.fond }};transition:transform .18s cubic-bezier(.2,.8,.3,1)">
+                    <div style="width:18px;height:18px;flex:none;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:{{ j.hex }};opacity:{{ j.opacite }}"></div>
+                    <span style="flex:1;min-width:0;font-size:15px;font-weight:600;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:{{ j.encre }}">{{ j.nom }}</span>
+                    <span style="flex:none;font-size:13px;font-weight:500;line-height:1.45;font-variant-numeric:tabular-nums;color:{{ j.encre }}">{{ j.score }}</span>
+                    <sc-if value="{{ j.aRole }}" hint-placeholder-val="{{ false }}">
+                      <span style="flex:none;font-size:12px;font-weight:600;border-radius:999px;padding:4px 8px;color:{{ j.roleEncre }};background:{{ j.roleFond }}">{{ j.role }}</span>
+                    </sc-if>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="5dter" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;flex-direction:column;gap:5px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:600;color:#FFFFFF;background:#16191A;border-radius:999px;padding:5px 11px">5d ter</span>
+          <span style="font-family:'Nunito',system-ui;font-size:22px;font-weight:800">Compte à rebours</span>
+        </div>
+        <span style="font-size:13px;color:#5A6066;max-width:900px">Tout le monde est prêt, ou le départ automatique est arrivé à zéro : rappel, bouton et aide disparaissent, le chiffre s'affiche seul dans le style Compte à rebours de la planche.</span>
+      </div>
+      <div data-screen-label="5.3 Compte à rebours" style="width:1440px;height:900px;background:#F4F5F2;border-radius:24px;overflow:hidden;box-shadow:0 2px 6px rgba(22,25,26,.06),0 40px 80px -50px rgba(22,25,26,.45);display:flex;flex-direction:column;color:#16191A">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:32px 56px">
+          <div style="display:flex;align-items:center;gap:13px">
+            <div style="position:relative;width:44px;height:44px;border-radius:16px;background:#0E7C66;flex:none">
+              <div style="position:absolute;left:9px;top:9px;width:10px;height:10px;border-radius:999px;background:#FFFFFF"></div>
+              <div style="position:absolute;right:8px;top:14px;width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.62)"></div>
+              <div style="position:absolute;left:16px;bottom:8px;width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.82)"></div>
+            </div>
+            <span style="font-family:'Nunito',system-ui;font-size:26px;font-weight:800;letter-spacing:-.03em">Games Party</span>
+          </div>
+          <button type="button" aria-label="Couper le son" style="width:48px;height:48px;border:1px solid #DFE2DB;border-radius:999px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .12s cubic-bezier(.4,0,1,1)" style-hover="background:#ECEEE8;border-color:#C7CCC0"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#16191A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3L11 6v12l-4-3.5H4z"></path><path d="M15 9.6a3.6 3.6 0 0 1 0 4.8"></path><path d="M17.6 7.2a7 7 0 0 1 0 9.6"></path></svg></button>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:20px;padding:0 56px 40px;min-height:0">
+          <div style="display:flex;align-items:center;gap:32px;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:999px;padding:12px 28px">
+            <span style="font-size:12px;font-weight:600;line-height:1.3;letter-spacing:.06em;text-transform:uppercase;color:#5A6066">Manche 1 / 3</span>
+            <span style="font-size:15px;font-weight:600;line-height:1.4;color:#5A6066">C'est parti !</span>
+            <div style="flex:1;min-width:0"></div>
+          </div>
+          <div style="flex:1;display:flex;gap:24px;align-items:flex-start;min-height:0">
+            <div style="flex:1;min-width:0;position:relative;aspect-ratio:16 / 9;border-radius:24px;background:#1E2422;overflow:hidden">
+              <div style="position:absolute;left:46.26%;top:43.36%;width:7.48%;height:13.29%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:18.7%;top:22.03%;width:18.7%;height:4.2%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:62.4%;top:73.43%;width:18.7%;height:4.2%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:73.62%;top:13.29%;width:2.36%;height:29.02%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:23.62%;top:57.69%;width:2.36%;height:29.02%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:4.5%;top:8%;width:30px;height:30px;box-sizing:border-box;border-radius:999px;border:3px solid #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">A</div>
+              <div style="position:absolute;left:91.4%;top:84%;width:30px;height:30px;box-sizing:border-box;border-radius:999px;border:3px solid #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">A</div>
+              <div style="position:absolute;left:91.4%;top:8%;width:30px;height:30px;box-sizing:border-box;border-radius:999px;border:3px dashed #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">B</div>
+              <div style="position:absolute;left:4.5%;top:84%;width:30px;height:30px;box-sizing:border-box;border-radius:999px;border:3px dashed #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">B</div>
+              <div style="position:absolute;inset:0;background:rgba(22,25,26,.72);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0px">
+                  <span style="font-family:'Nunito',system-ui;font-size:160px;font-weight:800;line-height:.9;letter-spacing:-.04em;color:#F2F5F1;font-variant-numeric:tabular-nums">{{ compte }}</span>
+              </div>
+            </div>
+            <div style="width:300px;box-sizing:border-box;flex:none;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:12px;box-shadow:0 1px 2px rgba(22,25,26,.05)">
+              <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em">Classement</span>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <sc-for list="{{ prepTous }}" as="j" hint-placeholder-count="6">
+                  <div style="display:flex;align-items:center;gap:10px;border:1px solid #DFE2DB;border-radius:16px;padding:0 12px;height:38px;box-sizing:border-box;background:{{ j.fond }};transition:transform .18s cubic-bezier(.2,.8,.3,1)">
+                    <div style="width:18px;height:18px;flex:none;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:{{ j.hex }};opacity:{{ j.opacite }}"></div>
+                    <span style="flex:1;min-width:0;font-size:15px;font-weight:600;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:{{ j.encre }}">{{ j.nom }}</span>
+                    <span style="flex:none;font-size:13px;font-weight:500;line-height:1.45;font-variant-numeric:tabular-nums;color:{{ j.encre }}">{{ j.score }}</span>
+                    <sc-if value="{{ j.aRole }}" hint-placeholder-val="{{ false }}">
+                      <span style="flex:none;font-size:12px;font-weight:600;border-radius:999px;padding:4px 8px;color:{{ j.roleEncre }};background:{{ j.roleFond }}">{{ j.role }}</span>
+                    </sc-if>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="5i" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;flex-direction:column;gap:5px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:600;color:#FFFFFF;background:#16191A;border-radius:999px;padding:5px 11px">5i</span>
+          <span style="font-family:'Nunito',system-ui;font-size:22px;font-weight:800">Préparation de la manche 2</span>
+        </div>
+        <span style="font-size:13px;color:#5A6066;max-width:900px">À partir de la manche 2, le rappel des réglages laisse place à ton résultat, et ton score apparaît dans la bande.</span>
+      </div>
+      <div data-screen-label="5.3 Préparation manche 2" style="width:1440px;height:900px;background:#F4F5F2;border-radius:24px;overflow:hidden;box-shadow:0 2px 6px rgba(22,25,26,.06),0 40px 80px -50px rgba(22,25,26,.45);display:flex;flex-direction:column;color:#16191A">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:32px 56px">
+          <div style="display:flex;align-items:center;gap:13px">
+            <div style="position:relative;width:44px;height:44px;border-radius:16px;background:#0E7C66;flex:none">
+              <div style="position:absolute;left:9px;top:9px;width:10px;height:10px;border-radius:999px;background:#FFFFFF"></div>
+              <div style="position:absolute;right:8px;top:14px;width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.62)"></div>
+              <div style="position:absolute;left:16px;bottom:8px;width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.82)"></div>
+            </div>
+            <span style="font-family:'Nunito',system-ui;font-size:26px;font-weight:800;letter-spacing:-.03em">Games Party</span>
+          </div>
+          <button type="button" aria-label="Couper le son" style="width:48px;height:48px;border:1px solid #DFE2DB;border-radius:999px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .12s cubic-bezier(.4,0,1,1)" style-hover="background:#ECEEE8;border-color:#C7CCC0"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#16191A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3L11 6v12l-4-3.5H4z"></path><path d="M15 9.6a3.6 3.6 0 0 1 0 4.8"></path><path d="M17.6 7.2a7 7 0 0 1 0 9.6"></path></svg></button>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:20px;padding:0 56px 40px;min-height:0">
+          <div style="display:flex;align-items:center;gap:32px;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:999px;padding:12px 28px">
+            <span style="font-size:12px;font-weight:600;line-height:1.3;letter-spacing:.06em;text-transform:uppercase;color:#5A6066">Manche 2 / 3</span>
+            <span style="font-size:15px;font-weight:600;line-height:1.4;color:#5A6066">Départ automatique dans 12 s</span>
+            <div style="flex:1;min-width:0"></div>
+            <div style="display:flex;align-items:baseline;gap:8px">
+              <span style="font-size:12px;font-weight:600;line-height:1.3;letter-spacing:.06em;text-transform:uppercase;color:#5A6066">Ton score</span>
+              <span style="font-family:'Nunito',system-ui;font-size:28px;font-weight:800;line-height:1.15;letter-spacing:-.02em;font-variant-numeric:tabular-nums">58 s</span>
+            </div>
+          </div>
+          <div style="flex:1;display:flex;gap:24px;align-items:flex-start;min-height:0">
+            <div style="flex:1;min-width:0;position:relative;aspect-ratio:16 / 9;border-radius:24px;background:#1E2422;overflow:hidden">
+              <div style="position:absolute;left:46.26%;top:43.36%;width:7.48%;height:13.29%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:18.7%;top:22.03%;width:18.7%;height:4.2%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:62.4%;top:73.43%;width:18.7%;height:4.2%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:73.62%;top:13.29%;width:2.36%;height:29.02%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:23.62%;top:57.69%;width:2.36%;height:29.02%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:4.5%;top:8%;width:30px;height:30px;box-sizing:border-box;border-radius:999px;border:3px solid #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">A</div>
+              <div style="position:absolute;left:91.4%;top:84%;width:30px;height:30px;box-sizing:border-box;border-radius:999px;border:3px solid #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">A</div>
+              <div style="position:absolute;left:91.4%;top:8%;width:30px;height:30px;box-sizing:border-box;border-radius:999px;border:3px dashed #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">B</div>
+              <div style="position:absolute;left:4.5%;top:84%;width:30px;height:30px;box-sizing:border-box;border-radius:999px;border:3px dashed #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">B</div>
+              <div style="position:absolute;inset:0;background:rgba(22,25,26,.72);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px">
+                  <span style="font-size:17px;line-height:1.6;color:#F2F5F1;text-align:center">Manche 1 terminée · Tu es 2e avec 58 s</span>
+                  <button type="button" style="height:56px;border:none;border-radius:999px;background:#0E7C66;color:#FFFFFF;padding:0 34px;font:inherit;font-size:17px;font-weight:600;cursor:pointer;transition:background .16s cubic-bezier(.2,.8,.3,1),transform .16s cubic-bezier(.2,.8,.3,1)" style-hover="background:#0A6653;transform:translateY(-1px)">Je suis prêt</button>
+                  <span style="font-size:13px;font-weight:500;line-height:1.45;color:#9BA6A0">Clique pour capturer ta souris</span>
+              </div>
+            </div>
+            <div style="width:300px;box-sizing:border-box;flex:none;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:12px;box-shadow:0 1px 2px rgba(22,25,26,.05)">
+              <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em">Classement</span>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <sc-for list="{{ prepManche2 }}" as="j" hint-placeholder-count="6">
+                  <div style="display:flex;align-items:center;gap:10px;border:1px solid #DFE2DB;border-radius:16px;padding:0 12px;height:38px;box-sizing:border-box;background:{{ j.fond }};transition:transform .18s cubic-bezier(.2,.8,.3,1)">
+                    <div style="width:18px;height:18px;flex:none;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:{{ j.hex }};opacity:{{ j.opacite }}"></div>
+                    <span style="flex:1;min-width:0;font-size:15px;font-weight:600;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:{{ j.encre }}">{{ j.nom }}</span>
+                    <span style="flex:none;font-size:13px;font-weight:500;line-height:1.45;font-variant-numeric:tabular-nums;color:{{ j.encre }}">{{ j.score }}</span>
+                    <sc-if value="{{ j.aRole }}" hint-placeholder-val="{{ false }}">
+                      <span style="flex:none;font-size:12px;font-weight:600;border-radius:999px;padding:4px 8px;color:{{ j.roleEncre }};background:{{ j.roleFond }}">{{ j.role }}</span>
+                    </sc-if>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="5dquater" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;flex-direction:column;gap:5px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:600;color:#FFFFFF;background:#16191A;border-radius:999px;padding:5px 11px">5d quater</span>
+          <span style="font-family:'Nunito',system-ui;font-size:22px;font-weight:800">Spectateur pendant la préparation</span>
+        </div>
+        <span style="font-size:13px;color:#5A6066;max-width:900px">Le spectateur voit le rappel, jamais le bouton : il n'a rien à préparer. Les badges Prêt restent visibles, aucune ligne n'est mise en évidence.</span>
+      </div>
+      <div data-screen-label="5.3 Spectateur préparation" style="width:1440px;height:900px;background:#F4F5F2;border-radius:24px;overflow:hidden;box-shadow:0 2px 6px rgba(22,25,26,.06),0 40px 80px -50px rgba(22,25,26,.45);display:flex;flex-direction:column;color:#16191A">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:32px 56px">
+          <div style="display:flex;align-items:center;gap:13px">
+            <div style="position:relative;width:44px;height:44px;border-radius:16px;background:#0E7C66;flex:none">
+              <div style="position:absolute;left:9px;top:9px;width:10px;height:10px;border-radius:999px;background:#FFFFFF"></div>
+              <div style="position:absolute;right:8px;top:14px;width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.62)"></div>
+              <div style="position:absolute;left:16px;bottom:8px;width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.82)"></div>
+            </div>
+            <span style="font-family:'Nunito',system-ui;font-size:26px;font-weight:800;letter-spacing:-.03em">Games Party</span>
+          </div>
+          <button type="button" aria-label="Couper le son" style="width:48px;height:48px;border:1px solid #DFE2DB;border-radius:999px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .12s cubic-bezier(.4,0,1,1)" style-hover="background:#ECEEE8;border-color:#C7CCC0"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#16191A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3L11 6v12l-4-3.5H4z"></path><path d="M15 9.6a3.6 3.6 0 0 1 0 4.8"></path><path d="M17.6 7.2a7 7 0 0 1 0 9.6"></path></svg></button>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:20px;padding:0 56px 40px;min-height:0">
+          <div style="display:flex;align-items:center;gap:32px;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:999px;padding:12px 28px">
+            <span style="font-size:12px;font-weight:600;line-height:1.3;letter-spacing:.06em;text-transform:uppercase;color:#5A6066">Manche 2 / 3</span>
+            <span style="font-size:15px;font-weight:600;line-height:1.4;color:#5A6066">Départ automatique dans 12 s</span>
+            <div style="flex:1;min-width:0"></div>
+            <span style="font-size:12px;font-weight:600;background:#ECEEE8;border-radius:999px;padding:4px 8px">Spectateur</span>
+            <span style="font-size:15px;font-weight:600;line-height:1.4;color:#5A6066">Tu joueras à la prochaine partie</span>
+          </div>
+          <div style="flex:1;display:flex;gap:24px;align-items:flex-start;min-height:0">
+            <div style="flex:1;min-width:0;position:relative;aspect-ratio:16 / 9;border-radius:24px;background:#1E2422;overflow:hidden">
+              <div style="position:absolute;left:46.26%;top:43.36%;width:7.48%;height:13.29%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:18.7%;top:22.03%;width:18.7%;height:4.2%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:62.4%;top:73.43%;width:18.7%;height:4.2%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:73.62%;top:13.29%;width:2.36%;height:29.02%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:23.62%;top:57.69%;width:2.36%;height:29.02%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:4.5%;top:8%;width:30px;height:30px;box-sizing:border-box;border-radius:999px;border:3px solid #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">A</div>
+              <div style="position:absolute;left:91.4%;top:84%;width:30px;height:30px;box-sizing:border-box;border-radius:999px;border:3px solid #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">A</div>
+              <div style="position:absolute;left:91.4%;top:8%;width:30px;height:30px;box-sizing:border-box;border-radius:999px;border:3px dashed #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">B</div>
+              <div style="position:absolute;left:4.5%;top:84%;width:30px;height:30px;box-sizing:border-box;border-radius:999px;border:3px dashed #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">B</div>
+              <div style="position:absolute;inset:0;background:rgba(22,25,26,.72);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px">
+                  <span style="font-size:17px;line-height:1.6;color:#F2F5F1;text-align:center">Manche 1 terminée · Mika mène avec 71 s</span>
+              </div>
+            </div>
+            <div style="width:300px;box-sizing:border-box;flex:none;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:12px;box-shadow:0 1px 2px rgba(22,25,26,.05)">
+              <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em">Classement</span>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <sc-for list="{{ prepSpectateur }}" as="j" hint-placeholder-count="6">
+                  <div style="display:flex;align-items:center;gap:10px;border:1px solid #DFE2DB;border-radius:16px;padding:0 12px;height:38px;box-sizing:border-box;background:{{ j.fond }};transition:transform .18s cubic-bezier(.2,.8,.3,1)">
+                    <div style="width:18px;height:18px;flex:none;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:{{ j.hex }};opacity:{{ j.opacite }}"></div>
+                    <span style="flex:1;min-width:0;font-size:15px;font-weight:600;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:{{ j.encre }}">{{ j.nom }}</span>
+                    <span style="flex:none;font-size:13px;font-weight:500;line-height:1.45;font-variant-numeric:tabular-nums;color:{{ j.encre }}">{{ j.score }}</span>
+                    <sc-if value="{{ j.aRole }}" hint-placeholder-val="{{ false }}">
+                      <span style="flex:none;font-size:12px;font-weight:600;border-radius:999px;padding:4px 8px;color:{{ j.roleEncre }};background:{{ j.roleFond }}">{{ j.role }}</span>
+                    </sc-if>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="5e" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;flex-direction:column;gap:5px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:600;color:#FFFFFF;background:#16191A;border-radius:999px;padding:5px 11px">5e</span>
+          <span style="font-family:'Nunito',system-ui;font-size:22px;font-weight:800">Clique pour reprendre</span>
+        </div>
+        <span style="font-size:13px;color:#5A6066;max-width:900px">Après Échap ou un changement de fenêtre. La partie continue derrière : l'arène reste lisible, assombrie. Trois choses cliquables seulement : reprendre, le son, quitter.</span>
+      </div>
+      <div data-screen-label="5.3 Reprise" style="position:relative;width:1440px;height:900px;background:#F4F5F2;border-radius:24px;overflow:hidden;box-shadow:0 2px 6px rgba(22,25,26,.06),0 40px 80px -50px rgba(22,25,26,.45);display:flex;flex-direction:column;color:#16191A">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:32px 56px">
+          <div style="display:flex;align-items:center;gap:13px">
+            <div style="position:relative;width:44px;height:44px;border-radius:16px;background:#0E7C66;flex:none">
+              <div style="position:absolute;left:9px;top:9px;width:10px;height:10px;border-radius:999px;background:#FFFFFF"></div>
+              <div style="position:absolute;right:8px;top:14px;width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.62)"></div>
+              <div style="position:absolute;left:16px;bottom:8px;width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.82)"></div>
+            </div>
+            <span style="font-family:'Nunito',system-ui;font-size:26px;font-weight:800;letter-spacing:-.03em">Games Party</span>
+          </div>
+          <button type="button" aria-label="Couper le son" style="width:48px;height:48px;border:1px solid #DFE2DB;border-radius:999px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .12s cubic-bezier(.4,0,1,1);position:relative;z-index:2" style-hover="background:#ECEEE8;border-color:#C7CCC0"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#16191A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3L11 6v12l-4-3.5H4z"></path><path d="M15 9.6a3.6 3.6 0 0 1 0 4.8"></path><path d="M17.6 7.2a7 7 0 0 1 0 9.6"></path></svg></button>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:20px;padding:0 56px 40px;min-height:0">
+          <div style="display:flex;align-items:center;gap:32px;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:999px;padding:12px 28px">
+            <span style="font-size:12px;font-weight:600;line-height:1.3;letter-spacing:.06em;text-transform:uppercase;color:#5A6066">Manche 2 / 3</span>
+            <span style="font-family:'Nunito',system-ui;font-size:40px;font-weight:800;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums">0:31</span>
+            <div style="flex:1;min-width:0"></div>
+            <span style="display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:600;line-height:1.4;color:#0A6653;background:#E3F0EA;border-radius:999px;padding:8px 16px"><span style="width:9px;height:9px;border-radius:999px;background:#0E7C66"></span>Coureur</span>
+            <div style="display:flex;align-items:baseline;gap:8px">
+              <span style="font-size:12px;font-weight:600;line-height:1.3;letter-spacing:.06em;text-transform:uppercase;color:#5A6066">Ton score</span>
+              <span style="font-family:'Nunito',system-ui;font-size:28px;font-weight:800;line-height:1.15;letter-spacing:-.02em;font-variant-numeric:tabular-nums">58 s</span>
+            </div>
+          </div>
+          <div style="flex:1;display:flex;gap:24px;align-items:flex-start;min-height:0">
+            <div style="flex:1;min-width:0;position:relative;aspect-ratio:16 / 9;border-radius:24px;background:#1E2422;overflow:hidden">
+              <div style="position:absolute;left:46.26%;top:43.36%;width:7.48%;height:13.29%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:18.7%;top:22.03%;width:18.7%;height:4.2%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:62.4%;top:73.43%;width:18.7%;height:4.2%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:73.62%;top:13.29%;width:2.36%;height:29.02%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:23.62%;top:57.69%;width:2.36%;height:29.02%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:4.5%;top:8%;width:30px;height:30px;box-sizing:border-box;border-radius:999px;border:3px solid #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">A</div>
+              <div style="position:absolute;left:91.4%;top:84%;width:30px;height:30px;box-sizing:border-box;border-radius:999px;border:3px solid #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">A</div>
+              <div style="position:absolute;left:91.4%;top:8%;width:30px;height:30px;box-sizing:border-box;border-radius:999px;border:3px dashed #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">B</div>
+              <div style="position:absolute;left:4.5%;top:84%;width:30px;height:30px;box-sizing:border-box;border-radius:999px;border:3px dashed #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">B</div>
+              <sc-for list="{{ areneJeu }}" as="c" hint-placeholder-count="6">
+                <div style="position:absolute;display:flex;align-items:center;gap:8px;left:{{ c.x }};top:{{ c.y }}">
+                  <sc-if value="{{ c.estChat }}" hint-placeholder-val="{{ false }}">
+                    <div style="position:relative;width:26px;height:26px;flex:none;border-radius:999px;background:{{ c.hex }};box-shadow:{{ c.halo }}">
+                      <div style="position:absolute;left:1px;top:-5px;width:8px;height:8px;border-radius:2px;transform:rotate(45deg);background:{{ c.hex }}"></div>
+                      <div style="position:absolute;right:1px;top:-5px;width:8px;height:8px;border-radius:2px;transform:rotate(45deg);background:{{ c.hex }}"></div>
+                      <sc-if value="{{ c.gelChat }}" hint-placeholder-val="{{ false }}">
+                        <div style="position:absolute;inset:0;border-radius:999px;background:rgba(142,197,232,.9);display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:13px;font-weight:800;color:#08324A;animation:gpFreeze 1.2s ease-in-out infinite">{{ c.gel }}</div>
+                      </sc-if>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ c.estGele }}" hint-placeholder-val="{{ false }}">
+                    <div style="position:relative;width:26px;height:26px;flex:none;border-radius:999px;background:{{ c.hex }};box-shadow:0 0 0 3px rgba(142,197,232,.4),0 0 0 7px rgba(142,197,232,.18)">
+                      <div style="position:absolute;inset:0;border-radius:999px;background:rgba(142,197,232,.9);display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:13px;font-weight:800;color:#08324A">{{ c.gel }}</div>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ c.estCoureur }}" hint-placeholder-val="{{ true }}">
+                    <div style="width:22px;height:22px;flex:none;border-radius:999px;background:{{ c.hex }};box-shadow:{{ c.halo }}"></div>
+                  </sc-if>
+                  <span style="font-size:12px;font-weight:600;color:#F2F5F1;background:rgba(0,0,0,.45);border-radius:6px;padding:3px 8px;white-space:nowrap">{{ c.nom }}{{ c.suffixe }}</span>
+                </div>
+              </sc-for>
+              <div style="position:absolute;inset:0;background:rgba(22,25,26,.72);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px">
+                <div style="display:flex;flex-direction:column;align-items:center;gap:12px">
+                  <span style="font-family:'Nunito',system-ui;font-size:40px;font-weight:800;line-height:1.05;letter-spacing:-.03em;color:#F2F5F1">Clique pour reprendre</span>
+                  <span style="display:inline-flex;align-items:center;gap:10px;font-size:15px;font-weight:600;line-height:1.4;color:#16191A;background:#F7EEDC;border-radius:999px;padding:10px 20px"><span style="width:9px;height:9px;flex:none;border-radius:999px;background:#7A5400"></span>Ton curseur ne bouge plus : tu peux te faire attraper</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px">
+                  <button type="button" style="height:56px;border:none;border-radius:999px;background:#0E7C66;color:#FFFFFF;padding:0 34px;font:inherit;font-size:17px;font-weight:600;cursor:pointer;transition:background .16s cubic-bezier(.2,.8,.3,1),transform .16s cubic-bezier(.2,.8,.3,1)" style-hover="background:#0A6653;transform:translateY(-1px)">Reprendre</button>
+                  <button type="button" style="height:56px;border:1px solid #DFE2DB;border-radius:999px;background:#FFFFFF;color:#16191A;padding:0 24px;font:inherit;font-size:16px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:10px;transition:background .12s cubic-bezier(.4,0,1,1)" style-hover="background:#ECEEE8;border-color:#C7CCC0"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#16191A" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4.5H6.8A1.8 1.8 0 0 0 5 6.3v11.4a1.8 1.8 0 0 0 1.8 1.8h7.7"></path><path d="M14.8 12H21"></path><path d="M18.2 8.8 21 12l-2.8 3.2"></path></svg>Quitter la room</button>
+                </div>
+              </div>
+            </div>
+            <div style="width:300px;box-sizing:border-box;flex:none;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:12px;box-shadow:0 1px 2px rgba(22,25,26,.05)">
+              <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em">Classement</span>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <sc-for list="{{ classementJeu }}" as="j" hint-placeholder-count="6">
+                  <div style="display:flex;align-items:center;gap:10px;border:1px solid #DFE2DB;border-radius:16px;padding:0 12px;height:38px;box-sizing:border-box;background:{{ j.fond }}">
+                    <div style="width:18px;height:18px;flex:none;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:{{ j.hex }};opacity:{{ j.opacite }}"></div>
+                    <span style="flex:1;min-width:0;font-size:15px;font-weight:600;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:{{ j.encre }}">{{ j.nom }}</span>
+                    <span style="flex:none;font-size:13px;font-weight:500;line-height:1.45;font-variant-numeric:tabular-nums;color:{{ j.encre }}">{{ j.score }}</span>
+                    <sc-if value="{{ j.aRole }}" hint-placeholder-val="{{ false }}">
+                      <span style="flex:none;font-size:12px;font-weight:600;border-radius:999px;padding:4px 8px;color:{{ j.roleEncre }};background:{{ j.roleFond }}">{{ j.role }}</span>
+                    </sc-if>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="5f" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;flex-direction:column;gap:5px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:600;color:#FFFFFF;background:#16191A;border-radius:999px;padding:5px 11px">5f</span>
+          <span style="font-family:'Nunito',system-ui;font-size:22px;font-weight:800">Quitter la room · vue joueur</span>
+        </div>
+        <span style="font-size:13px;color:#5A6066;max-width:900px">Même boîte que dans le lobby, posée sur l'écran de reprise. « Quitter » utilise le bouton destructif de la planche ; « Rester » reste l'issue par défaut.</span>
+      </div>
+      <div data-screen-label="5.3 Quitter la room" style="position:relative;width:1440px;height:900px;background:#F4F5F2;border-radius:24px;overflow:hidden;box-shadow:0 2px 6px rgba(22,25,26,.06),0 40px 80px -50px rgba(22,25,26,.45);display:flex;flex-direction:column;color:#16191A">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:32px 56px">
+          <div style="display:flex;align-items:center;gap:13px">
+            <div style="position:relative;width:44px;height:44px;border-radius:16px;background:#0E7C66;flex:none">
+              <div style="position:absolute;left:9px;top:9px;width:10px;height:10px;border-radius:999px;background:#FFFFFF"></div>
+              <div style="position:absolute;right:8px;top:14px;width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.62)"></div>
+              <div style="position:absolute;left:16px;bottom:8px;width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.82)"></div>
+            </div>
+            <span style="font-family:'Nunito',system-ui;font-size:26px;font-weight:800;letter-spacing:-.03em">Games Party</span>
+          </div>
+          <div style="width:48px;height:48px;border:1px solid #DFE2DB;border-radius:999px;background:#FFFFFF;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#16191A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3L11 6v12l-4-3.5H4z"></path><path d="M15 9.6a3.6 3.6 0 0 1 0 4.8"></path><path d="M17.6 7.2a7 7 0 0 1 0 9.6"></path></svg></div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:20px;padding:0 56px 40px;min-height:0">
+          <div style="display:flex;align-items:center;gap:32px;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:999px;padding:12px 28px">
+            <span style="font-size:12px;font-weight:600;line-height:1.3;letter-spacing:.06em;text-transform:uppercase;color:#5A6066">Manche 2 / 3</span>
+            <span style="font-family:'Nunito',system-ui;font-size:40px;font-weight:800;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums">0:29</span>
+            <div style="flex:1;min-width:0"></div>
+            <span style="display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:600;line-height:1.4;color:#0A6653;background:#E3F0EA;border-radius:999px;padding:8px 16px"><span style="width:9px;height:9px;border-radius:999px;background:#0E7C66"></span>Coureur</span>
+            <div style="display:flex;align-items:baseline;gap:8px">
+              <span style="font-size:12px;font-weight:600;line-height:1.3;letter-spacing:.06em;text-transform:uppercase;color:#5A6066">Ton score</span>
+              <span style="font-family:'Nunito',system-ui;font-size:28px;font-weight:800;line-height:1.15;letter-spacing:-.02em;font-variant-numeric:tabular-nums">58 s</span>
+            </div>
+          </div>
+          <div style="flex:1;display:flex;gap:24px;align-items:flex-start;min-height:0">
+            <div style="flex:1;min-width:0;position:relative;aspect-ratio:16 / 9;border-radius:24px;background:#1E2422;overflow:hidden">
+              <div style="position:absolute;left:46.26%;top:43.36%;width:7.48%;height:13.29%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:18.7%;top:22.03%;width:18.7%;height:4.2%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:62.4%;top:73.43%;width:18.7%;height:4.2%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:73.62%;top:13.29%;width:2.36%;height:29.02%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:23.62%;top:57.69%;width:2.36%;height:29.02%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:4.5%;top:8%;width:30px;height:30px;box-sizing:border-box;border-radius:999px;border:3px solid #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">A</div>
+              <div style="position:absolute;left:91.4%;top:84%;width:30px;height:30px;box-sizing:border-box;border-radius:999px;border:3px solid #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">A</div>
+              <div style="position:absolute;left:91.4%;top:8%;width:30px;height:30px;box-sizing:border-box;border-radius:999px;border:3px dashed #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">B</div>
+              <div style="position:absolute;left:4.5%;top:84%;width:30px;height:30px;box-sizing:border-box;border-radius:999px;border:3px dashed #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">B</div>
+              <div style="position:absolute;inset:0;background:rgba(22,25,26,.72)"></div>
+            </div>
+            <div style="width:300px;box-sizing:border-box;flex:none;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:12px;box-shadow:0 1px 2px rgba(22,25,26,.05)">
+              <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em">Classement</span>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <sc-for list="{{ classementJeu }}" as="j" hint-placeholder-count="6">
+                  <div style="display:flex;align-items:center;gap:10px;border:1px solid #DFE2DB;border-radius:16px;padding:0 12px;height:38px;box-sizing:border-box;background:{{ j.fond }}">
+                    <div style="width:18px;height:18px;flex:none;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:{{ j.hex }};opacity:{{ j.opacite }}"></div>
+                    <span style="flex:1;min-width:0;font-size:15px;font-weight:600;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:{{ j.encre }}">{{ j.nom }}</span>
+                    <span style="flex:none;font-size:13px;font-weight:500;line-height:1.45;font-variant-numeric:tabular-nums;color:{{ j.encre }}">{{ j.score }}</span>
+                    <sc-if value="{{ j.aRole }}" hint-placeholder-val="{{ false }}">
+                      <span style="flex:none;font-size:12px;font-weight:600;border-radius:999px;padding:4px 8px;color:{{ j.roleEncre }};background:{{ j.roleFond }}">{{ j.role }}</span>
+                    </sc-if>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="position:absolute;inset:0;background:rgba(22,25,26,.55);display:flex;align-items:center;justify-content:center">
+          <div style="width:520px;box-sizing:border-box;background:#FFFFFF;border-radius:24px;padding:40px;display:flex;flex-direction:column;gap:24px;box-shadow:0 2px 6px rgba(22,25,26,.06),0 24px 48px -24px rgba(22,25,26,.22)">
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <span style="font-family:'Nunito',system-ui;font-size:28px;font-weight:800;line-height:1.15;letter-spacing:-.02em">Quitter la room ?</span>
+              <span style="font-size:15px;line-height:1.55;color:#5A6066">Tu pourras revenir avec le lien, mais ton score de la soirée repartira de zéro.</span>
+            </div>
+            <div style="display:flex;gap:12px">
+              <button type="button" style="flex:1;height:54px;border:1px solid #DFE2DB;border-radius:999px;background:#FFFFFF;color:#16191A;font:inherit;font-size:16px;font-weight:600;cursor:pointer;transition:background .12s cubic-bezier(.4,0,1,1)" style-hover="background:#ECEEE8;border-color:#C7CCC0">Rester</button>
+              <button type="button" style="flex:1;height:54px;border:none;border-radius:999px;background:#B3261E;color:#FFFFFF;font:inherit;font-size:16px;font-weight:600;cursor:pointer;transition:background .16s cubic-bezier(.2,.8,.3,1)" style-hover="background:#8E1E18">Quitter</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="5g" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;flex-direction:column;gap:5px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:600;color:#FFFFFF;background:#16191A;border-radius:999px;padding:5px 11px">5g</span>
+          <span style="font-family:'Nunito',system-ui;font-size:22px;font-weight:800">Vue spectateur</span>
+        </div>
+        <span style="font-size:13px;color:#5A6066;max-width:900px">Disposition identique à celle d'un joueur, arène de la même taille. Le spectateur n'est pas un joueur : badge neutre à la place du rôle et du score, aucune ligne mise en évidence, aucun anneau blanc sur un curseur. Pas de capture de souris, l'interface se clique.</span>
+      </div>
+      <div data-screen-label="5.3 Spectateur" style="width:1440px;height:900px;background:#F4F5F2;border-radius:24px;overflow:hidden;box-shadow:0 2px 6px rgba(22,25,26,.06),0 40px 80px -50px rgba(22,25,26,.45);display:flex;flex-direction:column;color:#16191A">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:32px 56px">
+          <div style="display:flex;align-items:center;gap:13px">
+            <div style="position:relative;width:44px;height:44px;border-radius:16px;background:#0E7C66;flex:none">
+              <div style="position:absolute;left:9px;top:9px;width:10px;height:10px;border-radius:999px;background:#FFFFFF"></div>
+              <div style="position:absolute;right:8px;top:14px;width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.62)"></div>
+              <div style="position:absolute;left:16px;bottom:8px;width:10px;height:10px;border-radius:999px;background:rgba(255,255,255,.82)"></div>
+            </div>
+            <span style="font-family:'Nunito',system-ui;font-size:26px;font-weight:800;letter-spacing:-.03em">Games Party</span>
+          </div>
+          <button type="button" aria-label="Couper le son" style="width:48px;height:48px;border:1px solid #DFE2DB;border-radius:999px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .12s cubic-bezier(.4,0,1,1)" style-hover="background:#ECEEE8;border-color:#C7CCC0"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#16191A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3L11 6v12l-4-3.5H4z"></path><path d="M15 9.6a3.6 3.6 0 0 1 0 4.8"></path><path d="M17.6 7.2a7 7 0 0 1 0 9.6"></path></svg></button>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:20px;padding:0 56px 40px;min-height:0">
+          <div style="display:flex;align-items:center;gap:32px;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:999px;padding:12px 28px">
+            <span style="font-size:12px;font-weight:600;line-height:1.3;letter-spacing:.06em;text-transform:uppercase;color:#5A6066">Manche 2 / 3</span>
+            <span style="font-family:'Nunito',system-ui;font-size:40px;font-weight:800;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums">0:47</span>
+            <div style="flex:1;min-width:0"></div>
+            <span style="font-size:12px;font-weight:600;background:#ECEEE8;border-radius:999px;padding:4px 8px">Spectateur</span>
+            <span style="font-size:15px;font-weight:600;line-height:1.4;color:#5A6066">Tu joueras à la prochaine partie</span>
+          </div>
+          <div style="flex:1;display:flex;gap:24px;align-items:flex-start;min-height:0">
+            <div style="flex:1;min-width:0;position:relative;aspect-ratio:16 / 9;border-radius:24px;background:#1E2422;overflow:hidden">
+              <div style="position:absolute;left:46.26%;top:43.36%;width:7.48%;height:13.29%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:18.7%;top:22.03%;width:18.7%;height:4.2%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:62.4%;top:73.43%;width:18.7%;height:4.2%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:73.62%;top:13.29%;width:2.36%;height:29.02%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:23.62%;top:57.69%;width:2.36%;height:29.02%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:4.5%;top:8%;width:30px;height:30px;box-sizing:border-box;border-radius:999px;border:3px solid #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">A</div>
+              <div style="position:absolute;left:91.4%;top:84%;width:30px;height:30px;box-sizing:border-box;border-radius:999px;border:3px solid #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">A</div>
+              <div style="position:absolute;left:91.4%;top:8%;width:30px;height:30px;box-sizing:border-box;border-radius:999px;border:3px dashed #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">B</div>
+              <div style="position:absolute;left:4.5%;top:84%;width:30px;height:30px;box-sizing:border-box;border-radius:999px;border:3px dashed #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">B</div>
+              <sc-for list="{{ areneSpectateur }}" as="c" hint-placeholder-count="6">
+                <div style="position:absolute;display:flex;align-items:center;gap:8px;left:{{ c.x }};top:{{ c.y }}">
+                  <sc-if value="{{ c.estChat }}" hint-placeholder-val="{{ false }}">
+                    <div style="position:relative;width:26px;height:26px;flex:none;border-radius:999px;background:{{ c.hex }};box-shadow:{{ c.halo }}">
+                      <div style="position:absolute;left:1px;top:-5px;width:8px;height:8px;border-radius:2px;transform:rotate(45deg);background:{{ c.hex }}"></div>
+                      <div style="position:absolute;right:1px;top:-5px;width:8px;height:8px;border-radius:2px;transform:rotate(45deg);background:{{ c.hex }}"></div>
+                      <sc-if value="{{ c.gelChat }}" hint-placeholder-val="{{ false }}">
+                        <div style="position:absolute;inset:0;border-radius:999px;background:rgba(142,197,232,.9);display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:13px;font-weight:800;color:#08324A;animation:gpFreeze 1.2s ease-in-out infinite">{{ c.gel }}</div>
+                      </sc-if>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ c.estGele }}" hint-placeholder-val="{{ false }}">
+                    <div style="position:relative;width:26px;height:26px;flex:none;border-radius:999px;background:{{ c.hex }};box-shadow:0 0 0 3px rgba(142,197,232,.4),0 0 0 7px rgba(142,197,232,.18)">
+                      <div style="position:absolute;inset:0;border-radius:999px;background:rgba(142,197,232,.9);display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:13px;font-weight:800;color:#08324A;animation:gpFreeze 1.2s ease-in-out infinite">{{ c.gel }}</div>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ c.estCoureur }}" hint-placeholder-val="{{ true }}">
+                    <div style="width:22px;height:22px;flex:none;border-radius:999px;background:{{ c.hex }};box-shadow:{{ c.halo }}"></div>
+                  </sc-if>
+                  <span style="font-size:12px;font-weight:600;color:#F2F5F1;background:rgba(0,0,0,.45);border-radius:6px;padding:3px 8px;white-space:nowrap">{{ c.nom }}{{ c.suffixe }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="width:300px;box-sizing:border-box;flex:none;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:12px;box-shadow:0 1px 2px rgba(22,25,26,.05)">
+              <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em">Classement</span>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <sc-for list="{{ classementSpectateur }}" as="j" hint-placeholder-count="6">
+                  <div style="display:flex;align-items:center;gap:10px;border:1px solid #DFE2DB;border-radius:16px;padding:0 12px;height:38px;box-sizing:border-box;background:{{ j.fond }};transition:transform .18s cubic-bezier(.2,.8,.3,1)">
+                    <div style="width:18px;height:18px;flex:none;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:{{ j.hex }};opacity:{{ j.opacite }}"></div>
+                    <span style="flex:1;min-width:0;font-size:15px;font-weight:600;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:{{ j.encre }}">{{ j.nom }}</span>
+                    <span style="flex:none;font-size:13px;font-weight:500;line-height:1.45;font-variant-numeric:tabular-nums;color:{{ j.encre }}">{{ j.score }}</span>
+                    <sc-if value="{{ j.aRole }}" hint-placeholder-val="{{ false }}">
+                      <span style="flex:none;font-size:12px;font-weight:600;border-radius:999px;padding:4px 8px;color:{{ j.roleEncre }};background:{{ j.roleFond }}">{{ j.role }}</span>
+                    </sc-if>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="5h" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;flex-direction:column;gap:5px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <span style="font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:600;color:#FFFFFF;background:#16191A;border-radius:999px;padding:5px 11px">5h</span>
+          <span style="font-family:'Nunito',system-ui;font-size:22px;font-weight:800">10 joueurs dont un déconnecté · 1366 × 768</span>
+        </div>
+        <span style="font-size:13px;color:#5A6066;max-width:900px">Marges 48, colonne de classement 300, arène au reste en 16:9. Les dix lignes tiennent sans défilement ; le curseur du joueur déconnecté n'apparaît pas dans l'arène.</span>
+      </div>
+      <div data-screen-label="5.3 Dix joueurs 1366" style="width:1366px;height:768px;background:#F4F5F2;border-radius:24px;overflow:hidden;box-shadow:0 2px 6px rgba(22,25,26,.06),0 40px 80px -50px rgba(22,25,26,.45);display:flex;flex-direction:column;color:#16191A">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:24px 48px">
+          <div style="display:flex;align-items:center;gap:11px">
+            <div style="position:relative;width:38px;height:38px;border-radius:12px;background:#0E7C66;flex:none">
+              <div style="position:absolute;left:8px;top:8px;width:9px;height:9px;border-radius:999px;background:#FFFFFF"></div>
+              <div style="position:absolute;right:7px;top:12px;width:9px;height:9px;border-radius:999px;background:rgba(255,255,255,.62)"></div>
+              <div style="position:absolute;left:14px;bottom:7px;width:9px;height:9px;border-radius:999px;background:rgba(255,255,255,.82)"></div>
+            </div>
+            <span style="font-family:'Nunito',system-ui;font-size:23px;font-weight:800;letter-spacing:-.03em">Games Party</span>
+          </div>
+          <div style="width:48px;height:48px;border:1px solid #DFE2DB;border-radius:999px;background:#FFFFFF;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#16191A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3L11 6v12l-4-3.5H4z"></path><path d="M15 9.6a3.6 3.6 0 0 1 0 4.8"></path><path d="M17.6 7.2a7 7 0 0 1 0 9.6"></path></svg></div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:16px;padding:0 48px 32px;min-height:0">
+          <div style="display:flex;align-items:center;gap:24px;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:999px;padding:10px 24px">
+            <span style="font-size:12px;font-weight:600;line-height:1.3;letter-spacing:.06em;text-transform:uppercase;color:#5A6066">Manche 3 / 3</span>
+            <span style="font-family:'Nunito',system-ui;font-size:40px;font-weight:800;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums">0:52</span>
+            <div style="flex:1;min-width:0"></div>
+            <span style="display:inline-flex;align-items:center;gap:8px;font-size:15px;font-weight:600;line-height:1.4;color:#0A6653;background:#E3F0EA;border-radius:999px;padding:8px 16px"><span style="width:9px;height:9px;border-radius:999px;background:#0E7C66"></span>Coureur</span>
+            <div style="display:flex;align-items:baseline;gap:8px">
+              <span style="font-size:12px;font-weight:600;line-height:1.3;letter-spacing:.06em;text-transform:uppercase;color:#5A6066">Ton score</span>
+              <span style="font-family:'Nunito',system-ui;font-size:28px;font-weight:800;line-height:1.15;letter-spacing:-.02em;font-variant-numeric:tabular-nums">66 s</span>
+            </div>
+          </div>
+          <div style="flex:1;display:flex;gap:24px;align-items:flex-start;min-height:0">
+            <div style="flex:1;min-width:0;position:relative;aspect-ratio:16 / 9;border-radius:20px;background:#1E2422;overflow:hidden">
+              <div style="position:absolute;left:46.26%;top:43.36%;width:7.48%;height:13.29%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:18.7%;top:22.03%;width:18.7%;height:4.2%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:62.4%;top:73.43%;width:18.7%;height:4.2%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:73.62%;top:13.29%;width:2.36%;height:29.02%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:23.62%;top:57.69%;width:2.36%;height:29.02%;border-radius:8px;background:#333B37"></div>
+              <div style="position:absolute;left:4.5%;top:8%;width:28px;height:28px;box-sizing:border-box;border-radius:999px;border:3px solid #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">A</div>
+              <div style="position:absolute;left:91.4%;top:84%;width:28px;height:28px;box-sizing:border-box;border-radius:999px;border:3px solid #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">A</div>
+              <div style="position:absolute;left:91.4%;top:8%;width:28px;height:28px;box-sizing:border-box;border-radius:999px;border:3px dashed #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">B</div>
+              <div style="position:absolute;left:4.5%;top:84%;width:28px;height:28px;box-sizing:border-box;border-radius:999px;border:3px dashed #C9D2CC;display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:12px;font-weight:800;color:#C9D2CC">B</div>
+              <sc-for list="{{ areneDix }}" as="c" hint-placeholder-count="9">
+                <div style="position:absolute;display:flex;align-items:center;gap:8px;left:{{ c.x }};top:{{ c.y }}">
+                  <sc-if value="{{ c.estChat }}" hint-placeholder-val="{{ false }}">
+                    <div style="position:relative;width:26px;height:26px;flex:none;border-radius:999px;background:{{ c.hex }};box-shadow:{{ c.halo }}">
+                      <div style="position:absolute;left:1px;top:-5px;width:8px;height:8px;border-radius:2px;transform:rotate(45deg);background:{{ c.hex }}"></div>
+                      <div style="position:absolute;right:1px;top:-5px;width:8px;height:8px;border-radius:2px;transform:rotate(45deg);background:{{ c.hex }}"></div>
+                      <sc-if value="{{ c.gelChat }}" hint-placeholder-val="{{ false }}">
+                        <div style="position:absolute;inset:0;border-radius:999px;background:rgba(142,197,232,.9);display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:13px;font-weight:800;color:#08324A;animation:gpFreeze 1.2s ease-in-out infinite">{{ c.gel }}</div>
+                      </sc-if>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ c.estGele }}" hint-placeholder-val="{{ false }}">
+                    <div style="position:relative;width:26px;height:26px;flex:none;border-radius:999px;background:{{ c.hex }};box-shadow:0 0 0 3px rgba(142,197,232,.4),0 0 0 7px rgba(142,197,232,.18)">
+                      <div style="position:absolute;inset:0;border-radius:999px;background:rgba(142,197,232,.9);display:flex;align-items:center;justify-content:center;font-family:'Nunito',system-ui;font-size:13px;font-weight:800;color:#08324A;animation:gpFreeze 1.2s ease-in-out infinite">{{ c.gel }}</div>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ c.estCoureur }}" hint-placeholder-val="{{ true }}">
+                    <div style="width:22px;height:22px;flex:none;border-radius:999px;background:{{ c.hex }};box-shadow:{{ c.halo }}"></div>
+                  </sc-if>
+                  <span style="font-size:12px;font-weight:600;color:#F2F5F1;background:rgba(0,0,0,.45);border-radius:6px;padding:3px 8px;white-space:nowrap">{{ c.nom }}{{ c.suffixe }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="width:300px;box-sizing:border-box;flex:none;background:#FFFFFF;border:1px solid #DFE2DB;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 1px 2px rgba(22,25,26,.05)">
+              <span style="font-family:'Nunito',system-ui;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em">Classement</span>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <sc-for list="{{ classementDix }}" as="j" hint-placeholder-count="10">
+                  <div style="display:flex;align-items:center;gap:8px;border:1px solid #DFE2DB;border-radius:16px;padding:0 10px;height:38px;box-sizing:border-box;background:{{ j.fond }};transition:transform .18s cubic-bezier(.2,.8,.3,1)">
+                    <div style="width:18px;height:18px;flex:none;border-radius:999px;box-shadow:inset 0 0 0 1px rgba(22,25,26,.14);background:{{ j.hex }};opacity:{{ j.opacite }}"></div>
+                    <span style="flex:1;min-width:0;font-size:15px;font-weight:600;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:{{ j.encre }}">{{ j.nom }}</span>
+                    <span style="flex:none;font-size:13px;font-weight:500;line-height:1.45;font-variant-numeric:tabular-nums;color:{{ j.encre }}">{{ j.score }}</span>
+                    <sc-if value="{{ j.aRole }}" hint-placeholder-val="{{ false }}">
+                      <span style="flex:none;font-size:12px;font-weight:600;border-radius:999px;padding:4px 8px;color:{{ j.roleEncre }};background:{{ j.roleFond }}">{{ j.role }}</span>
+                    </sc-if>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;compte&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:3,&quot;min&quot;:1,&quot;max&quot;:3,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Compte à rebours&quot;}}">
+class Component extends DCLogic {
+  // Une seule source pour les six joueurs de la partie de référence.
+  base() {
+    return [
+      { nom: "Mika", hex: "#FF5FB0", score: 71 },
+      { nom: "ClementLeBoss123", hex: "#2BA8FF", score: 58, moi: true },
+      { nom: "Lulu", hex: "#3DDC97", score: 54 },
+      { nom: "Tibo", hex: "#C77DFF", score: 42 },
+      { nom: "Sam", hex: "#FF4D4D", score: 33 },
+      { nom: "Nono", hex: "#F5D131", score: 21 }
+    ];
+  }
+  positions() {
+    return [
+      { x: "36.2%", y: "32.2%" },
+      { x: "57.5%", y: "26.2%" },
+      { x: "30.7%", y: "71.7%" },
+      { x: "75.8%", y: "54.5%" },
+      { x: "12.4%", y: "58.4%" },
+      { x: "63.1%", y: "12.6%" }
+    ];
+  }
+  // rôles : "chat" | "coureur" | "gel"
+  // Halo du Chat : la couleur du joueur, comme sur l'accueil et le lobby.
+  haloChat(hex) {
+    const n = parseInt(hex.slice(1), 16);
+    const rvb = [(n >> 16) & 255, (n >> 8) & 255, n & 255].join(",");
+    return "0 0 0 4px rgba(" + rvb + ",.28),0 0 0 9px rgba(" + rvb + ",.12)";
+  }
+  // Préparation : aucun rôle tiré au sort, seul le badge « Prêt » compte.
+  classementPrep(prets, scores, spectateur) {
+    const avecScore = !!scores;
+    return this.base()
+      .map((p) => ({ ...p, score: avecScore ? scores[p.nom] : 0 }))
+      .sort((a, b) => b.score - a.score || a.nom.localeCompare(b.nom))
+      .map((p) => ({
+        nom: p.nom,
+        hex: p.hex,
+        score: p.score + " s",
+        opacite: 1,
+        encre: "#16191A",
+        fond: p.moi && !spectateur ? "#E3F0EA" : "#FFFFFF",
+        aRole: !!prets[p.nom],
+        role: "Prêt",
+        roleEncre: "#0A6653",
+        roleFond: "#E3F0EA"
+      }));
+  }
+  arene(roles, gels, spectateur) {
+    const pos = this.positions();
+    return this.base().map((p, i) => {
+      const role = roles[p.nom] || "coureur";
+      const chat = role === "chat" || role === "chatgel";
+      const anneauMoi = p.moi && !spectateur ? ",0 0 0 3px #F2F5F1" : "";
+      return {
+        nom: p.nom,
+        hex: p.hex,
+        x: pos[i].x,
+        y: pos[i].y,
+        estChat: chat,
+        estGele: role === "gel",
+        estCoureur: role === "coureur",
+        gelChat: role === "chatgel",
+        gel: gels[p.nom] || "",
+        suffixe: chat ? " · chat" : "",
+        halo: chat
+          ? this.haloChat(p.hex) + anneauMoi
+          : "0 0 0 2.5px rgba(255,255,255,.3)" + anneauMoi
+      };
+    }).filter((c) => !(roles[c.nom] === "absent"));
+  }
+  classement(roles, scores, deco, spectateur) {
+    const dec = deco || {};
+    return this.base()
+      .map((p) => ({ ...p, score: scores && scores[p.nom] !== undefined ? scores[p.nom] : p.score }))
+      .sort((a, b) => b.score - a.score || a.nom.localeCompare(b.nom))
+      .map((p) => {
+        const role = roles[p.nom] || "coureur";
+        const chat = role === "chat" || role === "chatgel";
+        const off = !!dec[p.nom];
+        return {
+          nom: p.nom,
+          hex: p.hex,
+          score: p.score + " s",
+          opacite: off ? 0.35 : 1,
+          encre: off ? "#5A6066" : "#16191A",
+          fond: p.moi && !spectateur ? "#E3F0EA" : "#FFFFFF",
+          aRole: off || chat,
+          role: off ? "Déconnecté" : "Chat",
+          roleEncre: off ? "#5A6066" : "#16191A",
+          roleFond: off ? "#F4F5F2" : "#FBE9E3"
+        };
+      });
+  }
+  renderVals() {
+    const jeu = { Mika: "chat", Sam: "chat", Nono: "gel" };
+    const chatMoi = { Mika: "chat", ClementLeBoss123: "chatgel" };
+    const retour = { Lulu: "chat", Sam: "chat" };
+
+    const dix = [
+      { nom: "Mika", hex: "#FF5FB0", score: 88 },
+      { nom: "ClementLeBoss123", hex: "#2BA8FF", score: 66, moi: true },
+      { nom: "Lulu", hex: "#3DDC97", score: 61 },
+      { nom: "Tibo", hex: "#C77DFF", score: 57 },
+      { nom: "Sam", hex: "#FF4D4D", score: 49 },
+      { nom: "Zoé", hex: "#7C8CFF", score: 44 },
+      { nom: "Kev", hex: "#22D3EE", score: 38 },
+      { nom: "Manu", hex: "#A3E635", score: 30 },
+      { nom: "Chloé", hex: "#FF9330", score: 24 },
+      { nom: "Nono", hex: "#F5D131", score: 12, off: true }
+    ];
+    const rolesDix = { Mika: "chat", Kev: "chat", Manu: "gel" };
+    const posDix = [
+      { x: "36.2%", y: "32.2%" }, { x: "57.5%", y: "26.2%" }, { x: "30.7%", y: "71.7%" },
+      { x: "75.8%", y: "54.5%" }, { x: "12.4%", y: "58.4%" }, { x: "63.1%", y: "12.6%" },
+      { x: "44.9%", y: "79.7%" }, { x: "16.5%", y: "13.3%" }, { x: "81.9%", y: "31.5%" }
+    ];
+
+    return {
+      compte: this.props.compte ?? 3,
+      areneJeu: this.arene(jeu, { Nono: 2 }),
+      areneChat: this.arene(chatMoi, { ClementLeBoss123: 2 }),
+      areneRetour: this.arene(retour, {}),
+      areneSpectateur: this.arene(jeu, { Nono: 2 }, true),
+      prepAttente: this.classementPrep({ Mika: true, Lulu: true, Tibo: true }, null),
+      prepPret: this.classementPrep({ Mika: true, Lulu: true, Tibo: true, ClementLeBoss123: true }, null),
+      prepTous: this.classementPrep({ Mika: true, ClementLeBoss123: true, Lulu: true, Tibo: true, Sam: true, Nono: true }, null),
+      prepManche2: this.classementPrep({ Mika: true, Lulu: true, Tibo: true }, { Mika: 71, ClementLeBoss123: 58, Lulu: 54, Tibo: 42, Sam: 33, Nono: 21 }),
+      prepSpectateur: this.classementPrep({ Mika: true, Lulu: true, Tibo: true }, { Mika: 71, ClementLeBoss123: 58, Lulu: 54, Tibo: 42, Sam: 33, Nono: 21 }, true),
+      classementJeu: this.classement(jeu, null),
+      classementChat: this.classement(chatMoi, { ClementLeBoss123: 51 }),
+      classementRetour: this.classement(retour, { ClementLeBoss123: 54, Lulu: 47 }),
+
+      areneDix: dix.filter((p) => !p.off).map((p, i) => {
+        const role = rolesDix[p.nom] || "coureur";
+        const anneauMoi = p.moi ? ",0 0 0 3px #F2F5F1" : "";
+        return {
+          nom: p.nom, hex: p.hex, x: posDix[i].x, y: posDix[i].y,
+          estChat: role === "chat", estGele: role === "gel", estCoureur: role === "coureur",
+          gelChat: false,
+          gel: role === "gel" ? 1 : "",
+          suffixe: role === "chat" ? " · chat" : "",
+          halo: role === "chat"
+            ? this.haloChat(p.hex) + anneauMoi
+            : "0 0 0 2.5px rgba(255,255,255,.3)" + anneauMoi
+        };
+      }),
+      classementDix: dix.slice().sort((a, b) => b.score - a.score || a.nom.localeCompare(b.nom)).map((p) => {
+        const role = rolesDix[p.nom] || "coureur";
+        return {
+          nom: p.nom, hex: p.hex, score: p.score + " s",
+          opacite: p.off ? 0.35 : 1,
+          encre: p.off ? "#5A6066" : "#16191A",
+          fond: p.moi ? "#E3F0EA" : "#FFFFFF",
+          aRole: p.off || role === "chat",
+          role: p.off ? "Déconnecté" : "Chat",
+          roleEncre: p.off ? "#5A6066" : "#16191A",
+          roleFond: p.off ? "#F4F5F2" : "#FBE9E3"
+        };
+      }),
+      classementSpectateur: this.classement(jeu, null, null, true)
+    };
+  }
+}
+
+</script>
+</body>
+</html>
