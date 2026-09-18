@@ -6,3 +6,68 @@ export const STATIC_ASSETS_MAX_AGE_S = 31536000;
 
 /** Largest incoming Socket.IO message accepted, in bytes (docs/architecture.md, §13). */
 export const MAX_MESSAGE_BYTES = 16384;
+
+/** People allowed in one room, spectators and bots included (docs/architecture.md, §13). */
+export const ROOM_CAPACITY = 10;
+
+/** Number of characters of a room code (docs/architecture.md, §13). */
+export const ROOM_CODE_LENGTH = 10;
+
+/** Alphabet of a room code, without look-alike characters (docs/architecture.md, §13). */
+export const ROOM_CODE_ALPHABET = "23456789abcdefghijkmnpqrstuvwxyz";
+
+/** Rooms living at the same time (docs/architecture.md, §13). */
+export const MAX_ROOMS = 50;
+
+/** Delay before an empty room is deleted, in milliseconds (docs/architecture.md, §13). */
+export const EMPTY_ROOM_TTL_MS = 300000;
+
+/** Delay a disconnected player keeps their seat, in milliseconds (docs/architecture.md, §13). */
+export const RECONNECT_GRACE_MS = 30000;
+
+/** Delay before the results screen returns to the lobby, in milliseconds (docs/architecture.md, §13). */
+export const RESULTS_AUTO_RETURN_MS = 20000;
+
+/** Shortest accepted pseudo, in characters (docs/architecture.md, §13). */
+export const PSEUDO_MIN_LENGTH = 2;
+
+/** Longest accepted pseudo, in characters (docs/architecture.md, §13). */
+export const PSEUDO_MAX_LENGTH = 16;
+
+/** Player colours, in the fixed order used to hand out a free one (docs/architecture.md, §13). */
+export const PLAYER_COLOR_IDS = [
+  "c1",
+  "c2",
+  "c3",
+  "c4",
+  "c5",
+  "c6",
+  "c7",
+  "c8",
+  "c9",
+  "c10",
+] as const;
+
+/** Number of characters of a secret session token (docs/architecture.md, §13). */
+export const SESSION_TOKEN_LENGTH = 32;
+
+/** Number of characters of a public player id (docs/architecture.md, §13). */
+export const SESSION_PLAYER_ID_LENGTH = 12;
+
+/** Lifetime of a session bound to no socket and no room, in milliseconds (docs/architecture.md, §13). */
+export const SESSION_TTL_MS = 86400000;
+
+/** Server loop steps per second (docs/architecture.md, §13). */
+export const SERVER_TICK_RATE = 30;
+
+/** Longest step handed to a game, in milliseconds (docs/architecture.md, §13). */
+export const MAX_TICK_DT_MS = 100;
+
+/** Messages accepted per sliding second and per socket (docs/architecture.md, §13). */
+export const RATE_LIMIT_MESSAGES_PER_SECOND = 60;
+
+/** Time over the message limit before a socket is disconnected, in milliseconds (docs/architecture.md, §13). */
+export const RATE_LIMIT_KICK_AFTER_MS = 5000;
+
+/** Unknown-room failures accepted per sliding minute and per socket (docs/architecture.md, §13). */
+export const MAX_JOIN_FAILURES_PER_MINUTE = 10;
