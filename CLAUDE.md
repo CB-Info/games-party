@@ -132,8 +132,10 @@ src/
   games/
     gameServer.types.ts         interfaces GameDefinition, GameInstance…
     gameClient.types.ts         interface GameClientDefinition
+    defineGame.ts               efface les types d'un jeu pour le registre
     registry.server.ts
     registry.client.ts
+    fakeGame.fixture.ts         jeu minimal, utilisé par les tests uniquement
     cursor-tag/
       rules.md                  règles du jeu (source de vérité du gameplay)
       shared/                   constants.ts, types.ts, schemas.ts, map.ts
@@ -158,6 +160,7 @@ src/
 | `client/engine`, `games/*/client/render` | Boucle temps réel, Pointer Lock, interpolation, dessin canvas | Importer React |
 | `client/utils`, `shared/`, `games/*/logic`, `games/*/shared` | Fonctions pures et types | Faire des effets de bord (réseau, DOM, stockage, timers, `Math.random`) |
 | `server/socket/handlers` | Transport : valider (Zod), appeler la room, répondre | Contenir des règles de room ou de jeu |
+| `server/sessions` | Identité d'un navigateur : jetons, liaison au socket, péremption | Importer Socket.IO ou Express |
 | `server/rooms`, `games/*/server` | Logique de room et orchestration des jeux | Importer Socket.IO ou Express |
 
 ### Sens des imports
@@ -176,7 +179,7 @@ Ces restrictions sont vérifiées par `npm run lint` (`no-restricted-imports` pa
 - Composants : `PascalCase.tsx`, un composant exporté par fichier.
 - Hooks : `useCamelCase.ts`, un hook exporté par fichier.
 - Classes : `PascalCase.ts`. Autres fichiers : `camelCase.ts`.
-- Tests à côté du fichier testé : `nomDuFichier.test.ts`.
+- Tests à côté du fichier testé : `nomDuFichier.test.ts`. Les données et outils partagés par plusieurs tests : `nomDuFichier.fixture.ts`, jamais importés par le code de production.
 - Exports nommés uniquement, pas d'`export default`.
 - Imports sans extension de fichier. Seule exception : `vite.config.ts`, qui importe avec l'extension `.ts` (exigence de Vite).
 - **Interdit :** les fichiers fourre-tout nommés `utils.ts`, `helpers.ts`, `common.ts`, `misc.ts` ou `index.ts` de réexport. Un fichier est nommé d'après ce qu'il contient (`formatDuration.ts`, `geometry.ts`).
@@ -230,8 +233,8 @@ Ces restrictions sont vérifiées par `npm run lint` (`no-restricted-imports` pa
 - [x] **Étape 0 : documentation**
 - [x] **Étape 1 : squelette.** Client + serveur + Socket.IO, ESLint et Prettier configurés, page affichant « connecté », déployée sur Render.
 - [x] **Design system**, réalisé avec Claude Design, puis `docs/design-system.md`.
-- [ ] **Étape 2a : design system dans le code.** Tokens (`@theme`), polices hébergées, icônes, logo, composants de base de `client/components/ui/`, page de démonstration `/dev/ui` (développement uniquement).
-- [ ] **Étape 2b : rooms côté serveur.** Sessions, création, aperçu, rejoindre, lobby, statut prêt, options des jeux, hôte, spectateurs, reconnexion, départ, classement cumulé, avec leurs tests.
+- [x] **Étape 2a : design system dans le code.** Tokens (`@theme`), polices hébergées, icônes, logo, composants de base de `client/components/ui/`, page de démonstration `/dev/ui` (développement uniquement).
+- [x] **Étape 2b : rooms côté serveur.** Sessions, création, aperçu, rejoindre, lobby, statut prêt, options des jeux, hôte, spectateurs, reconnexion, départ, classement cumulé, avec leurs tests.
 - [ ] **Étape 2c : écrans de l'accueil et du lobby.** Accueil, invitation, erreurs, lobby (joueurs, palette, jeu, réglages, prêt, lancement), confirmation « Quitter la room », notifications, message « ordinateur uniquement » (règle d'or 10). Resserrer la CSP (`style-src` sans `'unsafe-inline'`) une fois ces écrans construits.
 - [ ] **Étape 3 : moteur curseur.** Pointer Lock, curseur virtuel, arène, synchronisation, prédiction, interpolation, bots.
 - [ ] **Étape 4 : Cursor Tag complet.** Écran de jeu, préparation, écran de résultats.

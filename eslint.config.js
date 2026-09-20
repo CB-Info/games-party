@@ -16,7 +16,7 @@ export default tseslint.config(
   tseslint.configs.recommended,
   {
     name: "project/root-tooling",
-    files: ["*.js", "*.ts"],
+    files: ["*.js", "*.mjs", "*.ts"],
     languageOptions: { globals: globals.node },
   },
   {

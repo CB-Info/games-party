@@ -45,7 +45,6 @@ Conséquences acceptées :
 |---|---|
 | `/` | Accueil : saisie du pseudo, bouton « Créer une room » |
 | `/r/:code` | Room : lobby, puis jeu, puis résultats. Si la room n'existe pas : message « Cette room n'existe pas ou a expiré » et bouton de retour à l'accueil. Si le pseudo n'est pas encore défini : écran d'invitation (aperçu de la room via `room:preview`, section 5.7) avec saisie du pseudo avant de rejoindre. |
-| `/dev/ui` | **Développement uniquement.** Planche des composants du design system. La route n'est pas ajoutée quand `import.meta.env.DEV` est faux, et la page n'entre pas dans le build de production. |
 | autre | Page 404 avec bouton de retour à l'accueil |
 
 Sur un écran tactile sans souris (détecté via `matchMedia("(pointer: coarse)")` sans `(any-pointer: fine)`), toutes les routes affichent « Games Party se joue sur ordinateur, avec une souris. »
@@ -70,12 +69,13 @@ Sur un écran tactile sans souris (détecté via `matchMedia("(pointer: coarse)"
 - À la première connexion sans `sessionToken` valide, le serveur génère :
   - un `sessionToken` **secret** (nanoid, 32 caractères), stocké par le client dans `localStorage` et renvoyé à chaque connexion dans `auth` du handshake Socket.IO ;
   - un `playerId` **public** (nanoid, 12 caractères), qui identifie le joueur auprès des autres.
-- Le serveur envoie ces deux valeurs via `session:init`. Le `sessionToken` n'est jamais envoyé à un autre client ni écrit dans les logs.
+- Le serveur envoie ces deux valeurs via `session:init` **à chaque connexion**, y compris à une reconnexion avec un jeton valide : le client reçoit toujours son identité, et le message est sans effet s'il la connaissait déjà. Le `sessionToken` n'est jamais envoyé à un autre client ni écrit dans les logs.
 - Les sessions sont gardées en mémoire. Une session qui n'est liée à aucune room ni à aucun socket depuis 24 h est supprimée.
+- **La session est la seule source de vérité sur la room en cours.** Elle mémorise le code de la room où se trouve le joueur ; le serveur ne tient aucune autre table équivalente (par socket, par exemple), pour qu'il n'y ait rien à désynchroniser.
 - Le client stocke aussi dans `localStorage` son pseudo et l'identifiant de sa couleur préférée.
 - **Pseudo :** obligatoire avant de créer ou rejoindre une room. De `PSEUDO_MIN_LENGTH` à `PSEUDO_MAX_LENGTH` caractères après suppression des espaces aux extrémités, sans caractères de contrôle. Unique dans la room, sans tenir compte des majuscules. En cas de doublon, `room:join` échoue avec `PSEUDO_TAKEN` et le client propose d'en saisir un autre.
 - **Couleur :** palette de 10 couleurs, identifiées `c1` à `c10` dans `shared/constants.ts`. Leurs valeurs viennent de `docs/design-system.md`. Couleur unique dans la room. Si la couleur préférée est prise, la première couleur libre dans l'ordre `c1` → `c10` est attribuée. Le joueur peut en changer dans le lobby parmi les couleurs libres.
-- **Deux onglets avec la même session :** la nouvelle connexion remplace l'ancienne. L'ancien socket reçoit `session:replaced` puis est déconnecté, et l'ancien onglet affiche « Games Party est ouvert dans un autre onglet. »
+- **Deux onglets avec la même session :** la nouvelle connexion remplace l'ancienne. L'ancien socket reçoit `session:replaced` puis est déconnecté, et l'ancien onglet affiche « Games Party est ouvert dans un autre onglet. » Le nouvel onglet **reprend la place immédiatement** : le joueur reste `connected` pour les autres, sans passer par le délai de reconnexion, et le jeu en cours n'est pas notifié.
 
 ## 5. Rooms
 
@@ -85,9 +85,9 @@ Sur un écran tactile sans souris (détecté via `matchMedia("(pointer: coarse)"
 - Accès ouvert à toute personne qui a le lien.
 - Le créateur devient l'hôte et rejoint automatiquement la room.
 - Capacité : `ROOM_CAPACITY` personnes, joueurs, spectateurs et bots compris. Au-delà, `room:join` échoue avec `ROOM_FULL`.
-- Une room vide depuis `EMPTY_ROOM_TTL_MS` est supprimée.
+- Une room est **vide quand elle n'a plus aucun membre humain**, une fois les retraits faits : un joueur déconnecté occupe encore sa place, donc le délai ne démarre qu'après son retrait. Une room créée et jamais rejointe est vide dès sa création. Une room vide depuis `EMPTY_ROOM_TTL_MS` est supprimée.
 - Au maximum `MAX_ROOMS` rooms simultanées. Au-delà, `room:create` échoue avec `SERVER_FULL`.
-- Un socket ne peut être que dans une seule room. Rejoindre une autre room fait d'abord quitter la précédente.
+- Un socket ne peut être que dans une seule room. Rejoindre une autre room fait quitter la précédente : c'est un **départ immédiat**, comme `room:leave`, sans délai de reconnexion et avec perte du score cumulé. La room précédente n'est quittée que **si la nouvelle accepte le joueur** : un `room:join` refusé (pseudo pris, room pleine) ne coûte jamais sa place actuelle.
 
 ### 5.2 États d'une room
 
@@ -103,19 +103,23 @@ LOBBY ──(hôte lance)──► PLAYING ──(jeu terminé)──► RESULTS
 | `PLAYING` | La boucle de tick tourne. La room n'a pas de compte à rebours propre : chaque jeu gère son départ, par exemple une phase de préparation avant chaque manche (voir le `rules.md` du jeu). |
 | `RESULTS` | Classement de la partie et classement cumulé de la room. L'hôte peut cliquer sur « Retour au lobby ». Sinon, retour automatique au bout de `RESULTS_AUTO_RETURN_MS`. |
 
+**Joueurs comptés :** pour le minimum, le maximum et `normalizeOptions`, on compte les joueurs **non retirés et non spectateurs, déconnectés compris**. Seule la condition « tous prêts » (section 5.3) exclut les joueurs déconnectés.
+
+**Départ de l'hôte pendant `RESULTS` :** le rôle est transféré selon la section 5.3 et le retour automatique au lobby continue de courir normalement.
+
 **Partie abandonnée :** si, pendant `PLAYING`, le nombre de joueurs non retirés passe sous le minimum du jeu, la partie s'arrête immédiatement. La room revient au `LOBBY`, aucun point n'est attribué, et tous reçoivent `game:event` `{ type: "aborted" }` pour afficher « Partie arrêtée : pas assez de joueurs ».
 
 ### 5.3 Hôte
 
 - Seul l'hôte peut choisir le jeu, régler ses options, le lancer, revenir au lobby depuis les résultats et, en développement, ajouter ou retirer des bots.
 - **Aucun jeu n'est sélectionné automatiquement.** À la création de la room, `selectedGameId` vaut `null`. L'hôte choisit un jeu dans la liste ; tant qu'aucun jeu n'est choisi, les autres joueurs voient que l'hôte est en train de choisir.
-- **Options des jeux :** la room conserve les options de chaque jeu déjà choisi. Au premier choix d'un jeu, ses options valent `defaultOptions`. Si l'hôte change de jeu puis revient à un jeu déjà choisi, ses dernières options sont restaurées, puis passées par `normalizeOptions` (le nombre de joueurs a pu changer). Ces options disparaissent avec la room.
+- **Options des jeux :** la room conserve les options de chaque jeu déjà choisi. Au premier choix d'un jeu, ses options valent `defaultOptions`. Si l'hôte change de jeu puis revient à un jeu déjà choisi, ses dernières options sont restaurées, puis passées par `normalizeOptions` (le nombre de joueurs a pu changer). **La valeur normalisée remplace la valeur mémorisée : un réglage ramené dans ses bornes parce qu'un joueur est parti ne remonte pas tout seul si ce joueur revient.** Ces options disparaissent avec la room.
 - L'hôte n'a pas de statut « prêt » : lancer la partie vaut accord de sa part.
 - **Conditions de lancement (`lobby:start`), vérifiées dans cet ordre :**
   1. un jeu est sélectionné, sinon `NO_GAME_SELECTED` ;
   2. le nombre de joueurs est au moins le minimum du jeu, sinon `NOT_ENOUGH_PLAYERS`, et au plus le maximum, sinon `TOO_MANY_PLAYERS` ;
   3. sans `force` : tous les joueurs **connectés**, hôte excepté, sont prêts, sinon `NOT_ALL_READY`. Avec `force: true` (« Lancer quand même »), cette condition est ignorée. Les conditions 1 et 2 s'appliquent toujours.
-- Si l'hôte est retiré de la room (fin du délai de reconnexion ou départ volontaire), le rôle passe au joueur humain présent depuis le plus longtemps. Un bot ne peut jamais être hôte. S'il ne reste que des bots, la room est considérée comme vide.
+- Si l'hôte est retiré de la room (fin du délai de reconnexion ou départ volontaire), le rôle passe au joueur humain **connecté** présent depuis le plus longtemps ; s'il n'y en a aucun, au joueur humain présent depuis le plus longtemps, pour que la room garde toujours un hôte. Un bot ne peut jamais être hôte. S'il ne reste que des bots, la room est considérée comme vide.
 
 ### 5.4 Arrivée en cours de partie
 
@@ -124,8 +128,9 @@ LOBBY ──(hôte lance)──► PLAYING ──(jeu terminé)──► RESULTS
 
 ### 5.5 Déconnexion, départ et reconnexion
 
-- **Déconnexion :** le joueur est marqué `connected: false` et sa place est gardée `RECONNECT_GRACE_MS`. Pendant une partie, le jeu est notifié (`onPlayerDisconnect`). Chaque `rules.md` définit le comportement du jeu dans ce cas.
+- **Déconnexion :** le joueur est marqué `connected: false` et sa place est gardée `RECONNECT_GRACE_MS`. Un spectateur a droit au même délai : il occupe lui aussi une place dans la capacité. Pendant une partie, le jeu est notifié (`onPlayerDisconnect`). Chaque `rules.md` définit le comportement du jeu dans ce cas.
 - **Reconnexion** avec le même `sessionToken` dans ce délai : le joueur retrouve sa place (pseudo, couleur, score cumulé, rôle dans la partie en cours). Le jeu est notifié (`onPlayerReconnect`).
+- **Reconnexion alors que la room a disparu** (serveur redémarré, room vide supprimée, délai écoulé) : le serveur efface simplement le code de room de la session, sans envoyer de message. C'est le client qui redemande la room en arrivant sur `/r/<code>` et reçoit `ROOM_NOT_FOUND`.
 - **Retrait :** à la fin du délai, ou immédiatement en cas de `room:leave`, le joueur est retiré. Le jeu est notifié (`onPlayerLeave`), le rôle d'hôte est transféré si nécessaire, et son score cumulé est supprimé. S'il revient plus tard, il repart de zéro.
 - **Quitter volontairement :** un bouton « Quitter la room » est disponible dans le lobby et, pendant une partie, sur l'écran « Clique pour reprendre ». Il ouvre toujours une confirmation. Après confirmation, le client envoie `room:leave` puis revient à l'accueil (`/`). Si le joueur est l'hôte, la confirmation indique le pseudo du joueur qui deviendra hôte (le joueur humain présent depuis le plus longtemps, section 5.3).
 
@@ -137,7 +142,7 @@ LOBBY ──(hôte lance)──► PLAYING ──(jeu terminé)──► RESULTS
 - Exemple à 4 joueurs sans égalité : 3 / 2 / 1 / 0. Avec deux premiers ex æquo : 3 / 3 / 1 / 0.
 - Le calcul se trouve dans `server/rooms/ranking.ts`.
 - Les points sont ajoutés au classement cumulé de la room, trié par points décroissants. Il disparaît avec la room.
-- **Ordre d'affichage des égalités :** dans tous les classements (partie et soirée), les joueurs à égalité sont affichés par ordre alphabétique de leur pseudo, sans tenir compte des majuscules ni des accents. Ils gardent la même place.
+- **Ordre d'affichage des égalités :** dans tous les classements (partie et soirée), les joueurs à égalité sont affichés par ordre alphabétique de leur pseudo, sans tenir compte des majuscules ni des accents (`localeCompare` en `fr` avec `sensitivity: "base"`), puis par `playerId` pour que deux pseudos ne différant que par un accent gardent un ordre stable. Ils gardent la même place.
 - **Contenu de `GameResults`**, calculé par la room à la fin de la partie :
   - `ranking` : pour chaque joueur classé, `playerId`, `place`, `score` et `pointsAwarded` ;
   - `cumulative` : pour chaque joueur de la room hors spectateurs, `playerId`, `points` (total après la partie), `place` (après la partie) et `previousPlace` (place au classement cumulé juste avant la partie, calculée avec la même règle d'égalité). Le client en déduit la flèche de progression : place gagnée, perdue ou identique.
@@ -176,6 +181,7 @@ LOBBY ──(hôte lance)──► PLAYING ──(jeu terminé)──► RESULTS
 - Tous les événements sont typés dans `src/shared/protocol.ts` (`ClientToServerEvents`, `ServerToClientEvents`).
 - Nommage : `domaine:action`.
 - Les requêtes du client qui attendent une réponse utilisent les **acknowledgements** Socket.IO et renvoient `{ ok: true, data }` ou `{ ok: false, error: ErrorCode }`.
+- **Contenu des réponses :** `room:create` et `room:join` renvoient `{ code }` (le client n'a besoin que du code pour aller sur `/r/<code>` : l'état complet arrive juste après par `room:state`). `room:preview` renvoie l'aperçu de la section 5.7. Toutes les autres requêtes renvoient `{ ok: true }` sans données.
 - `ErrorCode` : `INVALID_PAYLOAD`, `ROOM_NOT_FOUND`, `ROOM_FULL`, `SERVER_FULL`, `PSEUDO_TAKEN`, `COLOR_TAKEN`, `NOT_HOST`, `INVALID_STATE`, `NOT_ENOUGH_PLAYERS`, `TOO_MANY_PLAYERS`, `NO_GAME_SELECTED`, `NOT_ALL_READY`, `RATE_LIMITED`.
 
 ### 6.2 Événements
@@ -216,6 +222,8 @@ LOBBY ──(hôte lance)──► PLAYING ──(jeu terminé)──► RESULTS
   2. appeler `tick(dt)` ;
   3. si `isOver()` : arrêter la boucle et passer à `RESULTS` ;
   4. sinon, envoyer à chaque joueur et spectateur connecté `game:view` avec `{ tick, serverTime: Date.now(), view: getViewFor(destinataire) }`.
+
+- `isOver()` est consulté **après chaque tick et après chaque retrait de joueur** : une partie peut se terminer en dehors d'un tick.
 
 ### 6.4 Arène
 
@@ -280,10 +288,19 @@ interface GameDefinition<Input, Action, View, Options> {
   bot: BotPolicy<Input, Action, View>;
 }
 
+type GameEvent = { readonly type: string } & Readonly<Record<string, unknown>>;
+
 interface GameContext {
-  players: ReadonlyArray<{ playerId: string; color: string; isBot: boolean }>;
+  // Liste vivante, lue à chaque appel : un jeu a besoin de l'état courant, par exemple pour
+  // compter les joueurs connectés au début d'une manche.
+  players(): ReadonlyArray<{
+    playerId: string;
+    color: string;
+    isBot: boolean;
+    connected: boolean;
+  }>;
   emitEvent(event: GameEvent, to?: string[]): void; // game:event, à toute la room si `to` est absent
-  getHostId(): string;               // hôte actuel de la room (peut changer pendant la partie)
+  getHostId(): string | null;        // hôte actuel de la room (peut changer pendant la partie)
   random(): number;                  // nombre dans [0, 1)
 }
 
@@ -326,6 +343,7 @@ interface GameClientDefinition<Input, Action, View, Options> {
 
 - `ViewStore` (`client/engine/viewStore.ts`) garde les vues reçues avec leur heure de réception et expose `latest()` et `sampleAt(time)`.
 - Le serveur appelle `onInput` et `onAction` uniquement pour les joueurs de la partie, jamais pour les spectateurs.
+- **Registre des jeux :** le serveur garde des jeux dont les types `Input`, `Action`, `View` et `Options` diffèrent. `games/defineGame.ts` convertit une `GameDefinition` typée en une entrée dont les frontières sont en `unknown`, chaque valeur étant validée par le schéma Zod du jeu avant de lui être transmise. C'est le seul endroit du code avec une conversion de type forcée.
 
 ## 8. Bots (développement uniquement)
 
@@ -343,9 +361,9 @@ interface GameClientDefinition<Input, Action, View, Options> {
 | Triche (fausses positions, faux scores) | Le serveur fait autorité. Les déplacements sont bornés par le budget, les murs et les bords. |
 | Lecture d'informations cachées | Tout passe par `getViewFor`. L'état interne n'est jamais diffusé. |
 | Usurpation d'un joueur | `sessionToken` secret, jamais diffusé ni loggé. Le `playerId` envoyé par un client n'est jamais cru. |
-| Flood de messages | Au plus `RATE_LIMIT_MESSAGES_PER_SECOND` messages par seconde glissante par socket, inputs compris. Surplus ignoré. Limite dépassée pendant `RATE_LIMIT_KICK_AFTER_MS` sans interruption : déconnexion. |
+| Flood de messages | Au plus `RATE_LIMIT_MESSAGES_PER_SECOND` messages par seconde glissante par socket, inputs compris. Un message en surplus qui attend une réponse (ack) reçoit `RATE_LIMITED` ; les autres (`game:input`, `game:view` et tout message sans ack) sont ignorés en silence. Limite dépassée pendant `RATE_LIMIT_KICK_AFTER_MS` sans interruption : déconnexion. |
 | Messages géants | `maxHttpBufferSize` Socket.IO fixé à `MAX_MESSAGE_BYTES`. |
-| Recherche de rooms au hasard | Codes de `ROOM_CODE_LENGTH` caractères. Au plus `MAX_JOIN_FAILURES_PER_MINUTE` échecs de `room:join` ou `room:preview` par socket par minute glissante, puis `RATE_LIMITED`. |
+| Recherche de rooms au hasard | Codes de `ROOM_CODE_LENGTH` caractères. Au plus `MAX_JOIN_FAILURES_PER_MINUTE` échecs `ROOM_NOT_FOUND` de `room:join` ou `room:preview` par socket par minute glissante, puis `RATE_LIMITED`. Les autres échecs (`PSEUDO_TAKEN`, `ROOM_FULL`, `COLOR_TAKEN`, `INVALID_PAYLOAD`…) viennent de joueurs légitimes et ne sont pas comptés. |
 | Saturation du serveur gratuit | `MAX_ROOMS` rooms simultanées, 1 room par socket. |
 | Injection dans la page (XSS) | Pas de `dangerouslySetInnerHTML`. Textes de joueurs affichés comme texte. En-têtes HTTP via `helmet`. |
 | Requêtes d'autres sites | Même origine en production, pas de CORS configuré. |
@@ -403,6 +421,10 @@ Valeurs exactes à utiliser dans `src/shared/constants.ts`. Chaque constante est
 | `STATIC_ASSETS_MAX_AGE_S` | `31536000` (1 an) |
 | `ROOM_CAPACITY` | `10` |
 | `ROOM_CODE_LENGTH` | `10` |
+| `ROOM_CODE_ALPHABET` | `23456789abcdefghijkmnpqrstuvwxyz` |
+| `SESSION_TOKEN_LENGTH` | `32` |
+| `SESSION_PLAYER_ID_LENGTH` | `12` |
+| `SESSION_TTL_MS` | `86400000` (24 h) |
 | `MAX_ROOMS` | `50` |
 | `EMPTY_ROOM_TTL_MS` | `300000` (5 min) |
 | `RECONNECT_GRACE_MS` | `30000` |
