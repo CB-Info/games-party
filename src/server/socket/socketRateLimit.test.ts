@@ -1,10 +1,10 @@
 import { afterEach, describe, expect, it } from "vitest";
 
 import {
+  ask,
+  connected,
   ACK_TIMEOUT_MS,
-  sessionOf,
   startTestServer,
-  type TestClient,
   type TestServer,
 } from "./socketTestHarness.fixture";
 
@@ -20,18 +20,13 @@ afterEach(async () => {
   server = null;
 });
 
-function ask(client: TestClient) {
-  return client.timeout(ACK_TIMEOUT_MS);
-}
-
-async function connected(): Promise<TestClient> {
+/** The running server, with a clear message when a test forgot to start one. */
+function mustServer(): TestServer {
   if (server === null) {
     throw new Error("The server is not started");
   }
 
-  const client = await server.connect();
-  await sessionOf(client);
-  return client;
+  return server;
 }
 
 describe("the message rate limit (§9)", () => {
@@ -39,7 +34,7 @@ describe("the message rate limit (§9)", () => {
     server = await startTestServer({
       rateLimits: { messagesPerSecond: MESSAGES_PER_SECOND, kickAfterMs: ACK_TIMEOUT_MS * 10 },
     });
-    const client = await connected();
+    const client = await connected(mustServer());
 
     const answers = [];
     for (let i = 0; i < MESSAGES_PER_SECOND + 2; i += 1) {
@@ -53,7 +48,7 @@ describe("the message rate limit (§9)", () => {
     server = await startTestServer({
       rateLimits: { messagesPerSecond: MESSAGES_PER_SECOND, kickAfterMs: ACK_TIMEOUT_MS * 10 },
     });
-    const client = await connected();
+    const client = await connected(mustServer());
     const created = await ask(client).emitWithAck("room:create", {
       pseudo: "Mika",
       preferredColor: "c1",
@@ -72,7 +67,7 @@ describe("the message rate limit (§9)", () => {
     server = await startTestServer({
       rateLimits: { messagesPerSecond: MESSAGES_PER_SECOND, kickAfterMs: KICK_AFTER_MS },
     });
-    const client = await connected();
+    const client = await connected(mustServer());
 
     const gone = new Promise<void>((resolve) => client.on("disconnect", () => resolve()));
     const flood = setInterval(() => client.emit("game:input", { delta: 1 }), 5);
@@ -88,7 +83,7 @@ describe("the unknown-room limit (§9)", () => {
     server = await startTestServer({
       rateLimits: { joinFailuresPerMinute: JOIN_FAILURES_PER_MINUTE },
     });
-    const client = await connected();
+    const client = await connected(mustServer());
 
     const answers = [];
     for (let i = 0; i < JOIN_FAILURES_PER_MINUTE + 1; i += 1) {
@@ -103,13 +98,13 @@ describe("the unknown-room limit (§9)", () => {
     server = await startTestServer({
       rateLimits: { joinFailuresPerMinute: JOIN_FAILURES_PER_MINUTE },
     });
-    const host = await connected();
+    const host = await connected(mustServer());
     const created = await ask(host).emitWithAck("room:create", {
       pseudo: "Mika",
       preferredColor: "c1",
     });
     const code = created.ok ? created.data.code : "";
-    const guest = await connected();
+    const guest = await connected(mustServer());
 
     const answers = [];
     for (let i = 0; i < JOIN_FAILURES_PER_MINUTE + 2; i += 1) {
@@ -125,7 +120,7 @@ describe("the unknown-room limit (§9)", () => {
     server = await startTestServer({
       rateLimits: { joinFailuresPerMinute: JOIN_FAILURES_PER_MINUTE },
     });
-    const host = await connected();
+    const host = await connected(mustServer());
     const created = await ask(host).emitWithAck("room:create", {
       pseudo: "Mika",
       preferredColor: "c1",
@@ -134,14 +129,14 @@ describe("the unknown-room limit (§9)", () => {
 
     // Fill the room up to its capacity, then keep knocking at the door.
     for (let i = 1; i < 10; i += 1) {
-      const filler = await connected();
+      const filler = await connected(mustServer());
       await ask(filler).emitWithAck("room:join", {
         code,
         pseudo: `Joueur${i}`,
         preferredColor: "c2",
       });
     }
-    const late = await connected();
+    const late = await connected(mustServer());
 
     const answers = [];
     for (let i = 0; i < JOIN_FAILURES_PER_MINUTE + 2; i += 1) {

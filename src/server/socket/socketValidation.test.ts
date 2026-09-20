@@ -2,11 +2,12 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import { MAX_MESSAGE_BYTES } from "../../shared/constants";
 import {
-  ACK_TIMEOUT_MS,
+  ask,
+  connected,
   sessionOf,
   startTestServer,
+  waitForNextState,
   waitForState,
-  type TestClient,
   type TestServer,
 } from "./socketTestHarness.fixture";
 
@@ -17,24 +18,19 @@ afterEach(async () => {
   server = null;
 });
 
-function ask(client: TestClient) {
-  return client.timeout(ACK_TIMEOUT_MS);
-}
-
-async function connected(): Promise<TestClient> {
+/** The running server, with a clear message when a test forgot to start one. */
+function mustServer(): TestServer {
   if (server === null) {
     throw new Error("The server is not started");
   }
 
-  const client = await server.connect();
-  await sessionOf(client);
-  return client;
+  return server;
 }
 
 describe("message size and shape (§9)", () => {
   it("never lets a message bigger than the limit through", async () => {
     server = await startTestServer();
-    const client = await connected();
+    const client = await connected(mustServer());
 
     const closed = new Promise<void>((resolve) => client.on("disconnect", () => resolve()));
     client.emit("room:preview", { code: "a".repeat(MAX_MESSAGE_BYTES) }, () => {});
@@ -44,7 +40,7 @@ describe("message size and shape (§9)", () => {
 
   it("answers INVALID_PAYLOAD and keeps serving after a malformed message", async () => {
     server = await startTestServer();
-    const client = await connected();
+    const client = await connected(mustServer());
 
     const refused = await ask(client).emitWithAck("room:create", { pseudo: 42 } as never);
     const accepted = await ask(client).emitWithAck("room:create", {
@@ -58,7 +54,7 @@ describe("message size and shape (§9)", () => {
 
   it("refuses a pseudo that is too short after trimming", async () => {
     server = await startTestServer();
-    const client = await connected();
+    const client = await connected(mustServer());
 
     const refused = await ask(client).emitWithAck("room:create", {
       pseudo: "  a  ",
@@ -70,7 +66,7 @@ describe("message size and shape (§9)", () => {
 
   it("refuses an unexpected key, since every payload is strict", async () => {
     server = await startTestServer();
-    const client = await connected();
+    const client = await connected(mustServer());
 
     const refused = await ask(client).emitWithAck("room:create", {
       pseudo: "Mika",
@@ -94,18 +90,20 @@ describe("the session bound to a socket (§4)", () => {
 
   it("gives the seat back to the second tab without the others seeing anything", async () => {
     server = await startTestServer();
-    const host = await connected();
+    const host = await connected(mustServer());
     const created = await ask(host).emitWithAck("room:create", {
       pseudo: "Mika",
       preferredColor: "c1",
     });
     const code = created.ok ? created.data.code : "";
-    const guest = await connected();
+    const guest = await connected(mustServer());
     const session = await sessionOf(guest);
     await ask(guest).emitWithAck("room:join", { code, pseudo: "Nova", preferredColor: "c2" });
     await waitForState(host, (state) => state.players.length === 2);
 
-    const secondTab = await server.connect({ sessionToken: session.sessionToken });
+    // Only a state broadcast after the takeover proves nobody blinked out.
+    const seen = waitForNextState(host, (state) => state.players.length === 2);
+    const secondTab = await mustServer().connect({ sessionToken: session.sessionToken });
     await sessionOf(secondTab);
     const rejoined = await ask(secondTab).emitWithAck("room:join", {
       code,
@@ -114,7 +112,6 @@ describe("the session bound to a socket (§4)", () => {
     });
 
     expect(rejoined).toEqual({ ok: true, data: { code } });
-    const state = await waitForState(host, (s) => s.players.length === 2);
-    expect(state.players.every((player) => player.connected)).toBe(true);
+    expect((await seen).players.every((player) => player.connected)).toBe(true);
   });
 });

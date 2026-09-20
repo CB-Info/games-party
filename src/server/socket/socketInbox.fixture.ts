@@ -101,6 +101,24 @@ export function waitForState(
   return awaitInbox(client, (inbox) => inbox.states.findLast(predicate), "room:state");
 }
 
+/**
+ * The first matching room state to arrive **after** this call. Use it whenever the expected state
+ * could already exist before the action under test: `waitForState` would then match an old one and
+ * the assertion would prove nothing.
+ */
+export function waitForNextState(
+  client: TestClient,
+  predicate: (state: RoomState) => boolean,
+): Promise<RoomState> {
+  const alreadyReceived = inboxes.get(client)?.states.length ?? 0;
+
+  return awaitInbox(
+    client,
+    (inbox) => inbox.states.slice(alreadyReceived).find(predicate),
+    "later room:state",
+  );
+}
+
 /** The first game view this client received (§6.3). */
 export function waitForView(client: TestClient): Promise<GameViewPayload> {
   return awaitInbox(client, (inbox) => inbox.views.at(0), "game:view");

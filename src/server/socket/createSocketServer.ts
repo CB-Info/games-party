@@ -12,6 +12,7 @@ import { registerLobbyHandlers } from "./handlers/lobbyHandlers";
 import { registerRoomHandlers } from "./handlers/roomHandlers";
 import { SocketRateLimiter, type RateLimiterOptions } from "./middleware/rateLimit";
 import { installSessionMiddleware } from "./middleware/session";
+import { restoreRoomOnConnect } from "./restoreRoomOnConnect";
 import type { ServerContext } from "./serverContext";
 import { createSocketOutbound } from "./socketOutbound";
 import { socketRoomOf, type GameServer, type GameSocket } from "./socketTypes";
@@ -43,8 +44,8 @@ export function createSocketServer(
   const now = () => Date.now();
 
   // One socket per player at a time, so the map holds the socket currently bound to each session.
+  // Which room a player sits in is kept by the session alone, never duplicated here (§4).
   const socketIdByPlayerId = new Map<string, string>();
-  const roomCodeBySocketId = new Map<string, string>();
   const limiters = new Map<string, SocketRateLimiter>();
 
   const rooms = new RoomManager({
@@ -72,20 +73,18 @@ export function createSocketServer(
     },
     socketIdOf: (playerId) => socketIdByPlayerId.get(playerId) ?? null,
     currentRoom: (socket) => {
-      const code = roomCodeBySocketId.get(socket.id);
-      return code === undefined ? null : rooms.get(code);
+      const code = sessions.get(socket.data.sessionToken)?.roomCode ?? null;
+      return code === null ? null : rooms.get(code);
     },
     bindSocketToRoom: (socket, code) => {
-      roomCodeBySocketId.set(socket.id, code);
       sessions.setRoomCode(socket.data.sessionToken, code);
     },
     leaveCurrentRoom: (socket) => {
-      const code = roomCodeBySocketId.get(socket.id);
-      if (code === undefined) {
+      const code = sessions.get(socket.data.sessionToken)?.roomCode ?? null;
+      if (code === null) {
         return;
       }
 
-      roomCodeBySocketId.delete(socket.id);
       sessions.setRoomCode(socket.data.sessionToken, null);
       void socket.leave(socketRoomOf(code));
       rooms.get(code)?.remove(socket.data.playerId);
@@ -104,23 +103,27 @@ export function createSocketServer(
     });
 
     installRateLimit(socket, ctx);
+    restoreRoomOnConnect(socket, ctx);
     registerRoomHandlers(socket, ctx);
     registerLobbyHandlers(socket, ctx);
     registerGameHandlers(socket, ctx);
 
     socket.on("disconnect", () => {
       limiters.delete(socket.id);
-      // The seat may already belong to another tab, which must not be disconnected (§4).
-      if (socketIdByPlayerId.get(socket.data.playerId) !== socket.id) {
+
+      // The session may already have moved to another tab, which keeps the seat (§4). The store is
+      // what says so: the middleware reassigns it before this socket is even told to close, while
+      // the map above is only updated once the new socket reaches this handler.
+      const session = sessions.get(socket.data.sessionToken);
+      if (session?.socketId !== socket.id) {
         return;
       }
 
       socketIdByPlayerId.delete(socket.data.playerId);
+      const code = session.roomCode;
       sessions.release(socket.data.sessionToken, socket.id, now());
 
-      const code = roomCodeBySocketId.get(socket.id);
-      roomCodeBySocketId.delete(socket.id);
-      if (code !== undefined) {
+      if (code !== null) {
         rooms.get(code)?.disconnect(socket.data.playerId);
       }
     });

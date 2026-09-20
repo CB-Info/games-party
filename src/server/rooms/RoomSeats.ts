@@ -14,6 +14,8 @@ export interface RoomSeatsDeps {
   gameInstance: () => GameInstance<unknown, unknown, unknown> | null;
   /** Called after a player was removed for good, before the room broadcasts. */
   onRemoved: (playerId: string) => void;
+  /** The grace delay ran out: the room removes the player, and tells everyone (§5.5). */
+  onGraceExpired: (playerId: string) => void;
   /** Passed in so that tests can shorten it instead of waiting. */
   reconnectGraceMs?: number;
 }
@@ -91,7 +93,7 @@ export class RoomSeats {
     const delay = this.deps.reconnectGraceMs ?? RECONNECT_GRACE_MS;
     this.removalTimers.set(
       playerId,
-      setTimeout(() => this.remove(playerId), delay),
+      setTimeout(() => this.deps.onGraceExpired(playerId), delay),
     );
     return true;
   }

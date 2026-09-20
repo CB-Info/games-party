@@ -36,6 +36,7 @@ export class Room {
       isInGame: () => this.flow.status !== "lobby",
       gameInstance: () => this.flow.instance,
       onRemoved: (playerId) => this.afterRemoval(playerId),
+      onGraceExpired: (playerId) => this.remove(playerId),
       ...(deps.reconnectGraceMs === undefined ? {} : { reconnectGraceMs: deps.reconnectGraceMs }),
     });
   }

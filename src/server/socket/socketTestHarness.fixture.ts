@@ -96,6 +96,7 @@ export {
   ACK_TIMEOUT_MS,
   sessionOf,
   waitForState,
+  waitForNextState,
   waitForView,
   waitForReplaced,
 } from "./socketInbox.fixture";

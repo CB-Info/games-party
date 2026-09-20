@@ -6,6 +6,7 @@ import {
   createRoom,
   sessionOf,
   startTestServer,
+  waitForNextState,
   waitForState,
   type TestServer,
 } from "./socketTestHarness.fixture";
@@ -132,9 +133,13 @@ describe("a refused join", () => {
       preferredColor: "c3",
     });
 
+    // Nothing is broadcast when a join is refused, so the room is read back instead.
     expect(refused).toEqual({ ok: false, error: "PSEUDO_TAKEN" });
-    const state = await waitForState(first.host, (s) => s.players.length === 2);
-    expect(state.players.map((player) => player.pseudo)).toEqual(["Mika", "Nova"]);
+    const preview = await ask(guest).emitWithAck("room:preview", { code: first.code });
+    expect(preview.ok && preview.data.players.map((player) => player.pseudo)).toEqual([
+      "Mika",
+      "Nova",
+    ]);
   });
 
   it("takes the player out of their previous room when the join succeeds", async () => {
@@ -151,13 +156,13 @@ describe("a refused join", () => {
     });
     await waitForState(first.host, (state) => state.players.length === 2);
 
+    const left = waitForNextState(first.host, (s) => s.players.length === 1);
     await ask(guest).emitWithAck("room:join", {
       code: other.code,
       pseudo: "Nova",
       preferredColor: "c3",
     });
 
-    const left = await waitForState(first.host, (s) => s.players.length === 1);
-    expect(left.players.map((player) => player.pseudo)).toEqual(["Mika"]);
+    expect((await left).players.map((player) => player.pseudo)).toEqual(["Mika"]);
   });
 });

@@ -5,6 +5,7 @@ import {
   ACK_TIMEOUT_MS,
   sessionOf,
   startTestServer,
+  waitForNextState,
   waitForState,
   waitForView,
   type TestClient,
@@ -122,12 +123,14 @@ describe("playing a game over a real connection", () => {
     });
     const { host } = await readyRoom();
 
+    const next = waitForNextState(host, () => true);
     const answer = await ask(host).emitWithAck("lobby:setOptions", {
       options: { durationMs: 3000 },
     });
 
     expect(answer).toEqual({ ok: true });
-    const state = await waitForState(host, (s) => s.readyPlayerIds.length === 2);
+    const state = await next;
+    expect(state.readyPlayerIds).toHaveLength(2);
     expect(state.selectedGameOptions).toEqual({ durationMs: 3000 });
   });
 
