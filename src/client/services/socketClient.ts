@@ -11,6 +11,9 @@ let socket: GameSocket | null = null;
 let sessionReplaced = false;
 const replacedListeners = new Set<() => void>();
 
+let connections = 0;
+const reconnectionListeners = new Set<() => void>();
+
 /**
  * The connection is opened once, on first use, and kept for the whole visit. `auth` is a function
  * so that Socket.IO reads the token again on every reconnection: the first connection has none,
@@ -32,6 +35,19 @@ export function getSocket(): GameSocket {
     socket.on("session:init", (identity) => {
       writeSessionToken(identity.sessionToken);
       sessionIdentity.remember(identity);
+    });
+
+    // A new connection tells everything again, room included. Warning the listeners here, and not
+    // from an effect, is what guarantees they have forgotten the old room before the server's
+    // answer for the new connection can arrive.
+    socket.on("connect", () => {
+      connections += 1;
+
+      if (connections > 1) {
+        for (const listener of reconnectionListeners) {
+          listener();
+        }
+      }
     });
 
     // The seat has moved to another tab (§4). This connection is over for good: closing it here
@@ -82,6 +98,20 @@ export function subscribeToRoomState(listener: ServerToClientEvents["room:state"
   currentSocket.on("room:state", listener);
   return () => {
     currentSocket.off("room:state", listener);
+  };
+}
+
+/**
+ * Calls back every time the connection comes **back** after a drop, never on the first one. What the
+ * server said before is not true any more: the room may have gone, and the seat may have expired
+ * (docs/architecture.md, §10).
+ */
+export function subscribeToReconnection(onReconnect: () => void): () => void {
+  getSocket();
+  reconnectionListeners.add(onReconnect);
+
+  return () => {
+    reconnectionListeners.delete(onReconnect);
   };
 }
 

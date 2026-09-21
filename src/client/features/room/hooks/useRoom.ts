@@ -10,7 +10,7 @@ import {
   setReady,
   startGame,
 } from "../../../services/roomRequests";
-import { subscribeToRoomState } from "../../../services/socketClient";
+import { subscribeToReconnection, subscribeToRoomState } from "../../../services/socketClient";
 
 export interface RoomActions {
   setColor: (color: PlayerColorId) => Promise<ErrorCode | null>;
@@ -35,6 +35,12 @@ export function useRoom(): { state: RoomState | null; actions: RoomActions } {
   const [state, setState] = useState<RoomState | null>(null);
 
   useEffect(() => subscribeToRoomState(setState), []);
+
+  // On a reconnection the server says again whether this browser still holds a seat. Until it
+  // does, the client knows nothing: the seat may have expired while the connection was down
+  // (docs/architecture.md, §10). The content only empties once the connection is back, so a
+  // passing cut leaves the lobby on screen.
+  useEffect(() => subscribeToReconnection(() => setState(null)), []);
 
   const actions: RoomActions = {
     setColor: useCallback((color: PlayerColorId) => refusalOf(setColor(color)), []),

@@ -3,6 +3,7 @@ import { createBrowserRouter, type RouteObject } from "react-router";
 
 import { HomePage } from "../pages/HomePage";
 import { NotFoundPage } from "../pages/NotFoundPage";
+import { RoomPage } from "../pages/RoomPage";
 
 // The design system demonstration exists only while developing. `import.meta.env.DEV` becomes the
 // literal `false` at build time, so the branch and its dynamic import leave the production bundle.
@@ -30,6 +31,7 @@ function devRoutes(): RouteObject[] {
 
 export const router = createBrowserRouter([
   { path: "/", element: <HomePage /> },
+  { path: "/r/:code", element: <RoomPage /> },
   ...devRoutes(),
   { path: "*", element: <NotFoundPage /> },
 ]);

@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import type { ErrorCode } from "../../../../shared/protocol";
 import type { RoomPreview } from "../../../../shared/types";
 import { previewRoom } from "../../../services/roomRequests";
+import { subscribeToReconnection } from "../../../services/socketClient";
 
 export type PreviewState =
   | { status: "loading" }
@@ -23,6 +24,18 @@ export interface RoomPreviewApi {
 export function useRoomPreview(code: string): RoomPreviewApi {
   const [preview, setPreview] = useState<PreviewState>({ status: "loading" });
   const [attempt, setAttempt] = useState(0);
+
+  // A reconnection may mean another answer: the room may have gone while the connection was down
+  // (docs/architecture.md, §10). Both this and the room being forgotten happen in the same
+  // callback, so the screen goes back to knowing nothing in one step.
+  useEffect(
+    () =>
+      subscribeToReconnection(() => {
+        setPreview({ status: "loading" });
+        setAttempt((previous) => previous + 1);
+      }),
+    [],
+  );
 
   useEffect(() => {
     let cancelled = false;

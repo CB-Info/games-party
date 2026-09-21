@@ -13,6 +13,7 @@ export function BadgesSection() {
         <Badge variant="you">Toi</Badge>
         <Badge variant="ready">Prêt</Badge>
         <Badge variant="disconnected">Déconnecté</Badge>
+        <Badge variant="takenPseudo">C’est ce pseudo</Badge>
         <span className="t-small text-ink-secondary">sur Surface 2 : variante à point</span>
       </div>
 
