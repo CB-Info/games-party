@@ -86,6 +86,7 @@ Sur un écran tactile sans souris (détecté via `matchMedia("(pointer: coarse)"
 - Le créateur devient l'hôte et rejoint automatiquement la room.
 - Capacité : `ROOM_CAPACITY` personnes, joueurs, spectateurs et bots compris. Au-delà, `room:join` échoue avec `ROOM_FULL`.
 - Une room est **vide quand elle n'a plus aucun membre humain**, une fois les retraits faits : un joueur déconnecté occupe encore sa place, donc le délai ne démarre qu'après son retrait. Une room créée et jamais rejointe est vide dès sa création. Une room vide depuis `EMPTY_ROOM_TTL_MS` est supprimée.
+- **La suppression des rooms vides et des sessions inactives se fait par un balayage périodique**, toutes les `MAINTENANCE_INTERVAL_MS`. Rien ne supprime une room à l'instant précis où elle se vide : une room disparaît donc entre `EMPTY_ROOM_TTL_MS` et `EMPTY_ROOM_TTL_MS + MAINTENANCE_INTERVAL_MS` après s'être vidée, soit entre 5 et 6 minutes. Tant qu'elle existe, son lien fonctionne encore, et la rejoindre redonne son rôle d'hôte au premier revenant. Le balayage remet aussi à `null` le code de room des sessions dont la place a expiré : sans cela, ces sessions ne seraient jamais considérées comme inactives, donc jamais supprimées.
 - Au maximum `MAX_ROOMS` rooms simultanées. Au-delà, `room:create` échoue avec `SERVER_FULL`.
 - Un socket ne peut être que dans une seule room. Rejoindre une autre room fait quitter la précédente : c'est un **départ immédiat**, comme `room:leave`, sans délai de reconnexion et avec perte du score cumulé. La room précédente n'est quittée que **si la nouvelle accepte le joueur** : un `room:join` refusé (pseudo pris, room pleine) ne coûte jamais sa place actuelle.
 
@@ -427,6 +428,7 @@ Valeurs exactes à utiliser dans `src/shared/constants.ts`. Chaque constante est
 | `SESSION_TTL_MS` | `86400000` (24 h) |
 | `MAX_ROOMS` | `50` |
 | `EMPTY_ROOM_TTL_MS` | `300000` (5 min) |
+| `MAINTENANCE_INTERVAL_MS` | `60000` (1 min) |
 | `RECONNECT_GRACE_MS` | `30000` |
 | `RESULTS_AUTO_RETURN_MS` | `20000` |
 | `PSEUDO_MIN_LENGTH` | `2` |

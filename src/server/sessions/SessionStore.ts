@@ -90,6 +90,19 @@ export class SessionStore {
     }
   }
 
+  /**
+   * Clears the room of every session whose seat is gone. The room layer cannot reach the sessions,
+   * so a seat lost to the reconnection delay leaves its code behind; a session still pointing at a
+   * room never counts as idle, and could never expire.
+   */
+  forgetRoomsWhere(gone: (roomCode: string, playerId: string) => boolean): void {
+    for (const session of this.byToken.values()) {
+      if (session.roomCode !== null && gone(session.roomCode, session.playerId)) {
+        session.roomCode = null;
+      }
+    }
+  }
+
   /** Drops sessions bound to no socket and no room for longer than the lifetime. */
   pruneExpired(now: number): void {
     for (const [token, session] of this.byToken) {

@@ -80,6 +80,28 @@ describe("creating and joining a room", () => {
 
     expect(joined).toEqual({ ok: false, error: "ROOM_NOT_FOUND" });
   });
+
+  it("forgets a room that was left empty", async () => {
+    server = await startTestServer({
+      reconnectGraceMs: 50,
+      emptyRoomTtlMs: 50,
+      maintenanceIntervalMs: 20,
+    });
+    const { host, code } = await createRoom(mustServer());
+    const visitor = await mustServer().connect();
+    await sessionOf(visitor);
+
+    // Nothing deletes a room on its own: only the periodic sweep does (§5.1).
+    host.disconnect();
+
+    await expect
+      .poll(() =>
+        ask(visitor)
+          .emitWithAck("room:preview", { code })
+          .then((answer) => answer.ok),
+      )
+      .toBe(false);
+  });
 });
 
 describe("previewing a room without joining it", () => {

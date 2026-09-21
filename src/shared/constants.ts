@@ -25,6 +25,9 @@ export const EMPTY_ROOM_TTL_MS = 300000;
 /** Delay a disconnected player keeps their seat, in milliseconds (docs/architecture.md, §13). */
 export const RECONNECT_GRACE_MS = 30000;
 
+/** Interval between two sweeps of empty rooms and idle sessions (docs/architecture.md, §13). */
+export const MAINTENANCE_INTERVAL_MS = 60000;
+
 /** Delay before the results screen returns to the lobby, in milliseconds (docs/architecture.md, §13). */
 export const RESULTS_AUTO_RETURN_MS = 20000;
 
