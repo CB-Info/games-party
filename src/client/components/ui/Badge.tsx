@@ -1,7 +1,14 @@
 import type { ReactNode } from "react";
 
 export type BadgeVariant =
-  "host" | "you" | "ready" | "cat" | "disconnected" | "disconnectedFlat" | "playerCount";
+  | "host"
+  | "you"
+  | "ready"
+  | "cat"
+  | "disconnected"
+  | "disconnectedFlat"
+  | "playerCount"
+  | "takenPseudo";
 
 interface BadgeProps {
   variant: BadgeVariant;
@@ -18,6 +25,7 @@ const SKINS: Record<BadgeVariant, string> = {
   // On a ranking row, itself laid on Surface (§11.8).
   disconnectedFlat: "bg-surface-2 text-ink-secondary",
   playerCount: "bg-surface-2 text-ink",
+  takenPseudo: "bg-danger-soft text-danger",
 };
 
 /** 6 px dot, only on the two variants that carry one (§11.8). */
