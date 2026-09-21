@@ -20,6 +20,9 @@ export function createHttpApp({ clientDir }: HttpAppOptions): Express {
         directives: {
           // Socket.IO polls over HTTP, then upgrades to a WebSocket: both stay on this origin.
           "connect-src": ["'self'"],
+          // The client carries no inline style and no external stylesheet: a player colour comes
+          // from a class, never from a `style` attribute (docs/design-system.md, §4.2).
+          "style-src": ["'self'"],
         },
       },
     }),
