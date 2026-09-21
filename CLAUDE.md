@@ -86,6 +86,7 @@ src/
       createHttpApp.ts          Express : helmet, fichiers statiques, /healthz
     socket/
       createSocketServer.ts     configuration Socket.IO
+      startMaintenance.ts       balayage des rooms vides et des sessions inactives
       middleware/               session.ts, rateLimit.ts
       handlers/                 roomHandlers.ts, lobbyHandlers.ts, gameHandlers.ts
     rooms/                      logique des rooms, sans Socket.IO
@@ -107,21 +108,40 @@ src/
       RoomPage.tsx
       NotFoundPage.tsx
     features/                   fonctionnalités de l'application
+      appShell/                 en-tête, messages qui remplacent tout le contenu
+        components/             AppShell.tsx, AppHeader.tsx, ReplacedMessage.tsx…
       connection/
         components/             ConnectionStatus.tsx…
         hooks/                  useConnectionStatus.ts…
-      session/
-        components/
-        hooks/
+      demo/
+        components/             DemoArena.tsx (illustration fixe de l'arène)
+      home/
+        components/             HomeScreen.tsx, HeroCard.tsx, PseudoForm.tsx
+      notifications/
+        notificationsContext.ts contexte partagé par la coquille et les écrans
+        components/             NotificationHost.tsx
+        hooks/                  useNotifications.ts, useNotifier.ts…
       room/
-        components/             Lobby.tsx, PlayerList.tsx, ResultsScreen.tsx…
-        hooks/                  useRoom.ts…
+        errorMessages.ts        ce que chaque refus du serveur affiche
+        components/             LobbyScreen.tsx, PlayerList.tsx, ColorPalette.tsx…
+        hooks/                  useRoom.ts, useRoomActions.ts…
+      session/
+        hooks/                  useSession.ts, useStoredPseudo.ts
+      sound/
+        hooks/                  useSoundPreference.ts
+      uiGallery/                développement uniquement : sections de /dev/ui
+        components/             ButtonsSection.tsx, LobbySection.tsx…
     components/
       ui/                       composants du design system, sans logique métier
-    hooks/                      hooks génériques (useAnimationFrame.ts…)
+    hooks/                      hooks génériques (useModalDialog.ts, usePointerCapability.ts…)
     services/                   effets de bord hors React
-      socketClient.ts
-      sessionStorage.ts
+      socketClient.ts           connexion typée, jeton du handshake, abonnements
+      roomRequests.ts           une fonction par message envoyé au serveur
+      sessionIdentity.ts        dernière identité reçue, relue par un abonné tardif
+      sessionStorage.ts         jeton de session
+      preferences.ts            pseudo, couleur préférée, son
+      clipboard.ts
+      pointerCapability.ts      détection d'un appareil sans souris
       audio.ts
     engine/                     moteur temps réel, sans React
       pointerLock.ts
@@ -129,6 +149,7 @@ src/
       interpolation.ts
       prediction.ts
     utils/                      fonctions pures génériques, nommées par sujet
+                                (lobbyPlayers.ts, readyCounter.ts, roomUrl.ts…)
   games/
     gameServer.types.ts         interfaces GameDefinition, GameInstance…
     gameClient.types.ts         interface GameClientDefinition
@@ -235,7 +256,7 @@ Ces restrictions sont vérifiées par `npm run lint` (`no-restricted-imports` pa
 - [x] **Design system**, réalisé avec Claude Design, puis `docs/design-system.md`.
 - [x] **Étape 2a : design system dans le code.** Tokens (`@theme`), polices hébergées, icônes, logo, composants de base de `client/components/ui/`, page de démonstration `/dev/ui` (développement uniquement).
 - [x] **Étape 2b : rooms côté serveur.** Sessions, création, aperçu, rejoindre, lobby, statut prêt, options des jeux, hôte, spectateurs, reconnexion, départ, classement cumulé, avec leurs tests.
-- [ ] **Étape 2c : écrans de l'accueil et du lobby.** Accueil, invitation, erreurs, lobby (joueurs, palette, jeu, réglages, prêt, lancement), confirmation « Quitter la room », notifications, message « ordinateur uniquement » (règle d'or 10). Resserrer la CSP (`style-src` sans `'unsafe-inline'`) une fois ces écrans construits.
+- [x] **Étape 2c : écrans de l'accueil et du lobby.** Accueil, invitation, erreurs, lobby (joueurs, palette, jeu, réglages, prêt, lancement), confirmation « Quitter la room », notifications, message « ordinateur uniquement » (règle d'or 10). Resserrer la CSP (`style-src` sans `'unsafe-inline'`) une fois ces écrans construits.
 - [ ] **Étape 3 : moteur curseur.** Pointer Lock, curseur virtuel, arène, synchronisation, prédiction, interpolation, bots.
 - [ ] **Étape 4 : Cursor Tag complet.** Écran de jeu, préparation, écran de résultats.
 - [ ] **Étape 5 : finitions.** Sons, animations, transitions, démo animée de chaque jeu (accueil et lobby, jouée par le moteur du jeu à partir d'une séquence écrite à l'avance, avec des joueurs fictifs fixes, au moins 4, sans lien avec les joueurs de la room), puis test avec le groupe.

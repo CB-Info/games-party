@@ -44,7 +44,7 @@ Conséquences acceptées :
 | Route | Contenu |
 |---|---|
 | `/` | Accueil : saisie du pseudo, bouton « Créer une room » |
-| `/r/:code` | Room : lobby, puis jeu, puis résultats. Si la room n'existe pas : message « Cette room n'existe pas ou a expiré » et bouton de retour à l'accueil. Si le pseudo n'est pas encore défini : écran d'invitation (aperçu de la room via `room:preview`, section 5.7) avec saisie du pseudo avant de rejoindre. |
+| `/r/:code` | Room : lobby, puis jeu, puis résultats. **L'écran d'invitation s'affiche toujours** (aperçu de la room via `room:preview`, section 5.7), le champ pré-rempli avec le pseudo mémorisé s'il y en a un : entrer dans une room est toujours un geste volontaire. **Seule exception :** un joueur déjà membre de la room (rechargement, reconnexion dans le délai) revient directement au lobby, sans rien ressaisir. Tant que le client ignore s'il est membre, il n'affiche **ni l'invitation ni le lobby** : l'en-tête seul, le contenu vide, pour qu'un membre ne voie jamais l'écran d'invitation, même une fraction de seconde. Il l'apprend quand `room:preview` répond : le serveur envoie `room:state` à un membre pendant qu'il traite la connexion, donc avant toute réponse à une demande de ce même client. Si la room n'existe pas : message « Cette room n'existe pas ou a expiré » et bouton de retour à l'accueil. **En cas de refus** de `room:join` (`PSEUDO_TAKEN`, `ROOM_FULL`, `SERVER_FULL`…), l'écran d'invitation reste affiché avec l'erreur correspondante, jamais une page vide. |
 | autre | Page 404 avec bouton de retour à l'accueil |
 
 Sur un écran tactile sans souris (détecté via `matchMedia("(pointer: coarse)")` sans `(any-pointer: fine)`), toutes les routes affichent « Games Party se joue sur ordinateur, avec une souris. »
@@ -75,7 +75,7 @@ Sur un écran tactile sans souris (détecté via `matchMedia("(pointer: coarse)"
 - Le client stocke aussi dans `localStorage` son pseudo et l'identifiant de sa couleur préférée.
 - **Pseudo :** obligatoire avant de créer ou rejoindre une room. De `PSEUDO_MIN_LENGTH` à `PSEUDO_MAX_LENGTH` caractères après suppression des espaces aux extrémités, sans caractères de contrôle. Unique dans la room, sans tenir compte des majuscules. En cas de doublon, `room:join` échoue avec `PSEUDO_TAKEN` et le client propose d'en saisir un autre.
 - **Couleur :** palette de 10 couleurs, identifiées `c1` à `c10` dans `shared/constants.ts`. Leurs valeurs viennent de `docs/design-system.md`. Couleur unique dans la room. Si la couleur préférée est prise, la première couleur libre dans l'ordre `c1` → `c10` est attribuée. Le joueur peut en changer dans le lobby parmi les couleurs libres.
-- **Deux onglets avec la même session :** la nouvelle connexion remplace l'ancienne. L'ancien socket reçoit `session:replaced` puis est déconnecté, et l'ancien onglet affiche « Games Party est ouvert dans un autre onglet. » Le nouvel onglet **reprend la place immédiatement** : le joueur reste `connected` pour les autres, sans passer par le délai de reconnexion, et le jeu en cours n'est pas notifié.
+- **Deux onglets avec la même session :** la nouvelle connexion remplace l'ancienne. L'ancien socket reçoit `session:replaced` puis est déconnecté, et l'ancien onglet affiche « Games Party est ouvert dans un autre onglet. » **à la place de tout son contenu**. Il ne tente **plus jamais** de se reconnecter, et n'affiche pas la notification de connexion perdue : sa connexion n'est pas coupée, elle est terminée. Sans cette règle, les deux onglets se reprendraient la place l'un à l'autre sans fin. Le nouvel onglet **reprend la place immédiatement** : le joueur reste `connected` pour les autres, sans passer par le délai de reconnexion, et le jeu en cours n'est pas notifié.
 
 ## 5. Rooms
 
@@ -84,7 +84,8 @@ Sur un écran tactile sans souris (détecté via `matchMedia("(pointer: coarse)"
 - Code de room : `ROOM_CODE_LENGTH` caractères générés avec `customAlphabet` de nanoid, alphabet `23456789abcdefghijkmnpqrstuvwxyz`. Lien : `/r/<code>`.
 - Accès ouvert à toute personne qui a le lien.
 - Le créateur devient l'hôte et rejoint automatiquement la room.
-- Capacité : `ROOM_CAPACITY` personnes, joueurs, spectateurs et bots compris. Au-delà, `room:join` échoue avec `ROOM_FULL`.
+- À la création, si le joueur n'a jamais choisi de couleur, le client envoie `c1` : le serveur attribue de toute façon la première couleur libre dans l'ordre `c1` → `c10` (section 4).
+- Capacité : `ROOM_CAPACITY` personnes, joueurs, spectateurs et bots compris. Au-delà, `room:join` échoue avec `ROOM_FULL`. Le client l'affiche **en écran** quand le refus arrive à l'arrivée (l'erreur remplace la colonne de gauche de l'écran d'invitation), et **en notification** si la room se remplit alors qu'on est déjà dedans.
 - Une room est **vide quand elle n'a plus aucun membre humain**, une fois les retraits faits : un joueur déconnecté occupe encore sa place, donc le délai ne démarre qu'après son retrait. Une room créée et jamais rejointe est vide dès sa création. Une room vide depuis `EMPTY_ROOM_TTL_MS` est supprimée.
 - **La suppression des rooms vides et des sessions inactives se fait par un balayage périodique**, toutes les `MAINTENANCE_INTERVAL_MS`. Rien ne supprime une room à l'instant précis où elle se vide : une room disparaît donc entre `EMPTY_ROOM_TTL_MS` et `EMPTY_ROOM_TTL_MS + MAINTENANCE_INTERVAL_MS` après s'être vidée, soit entre 5 et 6 minutes. Tant qu'elle existe, son lien fonctionne encore, et la rejoindre redonne son rôle d'hôte au premier revenant. Le balayage remet aussi à `null` le code de room des sessions dont la place a expiré : sans cela, ces sessions ne seraient jamais considérées comme inactives, donc jamais supprimées.
 - Au maximum `MAX_ROOMS` rooms simultanées. Au-delà, `room:create` échoue avec `SERVER_FULL`.
@@ -120,7 +121,8 @@ LOBBY ──(hôte lance)──► PLAYING ──(jeu terminé)──► RESULTS
   1. un jeu est sélectionné, sinon `NO_GAME_SELECTED` ;
   2. le nombre de joueurs est au moins le minimum du jeu, sinon `NOT_ENOUGH_PLAYERS`, et au plus le maximum, sinon `TOO_MANY_PLAYERS` ;
   3. sans `force` : tous les joueurs **connectés**, hôte excepté, sont prêts, sinon `NOT_ALL_READY`. Avec `force: true` (« Lancer quand même »), cette condition est ignorée. Les conditions 1 et 2 s'appliquent toujours.
-- Si l'hôte est retiré de la room (fin du délai de reconnexion ou départ volontaire), le rôle passe au joueur humain **connecté** présent depuis le plus longtemps ; s'il n'y en a aucun, au joueur humain présent depuis le plus longtemps, pour que la room garde toujours un hôte. Un bot ne peut jamais être hôte. S'il ne reste que des bots, la room est considérée comme vide.
+- **L'hôte est toujours le joueur humain connecté présent depuis le plus longtemps** ; s'il n'y en a aucun, le joueur humain présent depuis le plus longtemps, pour que la room garde toujours un hôte. Un bot ne peut jamais être hôte. S'il ne reste que des bots, la room est considérée comme vide.
+- Ce n'est pas un rôle transmis puis conservé : c'est une valeur **recalculée à chaque changement** — arrivée, déconnexion, retour et retrait. Deux conséquences assumées : quand l'hôte ferme son onglet, le rôle passe **immédiatement** au suivant, sans attendre la fin du délai de reconnexion ; et s'il revient dans ce délai, **il reprend le rôle**, puisque son ancienneté n'a pas changé. Un hôte retiré pour de bon ne le reprend pas : en revenant, il est le dernier arrivé.
 
 ### 5.4 Arrivée en cours de partie
 
@@ -134,6 +136,8 @@ LOBBY ──(hôte lance)──► PLAYING ──(jeu terminé)──► RESULTS
 - **Reconnexion alors que la room a disparu** (serveur redémarré, room vide supprimée, délai écoulé) : le serveur efface simplement le code de room de la session, sans envoyer de message. C'est le client qui redemande la room en arrivant sur `/r/<code>` et reçoit `ROOM_NOT_FOUND`.
 - **Retrait :** à la fin du délai, ou immédiatement en cas de `room:leave`, le joueur est retiré. Le jeu est notifié (`onPlayerLeave`), le rôle d'hôte est transféré si nécessaire, et son score cumulé est supprimé. S'il revient plus tard, il repart de zéro.
 - **Quitter volontairement :** un bouton « Quitter la room » est disponible dans le lobby et, pendant une partie, sur l'écran « Clique pour reprendre ». Il ouvre toujours une confirmation. Après confirmation, le client envoie `room:leave` puis revient à l'accueil (`/`). Si le joueur est l'hôte, la confirmation indique le pseudo du joueur qui deviendra hôte (le joueur humain présent depuis le plus longtemps, section 5.3).
+  - Joueur : titre « Quitter la room ? », texte « Tu pourras revenir avec le lien, mais ton score de la soirée repartira de zéro. »
+  - Hôte : le même texte, suivi de « [pseudo] deviendra l'hôte. »
 
 ### 5.6 Classement de partie et classement cumulé
 
@@ -386,7 +390,11 @@ La configuration est versionnée dans `render.yaml`, à la racine du dépôt. Le
 - `npm ci` exige que `package-lock.json` soit versionné. `--include=dev` est obligatoire : comme `NODE_ENV=production` est aussi défini pendant le build, npm ignorerait sinon les dépendances de développement (Vite, esbuild, TypeScript) et le build échouerait.
 - Version de Node : `engines.node` de `package.json` (`24.x`).
 - Le serveur écoute sur `process.env.PORT`, ou `DEFAULT_SERVER_PORT` s'il n'est pas défini.
-- Pendant une perte de connexion, le client affiche « Connexion perdue, reconnexion… » et laisse Socket.IO se reconnecter. Si la room n'existe plus après la reconnexion : message « Cette room n'existe pas ou a expiré » et retour à l'accueil.
+- Pendant une perte de connexion, le contenu reste tel quel et la notification « Connexion perdue, reconnexion… » **reste affichée jusqu'au retour de la connexion** : c'est un état, pas un événement. Le client laisse Socket.IO se reconnecter.
+- **Au retour de la connexion**, le client oublie ce qu'il savait de la room et redemande l'aperçu : ce que le serveur avait dit avant n'est plus forcément vrai. Il repasse par l'état « inconnu » de la section 2 le temps d'une réponse, puis :
+  - la room renvoie `room:state` : la place tient toujours, le lobby revient tel quel ;
+  - la room répond à l'aperçu sans rien envoyer d'autre : la place a expiré pendant la coupure, l'écran d'invitation revient avec le pseudo déjà saisi ;
+  - la room répond `ROOM_NOT_FOUND` : message « Cette room n'existe pas ou a expiré » et retour à l'accueil.
 
 ## 11. Tests
 
