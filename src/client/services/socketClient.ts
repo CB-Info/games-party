@@ -1,11 +1,58 @@
 import { io, type Socket } from "socket.io-client";
 
-let socket: Socket | null = null;
+import type { ClientToServerEvents, ServerToClientEvents } from "../../shared/protocol";
+import { sessionIdentity } from "./sessionIdentity";
+import { readSessionToken, writeSessionToken } from "./sessionStorage";
 
-/** The connection is opened once, on first use, and kept for the whole session. */
-function getSocket(): Socket {
-  socket ??= io();
+type GameSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
+
+let socket: GameSocket | null = null;
+
+let sessionReplaced = false;
+const replacedListeners = new Set<() => void>();
+
+/**
+ * The connection is opened once, on first use, and kept for the whole visit. `auth` is a function
+ * so that Socket.IO reads the token again on every reconnection: the first connection has none,
+ * and the one the server sends back must travel with the next handshake (docs/architecture.md, §4).
+ */
+export function getSocket(): GameSocket {
+  if (socket === null) {
+    socket = io({
+      auth: (send) => {
+        const token = readSessionToken();
+        send(token === null ? {} : { sessionToken: token });
+      },
+    });
+
+    // The server sends the identity on every connection, and only then. Storing the token is what
+    // makes a returning player find their seat again; keeping the whole identity is what lets a
+    // screen mounted later — the lobby, right after the home screen created the room — still know
+    // who it is.
+    socket.on("session:init", (identity) => {
+      writeSessionToken(identity.sessionToken);
+      sessionIdentity.remember(identity);
+    });
+
+    // The seat has moved to another tab (§4). This connection is over for good: closing it here
+    // rather than relying on the library means this tab can never take the seat back, which would
+    // leave the two tabs stealing it from each other.
+    socket.on("session:replaced", () => {
+      sessionReplaced = true;
+      socket?.disconnect();
+
+      for (const listener of replacedListeners) {
+        listener();
+      }
+    });
+  }
+
   return socket;
+}
+
+/** True once this session has been opened in another tab, and for the rest of this page's life. */
+export function isSessionReplaced(): boolean {
+  return sessionReplaced;
 }
 
 export function isConnected(): boolean {
@@ -22,5 +69,39 @@ export function subscribeToConnection(onChange: () => void): () => void {
   return () => {
     currentSocket.off("connect", onChange);
     currentSocket.off("disconnect", onChange);
+  };
+}
+
+/**
+ * One subscriber per event rather than a generic one: a generic event name does not narrow the
+ * listener type, and the protocol types are what make these calls safe.
+ */
+export function subscribeToRoomState(listener: ServerToClientEvents["room:state"]): () => void {
+  const currentSocket = getSocket();
+
+  currentSocket.on("room:state", listener);
+  return () => {
+    currentSocket.off("room:state", listener);
+  };
+}
+
+/** Reads from the flag above rather than from the socket, so a late subscriber still learns it. */
+export function subscribeToSessionReplaced(onChange: () => void): () => void {
+  getSocket();
+  replacedListeners.add(onChange);
+
+  return () => {
+    replacedListeners.delete(onChange);
+  };
+}
+
+export function subscribeToGameChanged(
+  listener: ServerToClientEvents["lobby:gameChanged"],
+): () => void {
+  const currentSocket = getSocket();
+
+  currentSocket.on("lobby:gameChanged", listener);
+  return () => {
+    currentSocket.off("lobby:gameChanged", listener);
   };
 }
