@@ -9,7 +9,7 @@ function startableRoom() {
   const host = addPlayer(harness.room, "Mika", "c1");
   const nova = addPlayer(harness.room, "Nova", "c2");
   const zippy = addPlayer(harness.room, "Zippy", "c3");
-  harness.room.selectGame(host, fakeGame.id);
+  harness.room.selectGame(host, fakeGame.meta.id);
   harness.room.setReady(nova, true);
   harness.room.setReady(zippy, true);
 
@@ -36,7 +36,7 @@ describe("starting a game", () => {
   it("refuses under the minimum number of players", () => {
     const { room } = createTestRoom();
     const host = addPlayer(room, "Mika");
-    room.selectGame(host, fakeGame.id);
+    room.selectGame(host, fakeGame.meta.id);
 
     expect(room.start(host, false)).toBe("NOT_ENOUGH_PLAYERS");
   });
@@ -47,7 +47,7 @@ describe("starting a game", () => {
     for (const pseudo of ["Nova", "Zippy", "Biscuit", "Pixel"]) {
       addPlayer(room, pseudo, "c2");
     }
-    room.selectGame(host, fakeGame.id);
+    room.selectGame(host, fakeGame.meta.id);
 
     expect(room.start(host, false)).toBe("TOO_MANY_PLAYERS");
   });

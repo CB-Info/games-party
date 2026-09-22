@@ -47,7 +47,7 @@ export function createTestRoom(overrides: Partial<{ now: () => number }> = {}) {
   const outbound = new RecordingOutbound();
   const manager = new RoomManager({
     outboundFor: () => outbound,
-    findGame: (gameId) => [fakeGame, otherFakeGame].find((game) => game.id === gameId) ?? null,
+    findGame: (gameId) => [fakeGame, otherFakeGame].find((game) => game.meta.id === gameId) ?? null,
     random: () => 0.5,
     now: overrides.now ?? (() => Date.now()),
   });

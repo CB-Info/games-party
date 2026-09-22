@@ -36,6 +36,6 @@ describe("RoomOptions", () => {
   });
 
   it("knows nothing about a game that was never chosen", () => {
-    expect(new RoomOptions().get(fakeGame.id)).toBeNull();
+    expect(new RoomOptions().get(fakeGame.meta.id)).toBeNull();
   });
 });

@@ -32,7 +32,7 @@ describe("Room lobby", () => {
     addPlayer(room, "Mika");
     const nova = addPlayer(room, "Nova", "c2");
 
-    expect(room.selectGame(nova, fakeGame.id)).toBe("NOT_HOST");
+    expect(room.selectGame(nova, fakeGame.meta.id)).toBe("NOT_HOST");
   });
 
   it("starts with no game selected", () => {
@@ -45,7 +45,7 @@ describe("Room lobby", () => {
   it("gives the game its default options when it is chosen", () => {
     const { room, outbound } = createTestRoom();
     const host = addPlayer(room, "Mika");
-    room.selectGame(host, fakeGame.id);
+    room.selectGame(host, fakeGame.meta.id);
 
     expect(outbound.lastState?.selectedGameOptions).toEqual({ durationMs: 1000 });
   });
@@ -54,10 +54,10 @@ describe("Room lobby", () => {
     const { room, outbound } = createTestRoom();
     const host = addPlayer(room, "Mika");
     const nova = addPlayer(room, "Nova", "c2");
-    room.selectGame(host, fakeGame.id);
+    room.selectGame(host, fakeGame.meta.id);
     room.setReady(nova, true);
 
-    room.selectGame(host, otherFakeGame.id);
+    room.selectGame(host, otherFakeGame.meta.id);
 
     expect(outbound.lastState?.readyPlayerIds).toEqual([]);
     expect(outbound.gameChanges.at(-1)?.playerIds).toEqual([nova]);
@@ -67,7 +67,7 @@ describe("Room lobby", () => {
     const { room, outbound } = createTestRoom();
     const host = addPlayer(room, "Mika");
     const nova = addPlayer(room, "Nova", "c2");
-    room.selectGame(host, fakeGame.id);
+    room.selectGame(host, fakeGame.meta.id);
     room.setReady(nova, true);
 
     room.setOptions(host, { durationMs: 2000 });
@@ -86,7 +86,7 @@ describe("Room lobby", () => {
   it("refuses options the game's own schema rejects", () => {
     const { room } = createTestRoom();
     const host = addPlayer(room, "Mika");
-    room.selectGame(host, fakeGame.id);
+    room.selectGame(host, fakeGame.meta.id);
 
     expect(room.setOptions(host, { durationMs: "long" })).toBe("INVALID_PAYLOAD");
   });
@@ -107,7 +107,7 @@ describe("Room preview", () => {
     const { room } = createTestRoom();
     const host = addPlayer(room, "Mika");
     addPlayer(room, "Nova", "c2");
-    room.selectGame(host, fakeGame.id);
+    room.selectGame(host, fakeGame.meta.id);
     expect(room.preview().status).toBe("lobby");
 
     room.start(host, true);

@@ -55,8 +55,8 @@ export class RoomGameFlow {
     const refusal = checkStartConditions({
       status: this.status,
       selectedGameId: this.selection.gameId,
-      minPlayers: game?.minPlayers ?? 0,
-      maxPlayers: game?.maxPlayers ?? 0,
+      minPlayers: game?.meta.minPlayers ?? 0,
+      maxPlayers: game?.meta.maxPlayers ?? 0,
       players: this.deps.members.counting,
       hostId: this.deps.members.host,
       force,
@@ -126,7 +126,7 @@ export class RoomGameFlow {
     }
 
     const game = this.selection.game;
-    if (game !== null && this.deps.members.counting.length < game.minPlayers) {
+    if (game !== null && this.deps.members.counting.length < game.meta.minPlayers) {
       this.session.stop();
       this.session = null;
       this.deps.outbound.gameEvent({ type: "aborted" });

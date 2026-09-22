@@ -8,5 +8,5 @@ export function listGames(): readonly RegisteredGame[] {
 }
 
 export function findGame(gameId: string): RegisteredGame | null {
-  return GAMES.find((game) => game.id === gameId) ?? null;
+  return GAMES.find((game) => game.meta.id === gameId) ?? null;
 }
