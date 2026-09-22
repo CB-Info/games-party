@@ -320,6 +320,7 @@ Les icônes moins, plus, flèche haut et flèche bas n'existent pas dans les maq
 
 - Hauteur **38 px**, rayon md, fond Surface, bordure Bordure, marge intérieure horizontale 16 px, espace de 12 px entre les éléments d'une ligne, espace de 8 px entre les lignes.
 - Contenu : pastille de couleur de 22 px, pseudo en corps-fort (coupé en « … »), badges alignés à droite.
+- **Ordre des badges.** Les badges **permanents** — « Hôte » puis « Toi », dans cet ordre — restent collés au bord droit et n'en bougent jamais. Les badges qui **apparaissent et disparaissent** — « Prêt », « C'est ce pseudo », « Déconnecté », dans cet ordre — s'insèrent à leur gauche, du côté du pseudo. Un badge qui apparaît ne doit jamais déplacer un badge déjà affiché : c'est le pseudo, coupé en « … », qui cède la place.
 - Ta ligne : fond Fond (`--color-page`), pour que le badge « Toi » (Surface 2) reste visible.
 - **Ordre de la liste :** l'hôte en premier, puis les autres joueurs dans leur ordre d'arrivée.
 - Joueur déconnecté : bordure pointillée, pastille et pseudo en Texte désactivé, badge « Déconnecté » à point. C'est bien la variante **à point** du §11.8 qui s'applique, et non la variante plate, malgré la mention « posées sur Surface 2 » de ce tableau.

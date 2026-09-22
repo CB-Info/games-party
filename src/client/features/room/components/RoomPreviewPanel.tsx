@@ -1,6 +1,5 @@
 import { pseudoKey } from "../../../../shared/pseudo";
 import type { RoomPreview } from "../../../../shared/types";
-import { Badge } from "../../../components/ui/Badge";
 import { PlayerRow } from "./PlayerRow";
 
 interface RoomPreviewPanelProps {
@@ -35,8 +34,8 @@ export function RoomPreviewPanel({ preview, takenPseudo }: RoomPreviewPanelProps
             key={player.pseudo}
             pseudo={player.pseudo}
             color={player.color}
+            isHost={player.isHost}
             taken={takenKey !== null && pseudoKey(player.pseudo) === takenKey}
-            badges={player.isHost ? <Badge variant="host">Hôte</Badge> : null}
           />
         ))}
       </div>

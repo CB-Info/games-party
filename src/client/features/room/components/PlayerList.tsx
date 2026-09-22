@@ -1,7 +1,6 @@
 import { useState } from "react";
 
 import type { Player, PlayerColorId } from "../../../../shared/types";
-import { Badge } from "../../../components/ui/Badge";
 import { Card } from "../../../components/ui/Card";
 import { ROOM_CAPACITY } from "../../../../shared/constants";
 import { orderLobbyPlayers } from "../../../utils/lobbyPlayers";
@@ -47,19 +46,11 @@ export function PlayerList({
               <PlayerRow
                 pseudo={player.pseudo}
                 color={player.color}
+                isHost={player.playerId === hostId}
                 isYou={isYou}
+                ready={readyPlayerIds.includes(player.playerId)}
                 connected={player.connected}
                 onSwatchClick={isYou ? () => setPaletteOpen((open) => !open) : undefined}
-                badges={
-                  <>
-                    {player.playerId === hostId ? <Badge variant="host">Hôte</Badge> : null}
-                    {isYou ? <Badge variant="you">Toi</Badge> : null}
-                    {readyPlayerIds.includes(player.playerId) ? (
-                      <Badge variant="ready">Prêt</Badge>
-                    ) : null}
-                    {player.connected ? null : <Badge variant="disconnected">Déconnecté</Badge>}
-                  </>
-                }
               />
 
               {isYou && paletteOpen && me !== undefined ? (

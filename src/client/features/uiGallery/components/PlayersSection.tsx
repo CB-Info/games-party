@@ -1,7 +1,6 @@
 import { useState } from "react";
 
 import type { PlayerColorId } from "../../../../shared/types";
-import { Badge } from "../../../components/ui/Badge";
 import { ColorPalette } from "../../room/components/ColorPalette";
 import { PlayerRow, WaitingPlayerRow } from "../../room/components/PlayerRow";
 import { ReadyCounter } from "../../room/components/ReadyCounter";
@@ -20,29 +19,14 @@ export function PlayersSection() {
   return (
     <GallerySection
       title="Joueurs"
-      note="La palette se ferme avec Échap ou un clic en dehors ; une couleur prise est barrée. La ligne bordée d’Erreur est celle d’un pseudo refusé, sur l’écran d’invitation."
+      note="Les badges Hôte et Toi restent collés au bord droit ; Prêt, Déconnecté et « C’est ce pseudo » s’insèrent à leur gauche. La palette se ferme avec Échap ou un clic en dehors ; une couleur prise est barrée. La ligne bordée d’Erreur est celle d’un pseudo refusé, sur l’écran d’invitation."
     >
       <div className="flex max-w-md flex-col gap-2">
-        <PlayerRow pseudo="Mika" color="c2" badges={<Badge variant="host">Hôte</Badge>} />
-        <PlayerRow
-          pseudo="Biscuit"
-          color={mine}
-          isYou
-          onSwatchClick={() => undefined}
-          badges={
-            <>
-              <Badge variant="you">Toi</Badge>
-              <Badge variant="ready">Prêt</Badge>
-            </>
-          }
-        />
-        <PlayerRow
-          pseudo="UnPseudoVraimentTresLong"
-          color="c5"
-          connected={false}
-          badges={<Badge variant="disconnected">Déconnecté</Badge>}
-        />
-        <PlayerRow pseudo="Nova" color="c5" taken badges={<Badge variant="host">Hôte</Badge>} />
+        <PlayerRow pseudo="Mika" color="c2" isHost />
+        <PlayerRow pseudo="Biscuit" color={mine} isYou ready onSwatchClick={() => undefined} />
+        <PlayerRow pseudo="Zippy" color="c4" isHost isYou />
+        <PlayerRow pseudo="UnPseudoVraimentTresLong" color="c5" isHost connected={false} />
+        <PlayerRow pseudo="Nova" color="c5" isHost taken />
         <WaitingPlayerRow />
       </div>
 

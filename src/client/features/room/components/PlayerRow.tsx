@@ -1,5 +1,3 @@
-import type { ReactNode } from "react";
-
 import { Badge } from "../../../components/ui/Badge";
 import { EmptySwatch, PlayerSwatch } from "../../../components/ui/PlayerSwatch";
 import type { PlayerColorId } from "../../../../shared/types";
@@ -7,12 +5,13 @@ import type { PlayerColorId } from "../../../../shared/types";
 interface PlayerRowProps {
   pseudo: string;
   color: PlayerColorId;
+  isHost?: boolean;
   /** Your own row sits on the page background, so that the "Toi" badge stays visible (§11.10). */
   isYou?: boolean;
+  ready?: boolean;
   connected?: boolean;
   /** This player already wears the pseudo the room just refused (§11.10). */
   taken?: boolean;
-  badges?: ReactNode;
   /** Only your own swatch opens the palette (§11.10). */
   onSwatchClick?: () => void;
 }
@@ -23,10 +22,11 @@ const ROW = "flex h-[38px] items-center gap-3 rounded-md px-4";
 export function PlayerRow({
   pseudo,
   color,
+  isHost = false,
   isYou = false,
+  ready = false,
   connected = true,
   taken = false,
-  badges,
   onSwatchClick,
 }: PlayerRowProps) {
   const skin = connected
@@ -55,8 +55,15 @@ export function PlayerRow({
         {pseudo}
       </span>
 
-      {badges}
+      {/* The order is decided here and nowhere else, so that no caller can get it wrong (§11.10).
+          These three come and go, so they sit on the pseudo's side… */}
+      {ready ? <Badge variant="ready">Prêt</Badge> : null}
       {taken ? <Badge variant="takenPseudo">C’est ce pseudo</Badge> : null}
+      {connected ? null : <Badge variant="disconnected">Déconnecté</Badge>}
+
+      {/* …and these two stay against the right edge, where they never move. */}
+      {isHost ? <Badge variant="host">Hôte</Badge> : null}
+      {isYou ? <Badge variant="you">Toi</Badge> : null}
     </div>
   );
 }
