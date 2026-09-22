@@ -10,6 +10,8 @@ interface GameSessionOptions {
   options: unknown;
   /** Players of the game, read live so that a game always sees the current list (§7). */
   players: () => readonly GamePlayer[];
+  /** Connected spectators, who watch without playing and get a view of their own (§6.3). */
+  spectators: () => readonly string[];
   getHostId: () => string | null;
   outbound: RoomOutbound;
   /** Injected so that tests stay reproducible (règle d'or 7). */
@@ -23,6 +25,7 @@ export class GameSession {
   readonly instance: GameInstance<unknown, unknown, unknown>;
   private readonly game: RegisteredGame;
   private readonly players: () => readonly GamePlayer[];
+  private readonly spectators: () => readonly string[];
   private readonly bots: BotRunner;
   private readonly outbound: RoomOutbound;
   private readonly now: () => number;
@@ -31,9 +34,19 @@ export class GameSession {
   private lastTickAt: number;
   private tickNumber = 0;
 
-  constructor({ game, options, players, getHostId, outbound, random, now }: GameSessionOptions) {
+  constructor({
+    game,
+    options,
+    players,
+    spectators,
+    getHostId,
+    outbound,
+    random,
+    now,
+  }: GameSessionOptions) {
     this.game = game;
     this.players = players;
+    this.spectators = spectators;
     this.outbound = outbound;
     this.now = now;
     this.lastTickAt = now();
@@ -72,7 +85,7 @@ export class GameSession {
   /**
    * One step of the loop, exposed so that tests drive it without a timer. Applies the inputs
    * received since the previous tick in their arrival order, ticks the game, and either reports
-   * that it is over or sends every recipient their own view (docs/architecture.md, §6.3).
+   * that it is over or sends every player and every spectator their own view (§6.3).
    */
   tickOnce(dtMs: number): boolean {
     // Bots decide from the state the last view showed, then their inputs join the others: as far
@@ -91,7 +104,7 @@ export class GameSession {
       return true;
     }
 
-    this.sendViews();
+    this.sendViews(this.spectators());
     return false;
   }
 

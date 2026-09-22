@@ -76,6 +76,7 @@ export class RoomGameFlow {
       game,
       options: this.selection.optionsForStart(game),
       players: () => this.deps.members.toGamePlayers(),
+      spectators: () => this.deps.members.connectedSpectatorIds,
       getHostId: () => this.deps.members.host,
       outbound: this.deps.outbound,
       random: this.deps.random,

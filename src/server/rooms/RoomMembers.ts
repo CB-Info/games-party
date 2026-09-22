@@ -27,6 +27,13 @@ export class RoomMembers {
     return this.members.filter((member) => !member.isSpectator);
   }
 
+  /** Watchers of the running game, who also receive a view at each tick (§6.3). */
+  get connectedSpectatorIds(): string[] {
+    return this.members
+      .filter((member) => member.isSpectator && member.connected && !member.isBot)
+      .map((member) => member.playerId);
+  }
+
   get host(): string | null {
     return this.hostId;
   }
