@@ -93,6 +93,11 @@ export function sessionOf(client: TestClient): Promise<SessionInit> {
   return awaitInbox(client, (inbox) => inbox.sessions.at(0), "session:init");
 }
 
+/** Every room state received so far, in order. Reading it needs no waiting. */
+export function receivedStates(client: TestClient): readonly RoomState[] {
+  return inboxes.get(client)?.states ?? [];
+}
+
 /** The first room state that satisfies `predicate`, past ones included (§6.2). */
 export function waitForState(
   client: TestClient,

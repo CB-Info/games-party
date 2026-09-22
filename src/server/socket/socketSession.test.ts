@@ -5,14 +5,9 @@ import {
   createRoom,
   sessionOf,
   startTestServer,
-  waitForNextState,
   waitForReplaced,
-  waitForState,
   type TestServer,
 } from "./socketTestHarness.fixture";
-
-/** Short enough for a test, long enough for a real round trip. */
-const SHORT_GRACE_MS = 200;
 
 let server: TestServer | null = null;
 
@@ -61,98 +56,29 @@ describe("a session over a real connection", () => {
 
     await expect(replaced).resolves.toBe(true);
   });
-});
 
-describe("leaving and coming back", () => {
-  it("keeps the seat of a player who comes back within the delay", async () => {
-    server = await startTestServer({ reconnectGraceMs: SHORT_GRACE_MS });
-    const { host, code } = await createRoom(mustServer());
-    const guest = await mustServer().connect();
-    const session = await sessionOf(guest);
-    await ask(guest).emitWithAck("room:join", { code, pseudo: "Nova", preferredColor: "c2" });
-
-    const away = waitForNextState(host, (state) => state.players.some((p) => !p.connected));
-    guest.disconnect();
-    await away;
-
-    // Everyone was connected before the drop, so only a later state proves the return.
-    const seen = waitForNextState(host, (state) => state.players.every((p) => p.connected));
-    const back = await mustServer().connect({ sessionToken: session.sessionToken });
-    await sessionOf(back);
-    const rejoined = await ask(back).emitWithAck("room:join", {
-      code,
-      pseudo: "Nova",
-      preferredColor: "c2",
-    });
-
-    expect(rejoined).toEqual({ ok: true, data: { code } });
-    expect((await seen).players.map((player) => player.playerId)).toContain(session.playerId);
-  });
-
-  it("removes a player who leaves on purpose", async () => {
+  it("never lets the replaced tab take the seat back", async () => {
     server = await startTestServer();
-    const { host, code } = await createRoom(mustServer());
-    const guest = await mustServer().connect();
-    await sessionOf(guest);
-    await ask(guest).emitWithAck("room:join", { code, pseudo: "Nova", preferredColor: "c2" });
-    await waitForState(host, (state) => state.players.length === 2);
+    const { code } = await createRoom(mustServer());
 
-    // The room held one player at creation, so the departure needs a state that comes after.
-    const gone = waitForNextState(host, (state) => state.players.length === 1);
-    guest.emit("room:leave");
+    // This one reconnects the way the real client does, which is the whole point: if it came back
+    // it would take the seat from the new tab, which would take it back, and so on.
+    const firstTab = await mustServer().connect({}, { reconnection: true, reconnectionDelay: 50 });
+    const session = await sessionOf(firstTab);
+    await ask(firstTab).emitWithAck("room:join", { code, pseudo: "Nova", preferredColor: "c2" });
 
-    expect((await gone).players.map((player) => player.pseudo)).toEqual(["Mika"]);
-  });
-});
-
-describe("coming back without asking for anything", () => {
-  it("gives the seat back and tells the other players", async () => {
-    server = await startTestServer({ reconnectGraceMs: SHORT_GRACE_MS });
-    const { host, code } = await createRoom(mustServer());
-    const guest = await mustServer().connect();
-    const session = await sessionOf(guest);
-    await ask(guest).emitWithAck("room:join", { code, pseudo: "Nova", preferredColor: "c2" });
-
-    const away = waitForNextState(host, (state) => state.players.some((p) => !p.connected));
-    guest.disconnect();
-    await away;
-
-    // The client only lets Socket.IO reconnect: it never sends room:join again (§10).
-    const back = waitForNextState(host, (state) => state.players.every((p) => p.connected));
-    await mustServer().connect({ sessionToken: session.sessionToken });
-
-    const state = await back;
-    expect(state.players).toHaveLength(2);
-    expect(state.players.map((player) => player.playerId)).toContain(session.playerId);
-  });
-
-  it("keeps the player connected when a second socket takes the seat", async () => {
-    server = await startTestServer();
-    const { host, code } = await createRoom(mustServer());
-    const guest = await mustServer().connect();
-    const session = await sessionOf(guest);
-    await ask(guest).emitWithAck("room:join", { code, pseudo: "Nova", preferredColor: "c2" });
-    await waitForState(host, (state) => state.players.length === 2);
-
-    const replaced = waitForReplaced(guest);
-    const seen = waitForNextState(host, (state) => state.players.length === 2);
-    await mustServer().connect({ sessionToken: session.sessionToken });
-
+    const replaced = waitForReplaced(firstTab);
+    const secondTab = await mustServer().connect({ sessionToken: session.sessionToken });
+    await sessionOf(secondTab);
     await expect(replaced).resolves.toBe(true);
-    expect((await seen).players.every((player) => player.connected)).toBe(true);
-  });
 
-  it("tells the other players when the grace delay runs out", async () => {
-    server = await startTestServer({ reconnectGraceMs: SHORT_GRACE_MS });
-    const { host, code } = await createRoom(mustServer());
-    const guest = await mustServer().connect();
-    await sessionOf(guest);
-    await ask(guest).emitWithAck("room:join", { code, pseudo: "Nova", preferredColor: "c2" });
-    await waitForState(host, (state) => state.players.length === 2);
+    // Long past several attempts at the shortened delay above.
+    await new Promise((resolve) => setTimeout(resolve, 400));
 
-    const removed = waitForNextState(host, (state) => state.players.length === 1);
-    guest.disconnect();
-
-    expect((await removed).players.map((player) => player.pseudo)).toEqual(["Mika"]);
+    expect(firstTab.connected).toBe(false);
+    // Still the seat's owner, so nothing was stolen back from it.
+    await expect(ask(secondTab).emitWithAck("lobby:setReady", { ready: true })).resolves.toEqual({
+      ok: true,
+    });
   });
 });

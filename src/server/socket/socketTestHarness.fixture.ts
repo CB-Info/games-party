@@ -8,9 +8,15 @@ import { createSocketServer, type SocketServerOptions } from "./createSocketServ
 
 export type TestClient = ClientSocket<ServerToClientEvents, ClientToServerEvents>;
 
+export interface TestClientOptions {
+  /** Most tests do not need it; a test about a replaced tab needs the real client's behaviour. */
+  reconnection?: boolean;
+  reconnectionDelay?: number;
+}
+
 export interface TestServer {
   url: string;
-  connect: (auth?: Record<string, unknown>) => Promise<TestClient>;
+  connect: (auth?: Record<string, unknown>, options?: TestClientOptions) => Promise<TestClient>;
   stop: () => Promise<void>;
 }
 
@@ -37,11 +43,12 @@ export async function startTestServer(options: SocketServerOptions = {}): Promis
   return {
     url,
 
-    connect: async (auth = {}) => {
+    connect: async (auth = {}, options = {}) => {
       const client: TestClient = connect(url, {
         forceNew: true,
         transports: ["websocket"],
-        reconnection: false,
+        reconnection: options.reconnection ?? false,
+        reconnectionDelay: options.reconnectionDelay ?? 1000,
         auth,
       });
       clients.push(client);
@@ -94,6 +101,7 @@ export async function createRoom(server: TestServer): Promise<{ host: TestClient
 
 export {
   ACK_TIMEOUT_MS,
+  receivedStates,
   sessionOf,
   waitForState,
   waitForNextState,

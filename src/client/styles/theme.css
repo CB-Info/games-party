@@ -154,6 +154,7 @@
   /* §9 — named animations. Keyframes declared here are dropped when no `animate-` class uses them. */
   --animate-appear: appear var(--transition-duration-smooth) var(--ease-smooth) both;
   --animate-highlight: highlight var(--transition-duration-highlight) var(--ease-smooth) 1 forwards;
+  --animate-blink: blink var(--transition-duration-blink) var(--ease-blink) infinite;
 
   @keyframes appear {
     from {
@@ -163,6 +164,16 @@
     to {
       opacity: 1;
       transform: translateY(0);
+    }
+  }
+
+  @keyframes blink {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.35;
     }
   }
 

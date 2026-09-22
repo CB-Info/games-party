@@ -13,11 +13,14 @@ const ASSET_PATH = "assets/index-abc12345.js";
 const FONT_PATH = "fonts/work-sans-latin.woff2";
 
 /** Starts the application on a free port and returns its base URL. */
-async function startServer(clientDir: string | null): Promise<{
+async function startServer(
+  clientDir: string | null,
+  secureOrigin = false,
+): Promise<{
   baseUrl: string;
   stop: () => Promise<void>;
 }> {
-  const server: HttpServer = createServer(createHttpApp({ clientDir }));
+  const server: HttpServer = createServer(createHttpApp({ clientDir, secureOrigin }));
 
   await new Promise<void>((resolve) => {
     server.listen(0, "127.0.0.1", resolve);
@@ -122,5 +125,34 @@ describe("createHttpApp with a built client", () => {
     expect(response.status).toBe(200);
     expect(response.headers.get("cache-control")).not.toContain("immutable");
     expect(response.headers.get("etag")).not.toBeNull();
+  });
+});
+
+/** The policy of the answer to any request; every route gets the same one. */
+async function policyOf(secureOrigin: boolean): Promise<string> {
+  const { baseUrl, stop } = await startServer(null, secureOrigin);
+
+  try {
+    const response = await fetch(`${baseUrl}/healthz`);
+    return response.headers.get("content-security-policy") ?? "";
+  } finally {
+    await stop();
+  }
+}
+
+describe("the content security policy", () => {
+  it("keeps requests as they are when the site is served over http", async () => {
+    const policy = await policyOf(false);
+
+    // Safari applies this directive to localhost, where Chrome and Firefox make an exception: it
+    // then asks for every file over a TLS the local server does not speak, and the page stays
+    // blank (docs/architecture.md, §2).
+    expect(policy).not.toContain("upgrade-insecure-requests");
+    expect(policy).toContain("style-src 'self'");
+    expect(policy).toContain("connect-src 'self'");
+  });
+
+  it("upgrades them in production, where the site is served over https", async () => {
+    expect(await policyOf(true)).toContain("upgrade-insecure-requests");
   });
 });

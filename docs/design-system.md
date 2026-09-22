@@ -284,6 +284,7 @@ Les icônes moins, plus, flèche haut et flèche bas n'existent pas dans les maq
 - Carte de jeu : fond Surface, bordure Bordure, rayon lg, marge intérieure 24 px ; icône du jeu 48 px (rayon md), nom en titre-3, description en corps Texte secondaire, badge « 3 à 10 joueurs ».
 - Survol : ombre-2 et bordure Bordure forte.
 - Grille : colonnes en remplissage automatique, largeur minimale 266 px, espace 24 px. Une carte par jeu existant, **jamais de carte « Bientôt »**.
+- **Aucun jeu disponible :** la grille affiche « Aucun jeu n'est disponible pour l'instant. » en corps Texte secondaire, à la place des cartes.
 - Jeu choisi (en-tête de la colonne centrale du lobby) : icône, nom, description, et bouton secondaire « Changer » pour l'hôte uniquement. Aucun badge « Choisi ».
 
 ### 11.8 Badges
@@ -299,6 +300,7 @@ Les icônes moins, plus, flèche haut et flèche bas n'existent pas dans les maq
 | Déconnecté · à point | Surface, bordure Bordure | Texte secondaire, précédé d'un point Texte désactivé de 6 px | Lignes de joueur (posées sur Surface 2) |
 | Déconnecté · plat | Surface 2 | Texte secondaire | Lignes de classement (posées sur Surface) |
 | Nombre de joueurs (« 3 à 10 joueurs ») | Surface 2 | Texte | Cartes de jeu |
+| C'est ce pseudo | Erreur doux | Erreur | Ligne de l'aperçu qui porte un pseudo refusé (écran d'invitation, section 11.10) |
 
 - Aucun badge « Coureur » : seuls un Chat et un joueur déconnecté portent un badge dans un classement.
 
@@ -318,10 +320,13 @@ Les icônes moins, plus, flèche haut et flèche bas n'existent pas dans les maq
 
 - Hauteur **38 px**, rayon md, fond Surface, bordure Bordure, marge intérieure horizontale 16 px, espace de 12 px entre les éléments d'une ligne, espace de 8 px entre les lignes.
 - Contenu : pastille de couleur de 22 px, pseudo en corps-fort (coupé en « … »), badges alignés à droite.
+- **Ordre des badges.** Les badges **permanents** — « Hôte » puis « Toi », dans cet ordre — restent collés au bord droit et n'en bougent jamais. Les badges qui **apparaissent et disparaissent** — « Prêt », « C'est ce pseudo », « Déconnecté », dans cet ordre — s'insèrent à leur gauche, du côté du pseudo. Un badge qui apparaît ne doit jamais déplacer un badge déjà affiché : c'est le pseudo, coupé en « … », qui cède la place.
 - Ta ligne : fond Fond (`--color-page`), pour que le badge « Toi » (Surface 2) reste visible.
-- Joueur déconnecté : bordure pointillée, pastille et pseudo en Texte désactivé, badge « Déconnecté » à point.
+- **Ordre de la liste :** l'hôte en premier, puis les autres joueurs dans leur ordre d'arrivée.
+- Joueur déconnecté : bordure pointillée, pastille et pseudo en Texte désactivé, badge « Déconnecté » à point. C'est bien la variante **à point** du §11.8 qui s'applique, et non la variante plate, malgré la mention « posées sur Surface 2 » de ce tableau.
 - **Pastille cliquable** (ta ligne uniquement) : anneau de 3 px Surface 2, Bordure forte au survol. Le clic ouvre la palette.
 - **Ligne d'attente** « Il manque un joueur » : bordure pointillée, pastille vide pointillée, texte en corps Texte secondaire. Jamais présentée comme une erreur.
+- **Pseudo refusé** (écran d'invitation) : quand `room:join` échoue avec `PSEUDO_TAKEN`, l'aperçu de la room est rafraîchi, puis la ligne du joueur qui porte ce pseudo — comparaison sans tenir compte des majuscules — prend une **bordure Erreur** et le badge **« C'est ce pseudo »** (section 11.8). Le message sous le champ reste affiché : il dit quoi faire, la ligne dit qui. La mise en évidence disparaît au refus suivant ou quand la room est rejointe.
 - Toutes les lignes sont affichées, sans défilement (10 au maximum).
 
 ### 11.11 Palette de couleurs
@@ -339,7 +344,10 @@ Les icônes moins, plus, flèche haut et flèche bas n'existent pas dans les maq
 
 - En haut de l'écran, centrées. Fond Surface, bordure Bordure, rayon md, ombre-3, marge intérieure 16 px, style corps, point de 8 px à gauche (Accent, Avertissement ou Erreur selon le message).
 - Apparition animation ample, disparition après 4 s.
-- Textes : « Lien copié, envoie-le à tes potes ! », « Mika a changé de jeu, reclique sur Prêt. », « Connexion perdue, reconnexion… », « La room est pleine : 10 joueurs, c'est le max. ».
+- Textes : « Mika a changé de jeu, reclique sur Prêt. », « Connexion perdue, reconnexion… », « La room est pleine : 10 joueurs, c'est le max. ».
+- **Action refusée par le serveur**, point Erreur : « Cette couleur vient d'être prise. » (`COLOR_TAKEN`), « Tu vas trop vite, réessaie dans un instant. » (`RATE_LIMITED`), « Action impossible, réessaie. » (tous les autres refus).
+- **Exception à la disparition :** « Connexion perdue, reconnexion… » décrit un état et reste affichée tant que la connexion n'est pas revenue (`docs/architecture.md`, section 10).
+- La copie du lien n'a **pas** de notification : le libellé du bouton suffit (section 11.2).
 
 ### 11.14 Bande d'informations (écran de jeu)
 
@@ -411,13 +419,14 @@ Les maquettes de `docs/maquettes/` montrent chaque écran en 1440 × 900 et, pou
 **Commun à tous les écrans :**
 - En-tête : logo (icône 44 px, nom 26 px) à gauche, bouton du son à droite. Marges 32 px en haut et 56 px sur les côtés en 1440 ; 24 px et 48 px en 1366 (icône 38 px, nom 23 px).
 - Le contenu commence directement sous l'en-tête, sans espace vide ajouté ; il n'est jamais centré verticalement dans la fenêtre.
+- **Un seul texte, quelle que soit la taille d'écran.** Les maquettes raccourcissent certaines phrases en 1366 : c'est le texte de 1440 qui s'applique partout. Seules les tailles changent au point de rupture.
 - Sur un appareil sans souris : message « Games Party se joue sur ordinateur, avec une souris. » à la place du contenu.
 
 **Accueil et invitation :** une carte principale en deux colonnes. À gauche, accroche (micro en pilule Accent doux), titre, texte d'introduction et formulaire ; à droite, aperçu de l'arène avec la carte du jeu (accueil) ou la liste des joueurs de la room (invitation). Les erreurs « room pleine » et « serveur complet » remplacent le contenu de la colonne de gauche ; « pseudo déjà pris » s'affiche sous le champ.
 
 **Lobby :**
 - Sous l'en-tête : titre « La room de Mika » et sous-titre à gauche, bouton « Copier le lien » à droite.
-- Jeu choisi : trois colonnes de même hauteur. **Joueurs** (largeur fixe, doit afficher un pseudo de 16 caractères avec les badges « Toi » et « Prêt ») ; **Le jeu** (colonne flexible : jeu choisi, arène de démonstration en 16:9, phrase « Ton score, c'est le temps passé sans être Chat. ») ; **Réglages** (largeur fixe : lignes de réglage, puis en bas compteur de prêts et bouton principal). En 1366, la colonne Réglages est élargie aux dépens de la colonne Le jeu.
+- Jeu choisi : trois colonnes de même hauteur. **Joueurs** (largeur fixe, doit afficher un pseudo de 16 caractères avec les badges « Toi » et « Prêt ») ; **Le jeu** (colonne flexible : jeu choisi, arène de démonstration en 16:9, phrase « Ton score, c'est le temps passé sans être Chat. ») ; **Réglages** (largeur fixe : lignes de réglage, puis en bas le compteur de prêts et le bouton d'action : principal « Lancer la partie » quand tous les joueurs connectés sont prêts, secondaire « Lancer quand même » sinon — un seul bouton à la fois). En 1366, la colonne Réglages est élargie aux dépens de la colonne Le jeu.
 - Aucun jeu choisi : les colonnes Le jeu et Réglages fusionnent (grille de jeux pour l'hôte, message d'attente pour les joueurs).
 - Bouton discret « Quitter la room » en bas de la carte Joueurs.
 - **Démo du lobby et de l'accueil :** tant que la démo animée n'existe pas (étape 5), arène fixe avec des joueurs fictifs (Pixel en Chat, Nova, Biscuit, Zippy), jamais les joueurs de la room.
@@ -437,7 +446,7 @@ Les maquettes de `docs/maquettes/` montrent chaque écran en 1440 × 900 et, pou
 
 - **Style : doux et minimaliste** (petits « pop », clics feutrés, carillons discrets), cohérent avec l'ambiance du site. Pas de musique.
 - Sons libres de droits, intégrés à l'étape 5 : toucher, gel, portail, compte à rebours, clic « Prêt », fin de manche, résultats.
-- Bouton du son dans l'en-tête de tous les écrans ; le choix est mémorisé dans le navigateur (couche services).
+- Bouton du son dans l'en-tête de tous les écrans ; le son est **actif par défaut** et le choix est mémorisé dans le navigateur (couche services).
 
 ## 16. Évolutions prévues
 

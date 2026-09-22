@@ -16,6 +16,7 @@ import { restoreRoomOnConnect } from "./restoreRoomOnConnect";
 import type { ServerContext } from "./serverContext";
 import { createSocketOutbound } from "./socketOutbound";
 import { socketRoomOf, type GameServer, type GameSocket } from "./socketTypes";
+import { startMaintenance } from "./startMaintenance";
 
 export interface SocketServerOptions {
   /** Games the host may choose. Defaults to the real registry; tests pass their own. */
@@ -24,6 +25,7 @@ export interface SocketServerOptions {
   reconnectGraceMs?: number;
   resultsAutoReturnMs?: number;
   emptyRoomTtlMs?: number;
+  maintenanceIntervalMs?: number;
   rateLimits?: RateLimiterOptions;
 }
 
@@ -129,11 +131,19 @@ export function createSocketServer(
     });
   });
 
+  const stopMaintenance = startMaintenance({
+    rooms,
+    sessions,
+    now,
+    intervalMs: options.maintenanceIntervalMs,
+  });
+
   return {
     io,
     rooms,
     sessions,
     close: async () => {
+      stopMaintenance();
       rooms.disposeAll();
       await io.close();
     },

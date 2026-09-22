@@ -127,6 +127,18 @@ export const layerRules = [
     rules: deny(NO_SERVER, NO_PAGES, NO_SERVICES, NO_ENGINE, NO_FEATURES),
   },
   {
+    // Anything at the root of a feature, beside its components/ and hooks/ folders.
+    name: "layers/feature-root",
+    files: ["src/client/features/*/*.ts", "src/client/features/*/*.tsx"],
+    rules: deny(NO_SERVER, NO_PAGES, NO_SERVICES, NO_ENGINE),
+  },
+  {
+    // Shared components that are not part of the design system still reach no service.
+    name: "layers/components-shared",
+    files: ["src/client/components/**"],
+    rules: deny(NO_SERVER, NO_PAGES, NO_SERVICES, NO_ENGINE),
+  },
+  {
     name: "layers/client-app",
     files: ["src/client/main.tsx", "src/client/app/**"],
     rules: deny(NO_SERVER, NO_SERVICES, NO_ENGINE),

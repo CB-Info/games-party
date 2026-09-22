@@ -3,6 +3,8 @@ import { useState } from "react";
 import { Button } from "../../../components/ui/Button";
 import { ConfirmDialog } from "../../../components/ui/ConfirmDialog";
 import { Notification } from "../../../components/ui/Notification";
+import { NoMouseMessage } from "../../appShell/components/NoMouseMessage";
+import { ReplacedMessage } from "../../appShell/components/ReplacedMessage";
 import { GallerySection } from "./GallerySection";
 
 export function FeedbackSection() {
@@ -10,11 +12,11 @@ export function FeedbackSection() {
 
   return (
     <GallerySection
-      title="Notifications et confirmation"
-      note="La boîte de confirmation se ferme aussi avec Échap ou par un clic sur le voile."
+      title="Notifications, confirmation et messages d’écran"
+      note="La boîte de confirmation se ferme aussi avec Échap ou par un clic sur le voile. Les deux derniers messages remplacent tout le contenu de la page."
     >
       <div className="flex flex-col items-center gap-3">
-        <Notification tone="success">Lien copié, envoie-le à tes potes !</Notification>
+        <Notification tone="success">Mika a changé de jeu, reclique sur Prêt.</Notification>
         <Notification tone="warning">Connexion perdue, reconnexion…</Notification>
         <Notification tone="error">La room est pleine : 10 joueurs, c’est le max.</Notification>
       </div>
@@ -34,6 +36,11 @@ export function FeedbackSection() {
         onCancel={() => setConfirming(false)}
         onConfirm={() => setConfirming(false)}
       />
+
+      <div className="flex flex-col gap-3 rounded-md border border-line bg-page p-6">
+        <NoMouseMessage />
+        <ReplacedMessage />
+      </div>
     </GallerySection>
   );
 }

@@ -23,7 +23,10 @@ export const MAX_ROOMS = 50;
 export const EMPTY_ROOM_TTL_MS = 300000;
 
 /** Delay a disconnected player keeps their seat, in milliseconds (docs/architecture.md, §13). */
-export const RECONNECT_GRACE_MS = 30000;
+export const RECONNECT_GRACE_MS = 300000;
+
+/** Interval between two sweeps of empty rooms and idle sessions (docs/architecture.md, §13). */
+export const MAINTENANCE_INTERVAL_MS = 60000;
 
 /** Delay before the results screen returns to the lobby, in milliseconds (docs/architecture.md, §13). */
 export const RESULTS_AUTO_RETURN_MS = 20000;
@@ -57,6 +60,12 @@ export const SESSION_PLAYER_ID_LENGTH = 12;
 /** Lifetime of a session bound to no socket and no room, in milliseconds (docs/architecture.md, §13). */
 export const SESSION_TTL_MS = 86400000;
 
+/** Logical width of the arena (docs/architecture.md, §13). */
+export const ARENA_WIDTH = 1600;
+
+/** Logical height of the arena (docs/architecture.md, §13). */
+export const ARENA_HEIGHT = 900;
+
 /** Server loop steps per second (docs/architecture.md, §13). */
 export const SERVER_TICK_RATE = 30;
 
@@ -71,3 +80,9 @@ export const RATE_LIMIT_KICK_AFTER_MS = 5000;
 
 /** Unknown-room failures accepted per sliding minute and per socket (docs/architecture.md, §13). */
 export const MAX_JOIN_FAILURES_PER_MINUTE = 10;
+
+/** How long a notification stays on screen, in milliseconds (docs/design-system.md, §11.13). */
+export const NOTIFICATION_DURATION_MS = 4000;
+
+/** How long "Lien copié" replaces the button label, in milliseconds (docs/design-system.md, §11.2). */
+export const COPY_FEEDBACK_MS = 2000;
