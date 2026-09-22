@@ -37,7 +37,8 @@ Conséquences acceptées :
   - `index.html` : `Cache-Control: no-store`, pour qu'un déploiement soit visible immédiatement ;
   - fichiers de `assets/` (noms contenant un hash généré par Vite) : `Cache-Control: public, max-age=STATIC_ASSETS_MAX_AGE_S, immutable`.
   - tous les autres fichiers statiques (polices de `fonts/`, favicon…), dont le nom ne change pas d'une version à l'autre : aucun cache long, revalidation par ETag à chaque visite.
-- **CSP :** politique par défaut de helmet, avec `connect-src 'self'`. `style-src` y autorise encore `'unsafe-inline'` : à resserrer lors de l'étape design system.
+- **CSP :** politique par défaut de helmet, resserrée sur deux points : `connect-src 'self'` (Socket.IO reste sur cette origine) et `style-src 'self'`, sans `'unsafe-inline'` ni `https:` — le site n'a ni feuille de style externe ni attribut `style`.
+  - **`upgrade-insecure-requests` n'est gardée qu'en production**, où le site est servi en `https` par Render. En local il est servi en `http`, et Safari applique cette directive à `localhost` là où Chrome et Firefox font une exception : il réclame alors chaque fichier en `https`, le serveur ne parle pas TLS, et la page reste blanche. Le serveur la reconnaît à `NODE_ENV=production`, la variable déjà définie par Render (section 10).
 
 ### Routes du client
 

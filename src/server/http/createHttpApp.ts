@@ -8,25 +8,31 @@ import { STATIC_ASSETS_MAX_AGE_S } from "../../shared/constants";
 interface HttpAppOptions {
   /** Directory holding the built client, or null in development where Vite serves it. */
   clientDir: string | null;
+  /** True where the site is served over https, which on Render means production (§10). */
+  secureOrigin: boolean;
 }
 
-export function createHttpApp({ clientDir }: HttpAppOptions): Express {
+export function createHttpApp({ clientDir, secureOrigin }: HttpAppOptions): Express {
   const app = express();
 
-  app.use(
-    helmet({
-      contentSecurityPolicy: {
-        useDefaults: true,
-        directives: {
-          // Socket.IO polls over HTTP, then upgrades to a WebSocket: both stay on this origin.
-          "connect-src": ["'self'"],
-          // The client carries no inline style and no external stylesheet: a player colour comes
-          // from a class, never from a `style` attribute (docs/design-system.md, §4.2).
-          "style-src": ["'self'"],
-        },
-      },
-    }),
-  );
+  const directives: Record<string, string[] | null> = {
+    // Socket.IO polls over HTTP, then upgrades to a WebSocket: both stay on this origin.
+    "connect-src": ["'self'"],
+    // The client carries no inline style and no external stylesheet: a player colour comes
+    // from a class, never from a `style` attribute (docs/design-system.md, §4.2).
+    "style-src": ["'self'"],
+  };
+
+  if (!secureOrigin) {
+    // Helmet upgrades every http request to https by default. Over https that is a safety net;
+    // over http it breaks the site outright in Safari, which applies the directive to localhost
+    // where Chrome and Firefox make an exception. Every file is then asked for over a TLS the
+    // server does not speak, and the page stays blank. `null` is how helmet drops one of its own
+    // defaults (docs/architecture.md, §2).
+    directives["upgrade-insecure-requests"] = null;
+  }
+
+  app.use(helmet({ contentSecurityPolicy: { useDefaults: true, directives } }));
 
   app.get("/healthz", (_request, response) => {
     response.type("text/plain").send("ok");

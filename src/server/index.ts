@@ -11,7 +11,11 @@ import { createSocketServer } from "./socket/createSocketServer";
 const builtClientDir = fileURLToPath(new URL("client/", import.meta.url));
 const clientDir = existsSync(builtClientDir) ? builtClientDir : null;
 
-const httpServer = createServer(createHttpApp({ clientDir }));
+// Render sets NODE_ENV=production and serves the site over https (§10). Everywhere else it is
+// plain http, where upgrading every request would make it unreachable.
+const secureOrigin = process.env.NODE_ENV === "production";
+
+const httpServer = createServer(createHttpApp({ clientDir, secureOrigin }));
 createSocketServer(httpServer);
 
 const port = Number(process.env.PORT ?? DEFAULT_SERVER_PORT);
