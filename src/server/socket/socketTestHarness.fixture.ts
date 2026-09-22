@@ -113,5 +113,7 @@ export {
   waitForState,
   waitForNextState,
   waitForView,
+  waitForNextView,
+  receivedViews,
   waitForReplaced,
 } from "./socketInbox.fixture";

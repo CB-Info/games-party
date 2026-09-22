@@ -129,6 +129,25 @@ export function waitForView(client: TestClient): Promise<GameViewPayload> {
   return awaitInbox(client, (inbox) => inbox.views.at(0), "game:view");
 }
 
+/** The first view to arrive **after** this call that satisfies `predicate` (see waitForNextState). */
+export function waitForNextView(
+  client: TestClient,
+  predicate: (payload: GameViewPayload) => boolean,
+): Promise<GameViewPayload> {
+  const alreadyReceived = inboxes.get(client)?.views.length ?? 0;
+
+  return awaitInbox(
+    client,
+    (inbox) => inbox.views.slice(alreadyReceived).find(predicate),
+    "later game:view",
+  );
+}
+
+/** Every view received so far, in order. Reading it needs no waiting. */
+export function receivedViews(client: TestClient): readonly GameViewPayload[] {
+  return inboxes.get(client)?.views ?? [];
+}
+
 /** Resolves once this client was told its session was opened elsewhere (§4). */
 export function waitForReplaced(client: TestClient): Promise<true> {
   return awaitInbox(client, (inbox) => (inbox.replaced ? true : undefined), "session:replaced");
