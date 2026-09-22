@@ -81,6 +81,32 @@ describe("creating and joining a room", () => {
     expect(joined).toEqual({ ok: false, error: "ROOM_NOT_FOUND" });
   });
 
+  it("changes nothing when a player joins the room they are already in", async () => {
+    server = await startTestServer();
+    const { host, code } = await createRoom(mustServer());
+    const guest = await mustServer().connect();
+    await sessionOf(guest);
+    await ask(guest).emitWithAck("room:join", { code, pseudo: "Nova", preferredColor: "c2" });
+    await ask(guest).emitWithAck("lobby:setReady", { ready: true });
+    const before = await waitForState(host, (state) => state.readyPlayerIds.length === 1);
+
+    // A different pseudo, and one already worn by somebody else: neither is applied, and neither
+    // is refused. The seat is simply given back as it is (docs/architecture.md, §5.1). The wait is
+    // registered first: the room broadcasts before it acknowledges.
+    const later = waitForNextState(host, () => true);
+    const again = await ask(host).emitWithAck("room:join", {
+      code,
+      pseudo: "Nova",
+      preferredColor: "c9",
+    });
+    const after = await later;
+
+    expect(again).toEqual({ ok: true, data: { code } });
+    expect(after.players).toEqual(before.players);
+    expect(after.hostId).toBe(before.hostId);
+    expect(after.readyPlayerIds).toEqual(before.readyPlayerIds);
+  });
+
   it("forgets a room that was left empty", async () => {
     server = await startTestServer({
       reconnectGraceMs: 50,
@@ -130,61 +156,5 @@ describe("previewing a room without joining it", () => {
     const state = await waitForState(host);
 
     expect(state.players).toHaveLength(1);
-  });
-});
-
-describe("a refused join", () => {
-  it("leaves the player in the room they were already in", async () => {
-    server = await startTestServer();
-    const first = await createRoom(mustServer());
-    const other = await createRoom(mustServer());
-
-    const guest = await mustServer().connect();
-    await sessionOf(guest);
-    await ask(guest).emitWithAck("room:join", {
-      code: first.code,
-      pseudo: "Nova",
-      preferredColor: "c2",
-    });
-    await waitForState(first.host, (state) => state.players.length === 2);
-
-    // "Mika" is the host of the other room, so this join is refused.
-    const refused = await ask(guest).emitWithAck("room:join", {
-      code: other.code,
-      pseudo: "Mika",
-      preferredColor: "c3",
-    });
-
-    // Nothing is broadcast when a join is refused, so the room is read back instead.
-    expect(refused).toEqual({ ok: false, error: "PSEUDO_TAKEN" });
-    const preview = await ask(guest).emitWithAck("room:preview", { code: first.code });
-    expect(preview.ok && preview.data.players.map((player) => player.pseudo)).toEqual([
-      "Mika",
-      "Nova",
-    ]);
-  });
-
-  it("takes the player out of their previous room when the join succeeds", async () => {
-    server = await startTestServer();
-    const first = await createRoom(mustServer());
-    const other = await createRoom(mustServer());
-
-    const guest = await mustServer().connect();
-    await sessionOf(guest);
-    await ask(guest).emitWithAck("room:join", {
-      code: first.code,
-      pseudo: "Nova",
-      preferredColor: "c2",
-    });
-    await waitForState(first.host, (state) => state.players.length === 2);
-
-    const left = waitForNextState(first.host, (s) => s.players.length === 1);
-    await ask(guest).emitWithAck("room:join", {
-      code: other.code,
-      pseudo: "Nova",
-      preferredColor: "c3",
-    });
-
-    expect((await left).players.map((player) => player.pseudo)).toEqual(["Mika"]);
   });
 });

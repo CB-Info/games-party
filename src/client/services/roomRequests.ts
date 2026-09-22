@@ -1,5 +1,6 @@
 import type { AckResponse, AckStatus, RoomCodeData } from "../../shared/protocol";
 import type { PlayerColorId, RoomPreview } from "../../shared/types";
+import { roomState } from "./roomState";
 import { getSocket } from "./socketClient";
 
 /**
@@ -26,8 +27,12 @@ export function joinRoom(payload: {
   return getSocket().emitWithAck("room:join", payload);
 }
 
-/** The server never answers this one (docs/architecture.md, §6.2). */
+/**
+ * The server never answers this one (docs/architecture.md, §6.2), so the room has to be forgotten
+ * here: nothing will come back to say it is gone.
+ */
 export function leaveRoom(): void {
+  roomState.forget();
   getSocket().emit("room:leave");
 }
 

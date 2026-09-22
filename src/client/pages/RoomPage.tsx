@@ -34,15 +34,20 @@ type Membership = "unknown" | "member" | "outside";
  * the integration test "sends the room back before it answers anything the member asks", in
  * src/server/socket/socketReconnect.test.ts — never rely on it without reading that test first.
  *
- * The same three states answer a reconnection (§10): `useRoom` forgets the room and `useRoomPreview`
- * asks again, both from the same callback, so the screen goes back to "unknown" in one step. The
- * room still holds the seat, the lobby comes back; the seat expired, the invitation comes back with
- * the pseudo already filled in; the room is gone, the answer is `ROOM_NOT_FOUND` and the screen says
- * so. The test "says nothing to a player whose seat expired while they were away" covers the middle
- * one.
+ * The other way in is the room this browser just created: the server broadcasts it before it
+ * acknowledges `room:create`, so it is already in the service's store by the time this screen
+ * mounts, and the creator lands straight in their own lobby.
+ *
+ * The same three states answer a reconnection (§10): the service forgets the room and
+ * `useRoomPreview` asks again, from the same callback, so the screen goes back to "unknown" in one
+ * step. The room still holds the seat, the lobby comes back; the seat expired, the invitation comes
+ * back with the pseudo already filled in; the room is gone, the answer is `ROOM_NOT_FOUND` and the
+ * screen says so. The test "says nothing to a player whose seat expired while they were away"
+ * covers the middle one.
  */
-function membershipOf(state: RoomState | null, preview: PreviewState): Membership {
-  if (state !== null) {
+function membershipOf(state: RoomState | null, preview: PreviewState, code: string): Membership {
+  // The code matters: a room left a moment ago must not pass for this one.
+  if (state !== null && state.code === code) {
     return "member";
   }
 
@@ -73,7 +78,7 @@ function RoomContent({ code }: { code: string }) {
     }
   }
 
-  const membership = membershipOf(state, preview);
+  const membership = membershipOf(state, preview, code);
 
   // Neither screen while it is unknown: showing the invitation to a member, even for one frame,
   // reads as if the room had forgotten them (docs/architecture.md, §2).
@@ -81,7 +86,7 @@ function RoomContent({ code }: { code: string }) {
     return null;
   }
 
-  if (state !== null) {
+  if (membership === "member" && state !== null) {
     return (
       <LobbyScreen
         state={state}

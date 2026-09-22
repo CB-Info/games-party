@@ -1,6 +1,7 @@
 import { io, type Socket } from "socket.io-client";
 
 import type { ClientToServerEvents, ServerToClientEvents } from "../../shared/protocol";
+import { roomState } from "./roomState";
 import { sessionIdentity } from "./sessionIdentity";
 import { readSessionToken, writeSessionToken } from "./sessionStorage";
 
@@ -37,13 +38,22 @@ export function getSocket(): GameSocket {
       sessionIdentity.remember(identity);
     });
 
-    // A new connection tells everything again, room included. Warning the listeners here, and not
-    // from an effect, is what guarantees they have forgotten the old room before the server's
-    // answer for the new connection can arrive.
+    // The room the server broadcasts is kept here rather than handed to whoever is listening:
+    // room:create answers with room:state before its acknowledgement, so it arrives while the home
+    // screen is still showing and nothing would ever send it again.
+    socket.on("room:state", (state) => {
+      roomState.remember(state);
+    });
+
+    // A new connection tells everything again, room included. Forgetting it here, and not from an
+    // effect, is what guarantees the old room is gone before the server's answer for the new
+    // connection can arrive.
     socket.on("connect", () => {
       connections += 1;
 
       if (connections > 1) {
+        roomState.forget();
+
         for (const listener of reconnectionListeners) {
           listener();
         }
@@ -55,6 +65,7 @@ export function getSocket(): GameSocket {
     // leave the two tabs stealing it from each other.
     socket.on("session:replaced", () => {
       sessionReplaced = true;
+      roomState.forget();
       socket?.disconnect();
 
       for (const listener of replacedListeners) {
@@ -89,19 +100,6 @@ export function subscribeToConnection(onChange: () => void): () => void {
 }
 
 /**
- * One subscriber per event rather than a generic one: a generic event name does not narrow the
- * listener type, and the protocol types are what make these calls safe.
- */
-export function subscribeToRoomState(listener: ServerToClientEvents["room:state"]): () => void {
-  const currentSocket = getSocket();
-
-  currentSocket.on("room:state", listener);
-  return () => {
-    currentSocket.off("room:state", listener);
-  };
-}
-
-/**
  * Calls back every time the connection comes **back** after a drop, never on the first one. What the
  * server said before is not true any more: the room may have gone, and the seat may have expired
  * (docs/architecture.md, §10).
@@ -125,6 +123,10 @@ export function subscribeToSessionReplaced(onChange: () => void): () => void {
   };
 }
 
+/**
+ * One subscriber per event rather than a generic one: a generic event name does not narrow the
+ * listener type, and the protocol types are what make these calls safe.
+ */
 export function subscribeToGameChanged(
   listener: ServerToClientEvents["lobby:gameChanged"],
 ): () => void {

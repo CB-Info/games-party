@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useSyncExternalStore } from "react";
 
 import type { ErrorCode } from "../../../../shared/protocol";
 import type { PlayerColorId, RoomState } from "../../../../shared/types";
@@ -10,7 +10,7 @@ import {
   setReady,
   startGame,
 } from "../../../services/roomRequests";
-import { subscribeToReconnection, subscribeToRoomState } from "../../../services/socketClient";
+import { roomState } from "../../../services/roomState";
 
 export interface RoomActions {
   setColor: (color: PlayerColorId) => Promise<ErrorCode | null>;
@@ -30,17 +30,14 @@ async function refusalOf(answer: Promise<{ ok: true } | { ok: false; error: Erro
 /**
  * The room as the server broadcasts it, plus the actions a member can take. The state is never
  * guessed locally: every change comes back through `room:state` (docs/architecture.md, §6.2).
+ *
+ * It is read as a snapshot rather than collected by an effect. The room the server sends when it
+ * is created arrives while the home screen is still showing, so a hook subscribing on mount would
+ * never see it. The service also forgets the room when the connection comes back and when another
+ * tab takes the session over (§10, §4).
  */
 export function useRoom(): { state: RoomState | null; actions: RoomActions } {
-  const [state, setState] = useState<RoomState | null>(null);
-
-  useEffect(() => subscribeToRoomState(setState), []);
-
-  // On a reconnection the server says again whether this browser still holds a seat. Until it
-  // does, the client knows nothing: the seat may have expired while the connection was down
-  // (docs/architecture.md, §10). The content only empties once the connection is back, so a
-  // passing cut leaves the lobby on screen.
-  useEffect(() => subscribeToReconnection(() => setState(null)), []);
+  const state = useSyncExternalStore(roomState.subscribe, roomState.get);
 
   const actions: RoomActions = {
     setColor: useCallback((color: PlayerColorId) => refusalOf(setColor(color)), []),
@@ -48,10 +45,7 @@ export function useRoom(): { state: RoomState | null; actions: RoomActions } {
     selectGame: useCallback((gameId: string) => refusalOf(selectGame(gameId)), []),
     setOptions: useCallback((options: unknown) => refusalOf(setGameOptions(options)), []),
     start: useCallback((force: boolean) => refusalOf(startGame(force)), []),
-    leave: useCallback(() => {
-      setState(null);
-      leaveRoom();
-    }, []),
+    leave: useCallback(() => leaveRoom(), []),
   };
 
   return { state, actions };
