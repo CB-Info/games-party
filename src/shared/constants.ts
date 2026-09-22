@@ -72,6 +72,36 @@ export const SERVER_TICK_RATE = 30;
 /** Longest step handed to a game, in milliseconds (docs/architecture.md, §13). */
 export const MAX_TICK_DT_MS = 100;
 
+/** Inputs a client sends per second while its cursor moves (docs/architecture.md, §13). */
+export const INPUT_SEND_RATE = 30;
+
+/** Multiplier applied to every mouse movement, the same for everyone (docs/architecture.md, §13). */
+export const CURSOR_SENSITIVITY = 1;
+
+/** Largest accepted component of one input, in logical units (docs/architecture.md, §13). */
+export const MAX_INPUT_DELTA = 2000;
+
+/** How much movement a cursor may bank, in milliseconds of travel (docs/architecture.md, §13). */
+export const MOVE_BUDGET_CAP_MS = 200;
+
+/** Longest step a move is cut into before testing walls, in logical units (docs/architecture.md, §13). */
+export const MOVE_SUBSTEP = 7;
+
+/** How far behind the server the other cursors are drawn, in milliseconds (docs/architecture.md, §13). */
+export const INTERPOLATION_DELAY_MS = 100;
+
+/** How long received views are kept for interpolation, in milliseconds (docs/architecture.md, §13). */
+export const INTERPOLATION_BUFFER_MS = 1000;
+
+/** Largest gap the local cursor catches up smoothly, in logical units (docs/architecture.md, §13). */
+export const CORRECTION_SNAP_DISTANCE = 48;
+
+/** How long the local cursor takes to rejoin its predicted place, in ms (docs/architecture.md, §13). */
+export const CORRECTION_SMOOTHING_MS = 100;
+
+/** Beyond this jump, another cursor is redrawn without interpolation (docs/architecture.md, §13). */
+export const TELEPORT_SNAP_DISTANCE = 200;
+
 /** Messages accepted per sliding second and per socket (docs/architecture.md, §13). */
 export const RATE_LIMIT_MESSAGES_PER_SECOND = 60;
 
