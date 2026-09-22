@@ -1,6 +1,8 @@
 import { ROOM_CAPACITY } from "../../shared/constants";
 import type { Player, RoomPreview, RoomState, RoomStatus } from "../../shared/types";
 import type { GameResults } from "../../shared/types";
+import type { RoomGameFlow } from "./RoomGameFlow";
+import type { RoomMembers } from "./RoomMembers";
 import type { RoomMember } from "./roomMember";
 
 export interface RoomSnapshot {
@@ -12,6 +14,20 @@ export interface RoomSnapshot {
   selectedGameOptions: unknown;
   cumulative: RoomState["cumulative"];
   lastResults: GameResults | null;
+}
+
+/** Everything both projections read, gathered from the parts of a room in one place. */
+export function snapshotOf(code: string, members: RoomMembers, flow: RoomGameFlow): RoomSnapshot {
+  return {
+    code,
+    status: flow.status,
+    hostId: members.host,
+    members: members.all,
+    selectedGameId: flow.selectedGameId,
+    selectedGameOptions: flow.selectedGameOptions,
+    cumulative: flow.cumulative,
+    lastResults: flow.lastResults,
+  };
 }
 
 function toPlayer(member: RoomMember, hostId: string | null): Player {
