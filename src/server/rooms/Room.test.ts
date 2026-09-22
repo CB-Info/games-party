@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { ROOM_CAPACITY } from "../../shared/constants";
+import { RECONNECT_GRACE_MS, ROOM_CAPACITY } from "../../shared/constants";
 import { addPlayer, createTestRoom } from "./roomTestHarness.fixture";
 
 beforeEach(() => {
@@ -90,7 +90,8 @@ describe("Room reconnection", () => {
 
     vi.advanceTimersByTime(1000);
     room.reconnect(mika);
-    vi.advanceTimersByTime(60_000);
+    // Past the whole delay: coming back has to have cancelled the removal, not postponed it.
+    vi.advanceTimersByTime(RECONNECT_GRACE_MS);
 
     expect(room.member(mika)?.connected).toBe(true);
   });
@@ -101,7 +102,7 @@ describe("Room reconnection", () => {
     addPlayer(room, "Nova", "c2");
     room.disconnect(mika);
 
-    vi.advanceTimersByTime(60_000);
+    vi.advanceTimersByTime(RECONNECT_GRACE_MS);
 
     expect(room.member(mika)).toBeNull();
   });

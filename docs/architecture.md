@@ -134,6 +134,8 @@ LOBBY ──(hôte lance)──► PLAYING ──(jeu terminé)──► RESULTS
 ### 5.5 Déconnexion, départ et reconnexion
 
 - **Déconnexion :** le joueur est marqué `connected: false` et sa place est gardée `RECONNECT_GRACE_MS`. Un spectateur a droit au même délai : il occupe lui aussi une place dans la capacité. Pendant une partie, le jeu est notifié (`onPlayerDisconnect`). Chaque `rules.md` définit le comportement du jeu dans ce cas.
+- **Pourquoi ce délai est long.** Les deux temps ne servent pas à la même chose. La **détection** doit être rapide : dès que Socket.IO déclare le socket mort, la partie en cours réagit sans attendre. Le **retrait**, lui, supprime la place, la couleur et le score de la soirée : il doit laisser le temps de revenir. Or une absence de plus de trente secondes ne veut pas dire qu'un joueur est parti — un onglet mis en pause en arrière-plan (Safari le fait), un Wi-Fi qui saute, un ordinateur en veille durent tous plus longtemps. Le délai est donc de cinq minutes. En contrepartie une place reste occupée jusqu'à cinq minutes après un vrai départ, ce qui est sans conséquence à dix joueurs entre amis ; et celui qui part pour de bon clique « Quitter la room », qui retire immédiatement.
+- **Conséquence à connaître :** la détection prend déjà une quarantaine de secondes (réglages par défaut de Socket.IO). Le dernier joueur d'une room qui ferme son onglet la laisse donc vivre environ onze minutes : 45 s de détection, 5 min avant le retrait, puis les 5 à 6 min de la section 5.1. Son lien fonctionne encore pendant tout ce temps.
 - **Reconnexion** avec le même `sessionToken` dans ce délai : le joueur retrouve sa place (pseudo, couleur, score cumulé, rôle dans la partie en cours). Le jeu est notifié (`onPlayerReconnect`).
 - **Reconnexion alors que la room a disparu** (serveur redémarré, room vide supprimée, délai écoulé) : le serveur efface simplement le code de room de la session, sans envoyer de message. C'est le client qui redemande la room en arrivant sur `/r/<code>` et reçoit `ROOM_NOT_FOUND`.
 - **Retrait :** à la fin du délai, ou immédiatement en cas de `room:leave`, le joueur est retiré. Le jeu est notifié (`onPlayerLeave`), le rôle d'hôte est transféré si nécessaire, et son score cumulé est supprimé. S'il revient plus tard, il repart de zéro.
@@ -439,7 +441,7 @@ Valeurs exactes à utiliser dans `src/shared/constants.ts`. Chaque constante est
 | `MAX_ROOMS` | `50` |
 | `EMPTY_ROOM_TTL_MS` | `300000` (5 min) |
 | `MAINTENANCE_INTERVAL_MS` | `60000` (1 min) |
-| `RECONNECT_GRACE_MS` | `30000` |
+| `RECONNECT_GRACE_MS` | `300000` (5 min) |
 | `RESULTS_AUTO_RETURN_MS` | `20000` |
 | `PSEUDO_MIN_LENGTH` | `2` |
 | `PSEUDO_MAX_LENGTH` | `16` |

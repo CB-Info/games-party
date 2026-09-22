@@ -23,7 +23,7 @@ export const MAX_ROOMS = 50;
 export const EMPTY_ROOM_TTL_MS = 300000;
 
 /** Delay a disconnected player keeps their seat, in milliseconds (docs/architecture.md, §13). */
-export const RECONNECT_GRACE_MS = 30000;
+export const RECONNECT_GRACE_MS = 300000;
 
 /** Interval between two sweeps of empty rooms and idle sessions (docs/architecture.md, §13). */
 export const MAINTENANCE_INTERVAL_MS = 60000;
