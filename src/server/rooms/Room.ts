@@ -1,44 +1,45 @@
 import type { ErrorCode } from "../../shared/protocol";
 import type { PlayerColorId, RoomPreview, RoomState } from "../../shared/types";
-import { RoomGameFlow } from "./RoomGameFlow";
-import { RoomMembers } from "./RoomMembers";
-import { RoomSeats, type JoinInput, type JoinResult } from "./RoomSeats";
+import type { RoomBots } from "./RoomBots";
+import type { RoomGameFlow } from "./RoomGameFlow";
+import type { RoomMembers } from "./RoomMembers";
+import type { JoinInput, JoinResult, RoomSeats } from "./RoomSeats";
 import type { RoomMember } from "./roomMember";
 import type { RoomDeps } from "./roomDeps";
 import type { RoomOutbound } from "./roomOutbound";
-import { toRoomPreview, toRoomState, type RoomSnapshot } from "./roomProjection";
+import { createRoomParts } from "./roomParts";
+import { snapshotOf, toRoomPreview, toRoomState, type RoomSnapshot } from "./roomProjection";
 
 /** One room: who sits in it, and the game they are playing. */
 export class Room {
   readonly code: string;
   private readonly outbound: RoomOutbound;
-  private readonly members = new RoomMembers();
+  private readonly members: RoomMembers;
   private readonly flow: RoomGameFlow;
   private readonly seats: RoomSeats;
+  private readonly bots: RoomBots;
 
   constructor(deps: RoomDeps) {
     this.code = deps.code;
     this.outbound = deps.outbound;
 
-    this.flow = new RoomGameFlow({
-      members: this.members,
-      outbound: deps.outbound,
-      findGame: deps.findGame,
-      random: deps.random,
-      now: deps.now,
-      onChange: () => this.broadcast(),
-      resultsAutoReturnMs: deps.resultsAutoReturnMs,
-    });
-
-    this.seats = new RoomSeats({
-      members: this.members,
-      now: deps.now,
+    const parts = createRoomParts(deps, {
       isInGame: () => this.flow.status !== "lobby",
       gameInstance: () => this.flow.instance,
-      onRemoved: (playerId) => this.afterRemoval(playerId),
-      onGraceExpired: (playerId) => this.remove(playerId),
-      ...(deps.reconnectGraceMs === undefined ? {} : { reconnectGraceMs: deps.reconnectGraceMs }),
+      afterRemoval: (playerId) => this.afterRemoval(playerId),
+      removePlayer: (playerId) => this.remove(playerId),
+      requireHostInLobby: (playerId) => this.requireHostInLobby(playerId),
+      broadcast: () => this.broadcast(),
+      afterMembershipChange: () => {
+        this.flow.renormalizeOptions();
+        this.broadcast();
+      },
     });
+
+    this.members = parts.members;
+    this.flow = parts.flow;
+    this.seats = parts.seats;
+    this.bots = parts.bots;
   }
 
   get isEmpty(): boolean {
@@ -67,6 +68,15 @@ export class Room {
     }
 
     return result;
+  }
+
+  /** Development bots, host only (docs/architecture.md, §8). */
+  addBot(requesterId: string): ErrorCode | null {
+    return this.bots.add(requesterId);
+  }
+
+  removeBot(requesterId: string, playerId: string): ErrorCode | null {
+    return this.bots.remove(requesterId, playerId);
   }
 
   disconnect(playerId: string): void {
@@ -155,16 +165,7 @@ export class Room {
   }
 
   private snapshot(): RoomSnapshot {
-    return {
-      code: this.code,
-      status: this.flow.status,
-      hostId: this.members.host,
-      members: this.members.all,
-      selectedGameId: this.flow.selectedGameId,
-      selectedGameOptions: this.flow.selectedGameOptions,
-      cumulative: this.flow.cumulative,
-      lastResults: this.flow.lastResults,
-    };
+    return snapshotOf(this.code, this.members, this.flow);
   }
 
   private afterRemoval(playerId: string): void {

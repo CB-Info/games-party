@@ -106,10 +106,13 @@ export let lastFakeGameInstance: FakeGameInstance | null = null;
 
 function createFakeGame(id: string, name: string): RegisteredGame {
   return defineGame<FakeInput, FakeAction, FakeGameView, FakeOptions>({
-    id,
-    name,
-    minPlayers: FAKE_GAME_MIN_PLAYERS,
-    maxPlayers: FAKE_GAME_MAX_PLAYERS,
+    meta: {
+      id,
+      name,
+      description: "Jeu minimal des tests.",
+      minPlayers: FAKE_GAME_MIN_PLAYERS,
+      maxPlayers: FAKE_GAME_MAX_PLAYERS,
+    },
     inputSchema,
     actionSchema,
     optionsSchema,

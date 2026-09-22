@@ -1,6 +1,7 @@
 import type { z } from "zod";
 
 import type { GameEvent } from "../shared/protocol";
+import type { GameMeta } from "./gameMeta";
 
 /** A player of the running game, as the game sees them (docs/architecture.md, §7). */
 export interface GamePlayer {
@@ -51,11 +52,8 @@ export interface BotPolicy<Input, Action, View> {
 
 /** Everything the room needs to run a game (docs/architecture.md, §7). */
 export interface GameDefinition<Input, Action, View, Options> {
-  id: string;
-  /** Displayed name, in French. */
-  name: string;
-  minPlayers: number;
-  maxPlayers: number;
+  /** Name, description and bounds, shared with the client definition (§7). */
+  meta: GameMeta;
   inputSchema: z.ZodType<Input>;
   actionSchema: z.ZodType<Action>;
   optionsSchema: z.ZodType<Options>;

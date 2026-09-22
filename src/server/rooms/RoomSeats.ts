@@ -78,6 +78,16 @@ export class RoomSeats {
     return { ok: true, member };
   }
 
+  /** Adds a bot, which takes a seat in the capacity like anyone else (§8). */
+  addBot(playerId: string, sessionToken: string): { ok: true } | { ok: false; error: ErrorCode } {
+    if (this.deps.members.size >= ROOM_CAPACITY) {
+      return { ok: false, error: "ROOM_FULL" };
+    }
+
+    const member = this.deps.members.addBot(playerId, sessionToken, this.deps.now());
+    return member === null ? { ok: false, error: "ROOM_FULL" } : { ok: true };
+  }
+
   /** Marks a player away and keeps their seat for the grace delay. */
   disconnect(playerId: string): boolean {
     const member = this.deps.members.find(playerId);

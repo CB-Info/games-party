@@ -54,7 +54,7 @@ async function readyRoom(): Promise<{ host: TestClient; guests: TestClient[]; co
   }
 
   // The game is chosen first: picking a different one clears every ready status (§5.8).
-  await ask(host).emitWithAck("lobby:selectGame", { gameId: fakeGame.id });
+  await ask(host).emitWithAck("lobby:selectGame", { gameId: fakeGame.meta.id });
   for (const guest of guests) {
     await ask(guest).emitWithAck("lobby:setReady", { ready: true });
   }
@@ -65,7 +65,7 @@ async function readyRoom(): Promise<{ host: TestClient; guests: TestClient[]; co
 describe("playing a game over a real connection", () => {
   it("sends every player their own view once the game starts", async () => {
     server = await startTestServer({
-      findGame: (id) => [fakeGame, otherFakeGame].find((game) => game.id === id) ?? null,
+      findGame: (id) => [fakeGame, otherFakeGame].find((game) => game.meta.id === id) ?? null,
     });
     const { host, guests } = await readyRoom();
 
@@ -79,7 +79,7 @@ describe("playing a game over a real connection", () => {
 
   it("refuses the start to a player who is not the host", async () => {
     server = await startTestServer({
-      findGame: (id) => (id === fakeGame.id ? fakeGame : null),
+      findGame: (id) => (id === fakeGame.meta.id ? fakeGame : null),
     });
     const { guests } = await readyRoom();
 
@@ -90,7 +90,7 @@ describe("playing a game over a real connection", () => {
 
   it("refuses the start while a connected player is not ready", async () => {
     server = await startTestServer({
-      findGame: (id) => (id === fakeGame.id ? fakeGame : null),
+      findGame: (id) => (id === fakeGame.meta.id ? fakeGame : null),
     });
     const { host, guests } = await readyRoom();
     await ask(guests[0] as TestClient).emitWithAck("lobby:setReady", { ready: false });
@@ -102,7 +102,7 @@ describe("playing a game over a real connection", () => {
 
   it("tells the players who were ready that the host changed the game", async () => {
     server = await startTestServer({
-      findGame: (id) => [fakeGame, otherFakeGame].find((game) => game.id === id) ?? null,
+      findGame: (id) => [fakeGame, otherFakeGame].find((game) => game.meta.id === id) ?? null,
     });
     const { host, guests } = await readyRoom();
     const guest = guests[0] as TestClient;
@@ -110,16 +110,16 @@ describe("playing a game over a real connection", () => {
     const told = new Promise<{ gameId: string }>((resolve) => {
       guest.on("lobby:gameChanged", resolve);
     });
-    await ask(host).emitWithAck("lobby:selectGame", { gameId: otherFakeGame.id });
+    await ask(host).emitWithAck("lobby:selectGame", { gameId: otherFakeGame.meta.id });
 
-    expect((await told).gameId).toBe(otherFakeGame.id);
-    const state = await waitForState(host, (s) => s.selectedGameId === otherFakeGame.id);
+    expect((await told).gameId).toBe(otherFakeGame.meta.id);
+    const state = await waitForState(host, (s) => s.selectedGameId === otherFakeGame.meta.id);
     expect(state.readyPlayerIds).toEqual([]);
   });
 
   it("keeps the ready statuses when the host only changes an option", async () => {
     server = await startTestServer({
-      findGame: (id) => (id === fakeGame.id ? fakeGame : null),
+      findGame: (id) => (id === fakeGame.meta.id ? fakeGame : null),
     });
     const { host } = await readyRoom();
 
@@ -136,7 +136,7 @@ describe("playing a game over a real connection", () => {
 
   it("makes a newcomer a spectator and gives them the spectator view", async () => {
     server = await startTestServer({
-      findGame: (id) => (id === fakeGame.id ? fakeGame : null),
+      findGame: (id) => (id === fakeGame.meta.id ? fakeGame : null),
     });
     const { host, code } = await readyRoom();
     await ask(host).emitWithAck("lobby:start", { force: false });
@@ -151,7 +151,7 @@ describe("playing a game over a real connection", () => {
 
   it("shows the results to everyone when the game is over", async () => {
     server = await startTestServer({
-      findGame: (id) => (id === fakeGame.id ? fakeGame : null),
+      findGame: (id) => (id === fakeGame.meta.id ? fakeGame : null),
     });
     const { host, guests } = await readyRoom();
     await ask(host).emitWithAck("lobby:setOptions", { options: { durationMs: 100 } });

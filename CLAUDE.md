@@ -78,8 +78,9 @@ src/
     constants.ts                constantes réseau, room, arène
     types.ts                    types métier communs (Player, RoomState…)
     cursor/
-      moveCursor.ts             déplacement d'un curseur (vitesse, murs, bords)
-      moveCursor.test.ts
+      collision.ts              disque contre mur, disque contre bords
+      moveCursor.ts             déplacement d'un curseur (budget, murs, bords)
+      cursorInput.ts            type et schéma de `game:input`
   server/
     index.ts                    démarrage uniquement : assemble http + socket
     http/
@@ -97,7 +98,7 @@ src/
     sessions/
       SessionStore.ts
     bots/
-      BotRunner.ts
+      BotRunner.ts              joue les bots d'une room, un tour par tick
   client/
     main.tsx                    point d'entrée
     app/
@@ -153,10 +154,16 @@ src/
   games/
     gameServer.types.ts         interfaces GameDefinition, GameInstance…
     gameClient.types.ts         interface GameClientDefinition
+    gameMeta.ts                 nom, description et bornes, lus des deux côtés
     defineGame.ts               efface les types d'un jeu pour le registre
     registry.server.ts
     registry.client.ts
     fakeGame.fixture.ts         jeu minimal, utilisé par les tests uniquement
+    sandbox/                    développement uniquement : bac à sable du moteur curseur
+      rules.md
+      shared/                   meta.ts, constants.ts, types.ts, schemas.ts
+      logic/                    sandboxState.ts + tests
+      server/                   SandboxGame.ts, bot.ts, sandboxDefinition.ts
     cursor-tag/
       rules.md                  règles du jeu (source de vérité du gameplay)
       shared/                   constants.ts, types.ts, schemas.ts, map.ts

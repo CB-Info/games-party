@@ -1,4 +1,5 @@
-import type { GameContext, GameDefinition, GameInstance } from "./gameServer.types";
+import type { GameMeta } from "./gameMeta";
+import type { BotPolicy, GameContext, GameDefinition, GameInstance } from "./gameServer.types";
 
 /**
  * A game registered with the boundaries of its four types erased. The room holds games with
@@ -7,16 +8,18 @@ import type { GameContext, GameDefinition, GameInstance } from "./gameServer.typ
  * value over, so the real types are still enforced at runtime.
  */
 export interface RegisteredGame {
-  id: string;
-  name: string;
-  minPlayers: number;
-  maxPlayers: number;
+  meta: GameMeta;
   parseInput(value: unknown): { ok: true; value: unknown } | { ok: false };
   parseAction(value: unknown): { ok: true; value: unknown } | { ok: false };
   parseOptions(value: unknown): { ok: true; value: unknown } | { ok: false };
   defaultOptions(playerCount: number): unknown;
   normalizeOptions(options: unknown, playerCount: number): unknown;
   create(ctx: GameContext, options: unknown): GameInstance<unknown, unknown, unknown>;
+  /**
+   * How a development bot plays (§8). Its output is not validated: it comes from our own code and
+   * never from the network, which is what règle d'or 3 guards against.
+   */
+  bot: BotPolicy<unknown, unknown, unknown>;
 }
 
 /**
@@ -28,10 +31,7 @@ export function defineGame<Input, Action, View, Options>(
   definition: GameDefinition<Input, Action, View, Options>,
 ): RegisteredGame {
   return {
-    id: definition.id,
-    name: definition.name,
-    minPlayers: definition.minPlayers,
-    maxPlayers: definition.maxPlayers,
+    meta: definition.meta,
     parseInput: (value) => {
       const result = definition.inputSchema.safeParse(value);
       return result.success ? { ok: true, value: result.data } : { ok: false };
@@ -49,5 +49,6 @@ export function defineGame<Input, Action, View, Options>(
       definition.normalizeOptions(options as Options, playerCount),
     create: (ctx, options) =>
       definition.create(ctx, options as Options) as GameInstance<unknown, unknown, unknown>,
+    bot: definition.bot as BotPolicy<unknown, unknown, unknown>,
   };
 }

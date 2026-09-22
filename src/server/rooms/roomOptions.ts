@@ -12,11 +12,11 @@ export class RoomOptions {
    * they go through `normalizeOptions`, since the player count may have changed.
    */
   select(game: RegisteredGame, playerCount: number): unknown {
-    const stored = this.byGameId.get(game.id);
+    const stored = this.byGameId.get(game.meta.id);
     const base = stored ?? game.defaultOptions(playerCount);
     const normalized = game.normalizeOptions(base, playerCount);
 
-    this.byGameId.set(game.id, normalized);
+    this.byGameId.set(game.meta.id, normalized);
     return normalized;
   }
 
@@ -24,7 +24,7 @@ export class RoomOptions {
   set(game: RegisteredGame, options: unknown, playerCount: number): unknown {
     const normalized = game.normalizeOptions(options, playerCount);
 
-    this.byGameId.set(game.id, normalized);
+    this.byGameId.set(game.meta.id, normalized);
     return normalized;
   }
 

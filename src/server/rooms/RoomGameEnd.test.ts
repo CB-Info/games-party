@@ -10,7 +10,7 @@ function startableRoom() {
   const host = addPlayer(harness.room, "Mika", "c1");
   const nova = addPlayer(harness.room, "Nova", "c2");
   const zippy = addPlayer(harness.room, "Zippy", "c3");
-  harness.room.selectGame(host, fakeGame.id);
+  harness.room.selectGame(host, fakeGame.meta.id);
   harness.room.setReady(nova, true);
   harness.room.setReady(zippy, true);
 

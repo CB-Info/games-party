@@ -14,6 +14,7 @@
 Conséquences acceptées :
 - Un redémarrage du serveur (déploiement, mise en veille, redémarrage imposé par Render) ferme toutes les rooms en cours.
 - Après 15 minutes sans trafic, le serveur se met en veille. Le premier visiteur attend environ une minute qu'il redémarre.
+- **La bande passante est la ressource rare, pas le processeur.** Render applique un quota mensuel de trafic sortant — **5 Go par mois** sur l'offre utilisée ici — et le dépasser sans moyen de paiement enregistré suspend le service jusqu'à la fin du mois. Une room de 10 joueurs envoie une vue par joueur 30 fois par seconde : à 900 octets la vue, c'est déjà **environ 1 Go par heure de jeu**, soit le quota entier en quelques soirées. C'est pourquoi la section 7 impose une vue compacte à tout jeu temps réel.
 
 ## 2. Vue d'ensemble
 
@@ -135,7 +136,8 @@ LOBBY ──(hôte lance)──► PLAYING ──(jeu terminé)──► RESULTS
 
 - **Déconnexion :** le joueur est marqué `connected: false` et sa place est gardée `RECONNECT_GRACE_MS`. Un spectateur a droit au même délai : il occupe lui aussi une place dans la capacité. Pendant une partie, le jeu est notifié (`onPlayerDisconnect`). Chaque `rules.md` définit le comportement du jeu dans ce cas.
 - **Pourquoi ce délai est long.** Les deux temps ne servent pas à la même chose. La **détection** doit être rapide : dès que Socket.IO déclare le socket mort, la partie en cours réagit sans attendre. Le **retrait**, lui, supprime la place, la couleur et le score de la soirée : il doit laisser le temps de revenir. Or une absence de plus de trente secondes ne veut pas dire qu'un joueur est parti — un onglet mis en pause en arrière-plan (Safari le fait), un Wi-Fi qui saute, un ordinateur en veille durent tous plus longtemps. Le délai est donc de cinq minutes. En contrepartie une place reste occupée jusqu'à cinq minutes après un vrai départ, ce qui est sans conséquence à dix joueurs entre amis ; et celui qui part pour de bon clique « Quitter la room », qui retire immédiatement.
-- **Conséquence à connaître :** la détection prend déjà une quarantaine de secondes (réglages par défaut de Socket.IO). Le dernier joueur d'une room qui ferme son onglet la laisse donc vivre environ onze minutes : 45 s de détection, 5 min avant le retrait, puis les 5 à 6 min de la section 5.1. Son lien fonctionne encore pendant tout ce temps.
+- **Détection d'une coupure :** Socket.IO abandonne un socket après `SOCKET_PING_INTERVAL_MS + SOCKET_PING_TIMEOUT_MS` sans réponse, soit **entre 5 et 10 secondes**. C'est court exprès : pendant une partie, le jeu réagit dès la déconnexion. Conséquence à connaître : un onglet mis en pause par le navigateur (Safari le fait en arrière-plan) apparaît « Déconnecté » chez les autres au bout d'une dizaine de secondes, alors que le joueur n'est allé nulle part. Sa place, elle, reste protégée cinq minutes : c'est le délai de retrait qui compte, pas celui de détection.
+- **Combien de temps une room survit :** le dernier joueur qui ferme son onglet la laisse vivre un peu plus de dix minutes — 10 s de détection, 5 min avant le retrait, puis les 5 à 6 min de la section 5.1. Son lien fonctionne encore pendant tout ce temps.
 - **Reconnexion** avec le même `sessionToken` dans ce délai : le joueur retrouve sa place (pseudo, couleur, score cumulé, rôle dans la partie en cours). Le jeu est notifié (`onPlayerReconnect`).
 - **Reconnexion alors que la room a disparu** (serveur redémarré, room vide supprimée, délai écoulé) : le serveur efface simplement le code de room de la session, sans envoyer de message. C'est le client qui redemande la room en arrivant sur `/r/<code>` et reçoit `ROOM_NOT_FOUND`.
 - **Retrait :** à la fin du délai, ou immédiatement en cas de `room:leave`, le joueur est retiré. Le jeu est notifié (`onPlayerLeave`), le rôle d'hôte est transféré si nécessaire, et son score cumulé est supprimé. S'il revient plus tard, il repart de zéro.
@@ -230,7 +232,7 @@ LOBBY ──(hôte lance)──► PLAYING ──(jeu terminé)──► RESULTS
   1. appliquer les inputs reçus depuis le tick précédent, dans leur ordre d'arrivée ;
   2. appeler `tick(dt)` ;
   3. si `isOver()` : arrêter la boucle et passer à `RESULTS` ;
-  4. sinon, envoyer à chaque joueur et spectateur connecté `game:view` avec `{ tick, serverTime: Date.now(), view: getViewFor(destinataire) }`.
+  4. sinon, envoyer à chaque joueur et spectateur connecté `game:view` avec `{ tick, serverTime: Date.now(), view: getViewFor(destinataire) }`. Un spectateur reçoit `getViewFor({ spectator: true })`, jamais la vue d'un joueur.
 
 - `isOver()` est consulté **après chaque tick et après chaque retrait de joueur** : une partie peut se terminer en dehors d'un tick.
 
@@ -283,11 +285,16 @@ Fonction pure utilisée à l'identique par le serveur et par la prédiction clie
 
 ```ts
 // src/games/gameServer.types.ts
-interface GameDefinition<Input, Action, View, Options> {
+interface GameMeta {                 // games/<id>/shared/meta.ts, lue aussi par le client
   id: string;                        // ex. "cursor-tag"
   name: string;                      // nom affiché, en français
+  description: string;               // une phrase, pour la carte de jeu (design system, 11.7)
   minPlayers: number;
   maxPlayers: number;
+}
+
+interface GameDefinition<Input, Action, View, Options> {
+  meta: GameMeta;
   inputSchema: z.ZodType<Input>;     // validation de game:input
   actionSchema: z.ZodType<Action>;   // validation de game:action
   optionsSchema: z.ZodType<Options>; // validation des options envoyées par l'hôte
@@ -350,17 +357,31 @@ interface GameClientDefinition<Input, Action, View, Options> {
 }
 ```
 
+- **`meta` est déclarée une seule fois**, dans `games/<id>/shared/meta.ts` : `id`, `name`, `description`, `minPlayers`, `maxPlayers`. La définition serveur et la définition client la lisent toutes les deux. Deux copies d'un nombre de joueurs finiraient par diverger, et le lobby refuserait un jeu qu'il vient de proposer.
+- **`defineGame` transmet aussi le `bot`.** Sa sortie n'est validée par aucun schéma : elle vient du code du serveur, pas du réseau, et la règle d'or 3 ne vise que les messages entrants.
+- **Reconnexion d'un joueur :** dans `onPlayerReconnect`, un jeu au curseur doit remettre son `lastProcessedSeq` à −1 et son budget à 0. Le client qui revient repart de `seq` 0 (section 6.5) ; sans cette remise à zéro, le serveur ignorerait tous ses inputs jusqu'à ce qu'il rattrape l'ancien compteur.
+- **Vue compacte, pour tout jeu temps réel.** La vue part à chaque tick, à chaque joueur : c'est de loin le premier poste de trafic sortant, et ce trafic est limité (section 1). Elle est donc écrite pour être petite, pas pour être agréable à lire :
+  - clés d'une ou deux lettres plutôt que des noms complets ;
+  - positions arrondies à l'entier, et plus généralement aucune décimale qui ne se verrait pas à l'écran ;
+  - listes de joueurs en tableaux de valeurs (`[x, y, role]`) plutôt qu'en objets répétant leurs clés ;
+  - rien qui ne change pas d'un tick à l'autre, ni rien que le client tient déjà de `room:state` (pseudos, couleurs) ou de son `map.ts`.
+  - **Budget cible : environ 200 octets pour 10 joueurs**, trame Socket.IO comprise.
+  - **Le volume est mesuré avant de clore l'étape du jeu**, et le chiffre est reporté dans le rapport de l'étape. Une vue qui dépasse largement le budget se corrige avant la fusion, pas après.
+  - Le bac à sable (`games/sandbox`) **n'y est pas soumis** : réservé au développement, il n'est jamais enregistré en production et ne consomme donc rien sur Render. Sa vue reste lisible plutôt que compacte.
 - `ViewStore` (`client/engine/viewStore.ts`) garde les vues reçues avec leur heure de réception et expose `latest()` et `sampleAt(time)`.
 - Le serveur appelle `onInput` et `onAction` uniquement pour les joueurs de la partie, jamais pour les spectateurs.
 - **Registre des jeux :** le serveur garde des jeux dont les types `Input`, `Action`, `View` et `Options` diffèrent. `games/defineGame.ts` convertit une `GameDefinition` typée en une entrée dont les frontières sont en `unknown`, chaque valeur étant validée par le schéma Zod du jeu avant de lui être transmise. C'est le seul endroit du code avec une conversion de type forcée.
 
 ## 8. Bots (développement uniquement)
 
-- Disponibles uniquement si `NODE_ENV !== "production"`. En production, les événements `dev:*` sont ignorés.
+- Disponibles uniquement si `NODE_ENV !== "production"`.
 - Ajoutés et retirés par l'hôte depuis un panneau de développement dans le lobby.
 - Pseudo `Bot 1`, `Bot 2`… couleur attribuée comme pour un joueur.
 - Un bot est un faux joueur côté serveur : à chaque tick, `BotRunner` appelle `nextInput` et `nextAction` avec la vue du bot, et transmet les résultats non nuls à `onInput` et `onAction`, comme pour un joueur.
 - Les bots comptent dans la capacité de la room et ne peuvent pas être hôtes.
+- **Un bot est toujours prêt**, dès sa création et après chaque retour au lobby. Il n'attend personne, et Cursor Tag le fait déjà se déclarer prêt dès le début d'une préparation (`rules.md`, section 4.1). Sans cela, l'hôte d'une room de bots devrait cliquer « Lancer quand même » sans raison.
+- Un bot ne peut être ajouté que **dans le lobby** : pendant une partie, un arrivant est spectateur (section 5.4) et un bot n'aurait rien à jouer. Il peut être retiré à tout moment.
+- Les événements `dev:*` sont **refusés** en production plutôt qu'ignorés en silence : un accusé de réception qui n'arrive jamais laisserait l'appelant en attente.
 
 ## 9. Sécurité
 
@@ -460,6 +481,8 @@ Valeurs exactes à utiliser dans `src/shared/constants.ts`. Chaque constante est
 | `CORRECTION_SNAP_DISTANCE` | `48` |
 | `CORRECTION_SMOOTHING_MS` | `100` |
 | `TELEPORT_SNAP_DISTANCE` | `200` |
+| `SOCKET_PING_INTERVAL_MS` | `5000` |
+| `SOCKET_PING_TIMEOUT_MS` | `5000` |
 | `RATE_LIMIT_MESSAGES_PER_SECOND` | `60` |
 | `RATE_LIMIT_KICK_AFTER_MS` | `5000` |
 | `MAX_MESSAGE_BYTES` | `16384` |
