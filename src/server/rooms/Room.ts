@@ -1,5 +1,6 @@
 import type { ErrorCode } from "../../shared/protocol";
 import type { PlayerColorId, RoomPreview, RoomState } from "../../shared/types";
+import type { RoomBots } from "./RoomBots";
 import type { RoomGameFlow } from "./RoomGameFlow";
 import type { RoomMembers } from "./RoomMembers";
 import type { JoinInput, JoinResult, RoomSeats } from "./RoomSeats";
@@ -16,6 +17,7 @@ export class Room {
   private readonly members: RoomMembers;
   private readonly flow: RoomGameFlow;
   private readonly seats: RoomSeats;
+  private readonly bots: RoomBots;
 
   constructor(deps: RoomDeps) {
     this.code = deps.code;
@@ -26,12 +28,18 @@ export class Room {
       gameInstance: () => this.flow.instance,
       afterRemoval: (playerId) => this.afterRemoval(playerId),
       removePlayer: (playerId) => this.remove(playerId),
+      requireHostInLobby: (playerId) => this.requireHostInLobby(playerId),
       broadcast: () => this.broadcast(),
+      afterMembershipChange: () => {
+        this.flow.renormalizeOptions();
+        this.broadcast();
+      },
     });
 
     this.members = parts.members;
     this.flow = parts.flow;
     this.seats = parts.seats;
+    this.bots = parts.bots;
   }
 
   get isEmpty(): boolean {
@@ -60,6 +68,15 @@ export class Room {
     }
 
     return result;
+  }
+
+  /** Development bots, host only (docs/architecture.md, §8). */
+  addBot(requesterId: string): ErrorCode | null {
+    return this.bots.add(requesterId);
+  }
+
+  removeBot(requesterId: string, playerId: string): ErrorCode | null {
+    return this.bots.remove(requesterId, playerId);
   }
 
   disconnect(playerId: string): void {

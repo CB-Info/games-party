@@ -1,4 +1,5 @@
 import type { GamePlayer } from "../../games/gameServer.types";
+import { PLAYER_COLOR_IDS } from "../../shared/constants";
 import type { PlayerColorId } from "../../shared/types";
 import type { RoomMember } from "./roomMember";
 import { electHost, isPseudoTaken, isRoomEmpty, pickColor } from "./roomPlayers";
@@ -75,6 +76,34 @@ export class RoomMembers {
     return member;
   }
 
+  /**
+   * Adds a development bot (docs/architecture.md, §8). It takes a colour and a seat like anyone
+   * else, and its pseudo is the first `Bot n` still free, so that removing Bot 1 and adding one
+   * back does not produce two Bot 2.
+   */
+  addBot(playerId: string, sessionToken: string, joinedAt: number): RoomMember | null {
+    const member = this.add({
+      playerId,
+      sessionToken,
+      pseudo: this.freeBotPseudo(),
+      preferredColor: PLAYER_COLOR_IDS[0],
+      isSpectator: false,
+      joinedAt,
+    });
+
+    if (member !== null) {
+      member.isBot = true;
+      // A bot is always ready: it has nobody to wait for, and Cursor Tag has it declare itself
+      // ready as soon as a preparation starts (rules.md, §4.1). Without this the host would have
+      // to click "Lancer quand même" in a room of bots, for no reason.
+      member.ready = true;
+      // A bot is never a host, so the election has to run again now that the flag is set (§5.3).
+      this.reelectHost();
+    }
+
+    return member;
+  }
+
   remove(playerId: string): RoomMember | null {
     const index = this.members.findIndex((member) => member.playerId === playerId);
     if (index === -1) {
@@ -101,15 +130,26 @@ export class RoomMembers {
     return true;
   }
 
+  private freeBotPseudo(): string {
+    for (let index = 1; index <= this.members.length + 1; index += 1) {
+      const candidate = `Bot ${index}`;
+      if (!this.isPseudoTaken(candidate)) {
+        return candidate;
+      }
+    }
+
+    return `Bot ${this.members.length + 1}`;
+  }
+
   /** The host is re-elected on every change, so that the role never sits on a missing player. */
   reelectHost(): void {
     this.hostId = electHost(this.members);
   }
 
-  /** Everyone starts a lobby not ready, and the host never has the status (§5.8). */
+  /** Everyone starts a lobby not ready, except the bots, which never stop being (§5.8, §8). */
   clearReady(): void {
     for (const member of this.members) {
-      member.ready = false;
+      member.ready = member.isBot;
     }
   }
 

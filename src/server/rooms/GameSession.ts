@@ -2,6 +2,7 @@ import type { RegisteredGame } from "../../games/defineGame";
 import type { GameContext, GameInstance, GamePlayer } from "../../games/gameServer.types";
 import { MAX_TICK_DT_MS, SERVER_TICK_RATE } from "../../shared/constants";
 import type { GameEvent } from "../../shared/protocol";
+import { BotRunner } from "../bots/BotRunner";
 import type { RoomOutbound } from "./roomOutbound";
 
 interface GameSessionOptions {
@@ -22,6 +23,7 @@ export class GameSession {
   readonly instance: GameInstance<unknown, unknown, unknown>;
   private readonly game: RegisteredGame;
   private readonly players: () => readonly GamePlayer[];
+  private readonly bots: BotRunner;
   private readonly outbound: RoomOutbound;
   private readonly now: () => number;
   private readonly pendingInputs: Array<{ playerId: string; input: unknown }> = [];
@@ -44,6 +46,7 @@ export class GameSession {
     };
 
     this.instance = game.create(ctx, options);
+    this.bots = new BotRunner({ game, instance: this.instance, players, random });
   }
 
   /** Starts the loop. `onOver` fires as soon as the game reports it is finished (§6.3). */
@@ -72,6 +75,10 @@ export class GameSession {
    * that it is over or sends every recipient their own view (docs/architecture.md, §6.3).
    */
   tickOnce(dtMs: number): boolean {
+    // Bots decide from the state the last view showed, then their inputs join the others: as far
+    // as the game is concerned a bot is a player like any other (§8).
+    this.bots.play(dtMs);
+
     for (const { playerId, input } of this.pendingInputs) {
       this.instance.onInput(playerId, input);
     }

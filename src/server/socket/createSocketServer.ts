@@ -7,6 +7,7 @@ import { findGame } from "../../games/registry.server";
 import { MAX_MESSAGE_BYTES } from "../../shared/constants";
 import { RoomManager } from "../rooms/RoomManager";
 import { SessionStore } from "../sessions/SessionStore";
+import { registerDevHandlers } from "./handlers/devHandlers";
 import { registerGameHandlers } from "./handlers/gameHandlers";
 import { registerLobbyHandlers } from "./handlers/lobbyHandlers";
 import { registerRoomHandlers } from "./handlers/roomHandlers";
@@ -26,6 +27,8 @@ export interface SocketServerOptions {
   resultsAutoReturnMs?: number;
   emptyRoomTtlMs?: number;
   maintenanceIntervalMs?: number;
+  /** Bots exist in development only; a test may turn them off to check that (§8). */
+  allowBots?: boolean;
   rateLimits?: RateLimiterOptions;
 }
 
@@ -42,6 +45,8 @@ export function createSocketServer(
   options: SocketServerOptions = {},
 ): SocketServer {
   const io: GameServer = new Server(httpServer, { maxHttpBufferSize: MAX_MESSAGE_BYTES });
+
+  const allowBots = options.allowBots ?? process.env.NODE_ENV !== "production";
   const sessions = new SessionStore();
   const now = () => Date.now();
 
@@ -109,6 +114,7 @@ export function createSocketServer(
     registerRoomHandlers(socket, ctx);
     registerLobbyHandlers(socket, ctx);
     registerGameHandlers(socket, ctx);
+    registerDevHandlers(socket, ctx, allowBots);
 
     socket.on("disconnect", () => {
       limiters.delete(socket.id);

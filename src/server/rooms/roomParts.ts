@@ -1,11 +1,13 @@
 import type { GameInstance } from "../../games/gameServer.types";
+import type { ErrorCode } from "../../shared/protocol";
+import { RoomBots } from "./RoomBots";
 import { RoomGameFlow } from "./RoomGameFlow";
 import { RoomMembers } from "./RoomMembers";
 import { RoomSeats } from "./RoomSeats";
 import type { RoomDeps } from "./roomDeps";
 
 /**
- * What the parts of a room need from the room itself. They are functions rather than values
+ * What the four parts of a room need from the room itself. They are functions rather than values
  * because they are called later: the seats ask the flow whether a game is running, and the flow is
  * being built at the same moment.
  */
@@ -16,17 +18,21 @@ export interface RoomHooks {
   afterRemoval: (playerId: string) => void;
   /** The room's own removal, which tells the game and broadcasts (§5.5). */
   removePlayer: (playerId: string) => void;
+  requireHostInLobby: (playerId: string) => ErrorCode | null;
   broadcast: () => void;
+  /** Options depend on the player count, so a membership change renormalises then broadcasts. */
+  afterMembershipChange: () => void;
 }
 
 export interface RoomParts {
   members: RoomMembers;
   flow: RoomGameFlow;
   seats: RoomSeats;
+  bots: RoomBots;
 }
 
 /**
- * Builds the parts of a room and wires them to each other. Kept out of `Room` so that the
+ * Builds the four parts of a room and wires them to each other. Kept out of `Room` so that the
  * class holds its rules and nothing else: this is assembly, and it reads better on its own.
  */
 export function createRoomParts(deps: RoomDeps, hooks: RoomHooks): RoomParts {
@@ -52,5 +58,13 @@ export function createRoomParts(deps: RoomDeps, hooks: RoomHooks): RoomParts {
     ...(deps.reconnectGraceMs === undefined ? {} : { reconnectGraceMs: deps.reconnectGraceMs }),
   });
 
-  return { members, flow, seats };
+  const bots = new RoomBots({
+    members,
+    seats,
+    requireHostInLobby: hooks.requireHostInLobby,
+    removePlayer: hooks.removePlayer,
+    onChange: hooks.afterMembershipChange,
+  });
+
+  return { members, flow, seats, bots };
 }
