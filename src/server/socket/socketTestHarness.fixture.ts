@@ -4,7 +4,11 @@ import { io as connect, type Socket as ClientSocket } from "socket.io-client";
 
 import type { ClientToServerEvents, ServerToClientEvents } from "../../shared/protocol";
 import { ACK_TIMEOUT_MS, sessionOf, watch } from "./socketInbox.fixture";
-import { createSocketServer, type SocketServerOptions } from "./createSocketServer";
+import {
+  createSocketServer,
+  type SocketServer,
+  type SocketServerOptions,
+} from "./createSocketServer";
 
 export type TestClient = ClientSocket<ServerToClientEvents, ClientToServerEvents>;
 
@@ -16,6 +20,8 @@ export interface TestClientOptions {
 
 export interface TestServer {
   url: string;
+  /** The running server, so that a test can read the settings it was built with. */
+  socketServer: SocketServer;
   connect: (auth?: Record<string, unknown>, options?: TestClientOptions) => Promise<TestClient>;
   stop: () => Promise<void>;
 }
@@ -42,6 +48,7 @@ export async function startTestServer(options: SocketServerOptions = {}): Promis
 
   return {
     url,
+    socketServer,
 
     connect: async (auth = {}, options = {}) => {
       const client: TestClient = connect(url, {

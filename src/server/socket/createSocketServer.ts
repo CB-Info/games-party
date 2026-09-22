@@ -4,7 +4,11 @@ import { Server } from "socket.io";
 
 import type { RegisteredGame } from "../../games/defineGame";
 import { findGame } from "../../games/registry.server";
-import { MAX_MESSAGE_BYTES } from "../../shared/constants";
+import {
+  MAX_MESSAGE_BYTES,
+  SOCKET_PING_INTERVAL_MS,
+  SOCKET_PING_TIMEOUT_MS,
+} from "../../shared/constants";
 import { RoomManager } from "../rooms/RoomManager";
 import { SessionStore } from "../sessions/SessionStore";
 import { registerDevHandlers } from "./handlers/devHandlers";
@@ -27,6 +31,9 @@ export interface SocketServerOptions {
   resultsAutoReturnMs?: number;
   emptyRoomTtlMs?: number;
   maintenanceIntervalMs?: number;
+  /** Shortened by the tests, which cannot wait ten seconds for a dead socket to be noticed. */
+  pingIntervalMs?: number;
+  pingTimeoutMs?: number;
   /** Bots exist in development only; a test may turn them off to check that (§8). */
   allowBots?: boolean;
   rateLimits?: RateLimiterOptions;
@@ -44,7 +51,13 @@ export function createSocketServer(
   httpServer: HttpServer,
   options: SocketServerOptions = {},
 ): SocketServer {
-  const io: GameServer = new Server(httpServer, { maxHttpBufferSize: MAX_MESSAGE_BYTES });
+  // A game reacts the moment a player drops, so a dead socket must be noticed in seconds rather
+  // than in the three quarters of a minute the library waits by default (§13).
+  const io: GameServer = new Server(httpServer, {
+    maxHttpBufferSize: MAX_MESSAGE_BYTES,
+    pingInterval: options.pingIntervalMs ?? SOCKET_PING_INTERVAL_MS,
+    pingTimeout: options.pingTimeoutMs ?? SOCKET_PING_TIMEOUT_MS,
+  });
 
   const allowBots = options.allowBots ?? process.env.NODE_ENV !== "production";
   const sessions = new SessionStore();

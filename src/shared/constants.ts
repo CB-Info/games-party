@@ -102,6 +102,12 @@ export const CORRECTION_SMOOTHING_MS = 100;
 /** Beyond this jump, another cursor is redrawn without interpolation (docs/architecture.md, §13). */
 export const TELEPORT_SNAP_DISTANCE = 200;
 
+/** Delay between two Socket.IO pings, in milliseconds (docs/architecture.md, §13). */
+export const SOCKET_PING_INTERVAL_MS = 5000;
+
+/** Silence after a ping before a socket is given up, in milliseconds (docs/architecture.md, §13). */
+export const SOCKET_PING_TIMEOUT_MS = 5000;
+
 /** Messages accepted per sliding second and per socket (docs/architecture.md, §13). */
 export const RATE_LIMIT_MESSAGES_PER_SECOND = 60;
 

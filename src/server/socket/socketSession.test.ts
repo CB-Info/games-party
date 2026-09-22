@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it } from "vitest";
 
+import { SOCKET_PING_INTERVAL_MS, SOCKET_PING_TIMEOUT_MS } from "../../shared/constants";
 import {
   ask,
   createRoom,
@@ -24,6 +25,27 @@ function mustServer(): TestServer {
 
   return server;
 }
+
+describe("noticing a connection that died", () => {
+  it("pings often enough for a game to react in seconds", async () => {
+    server = await startTestServer();
+    const { opts } = mustServer().socketServer.io.engine;
+
+    // The library waits 25 s between pings and 20 s for an answer by default, so a player who
+    // pulled the cable stayed on screen for three quarters of a minute (§13).
+    expect(opts.pingInterval).toBe(SOCKET_PING_INTERVAL_MS);
+    expect(opts.pingTimeout).toBe(SOCKET_PING_TIMEOUT_MS);
+    expect(SOCKET_PING_INTERVAL_MS + SOCKET_PING_TIMEOUT_MS).toBeLessThanOrEqual(10_000);
+  });
+
+  it("lets a test shorten both, since neither can be waited out", async () => {
+    server = await startTestServer({ pingIntervalMs: 80, pingTimeoutMs: 80 });
+    const { opts } = mustServer().socketServer.io.engine;
+
+    expect(opts.pingInterval).toBe(80);
+    expect(opts.pingTimeout).toBe(80);
+  });
+});
 
 describe("a session over a real connection", () => {
   it("gives every new connection its own identity", async () => {
