@@ -108,8 +108,11 @@ function RoomContent({ code }: { code: string }) {
       <LobbyScreen
         state={state}
         myPlayerId={playerId}
+        games={games}
         onPickColor={actions.pickColor}
         onToggleReady={actions.toggleReady}
+        onSelectGame={actions.selectGame}
+        onOptionsChange={actions.setOptions}
         onCopyLink={copyLink}
         onStart={actions.start}
         onLeave={leave}

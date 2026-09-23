@@ -1,6 +1,8 @@
 import { useState } from "react";
 
+import { CursorTagIcon } from "../../../assets/CursorTagIcon";
 import { Stepper } from "../../../components/ui/Stepper";
+import { DemoArena } from "../../demo/components/DemoArena";
 import { GameColumn } from "../../room/components/GameColumn";
 import { ReadyToggle } from "../../room/components/ReadyToggle";
 import { SettingsColumn } from "../../room/components/SettingsColumn";
@@ -13,9 +15,8 @@ const GAME_DESCRIPTION =
 const SCORE_HINT = "Ton score, c’est le temps passé sans être Chat.";
 
 /**
- * The three-column lobby, which the application cannot show yet: no game is registered before
- * step 4, so a room always stays in its "aucun jeu choisi" shape. The settings shown here stand in
- * for the form the game will provide (docs/architecture.md, §7).
+ * The three-column lobby, with Cursor Tag's own texts and settings, which arrive at step 4. The
+ * application shows the same layout today with the sandbox and its one setting.
  */
 export function LobbySection() {
   const [rounds, setRounds] = useState(3);
@@ -23,10 +24,12 @@ export function LobbySection() {
   return (
     <GallerySection
       title="Lobby · jeu choisi"
-      note="Inaccessible dans l’application tant qu’aucun jeu n’est enregistré (étape 4)."
+      note="Cursor Tag arrive à l’étape 4 ; dans l’application, le bac à sable emprunte la même disposition."
     >
       <div className="flex items-stretch gap-6">
         <GameColumn
+          icon={<CursorTagIcon />}
+          preview={<DemoArena />}
           name={GAME_NAME}
           description={GAME_DESCRIPTION}
           scoreHint={SCORE_HINT}
