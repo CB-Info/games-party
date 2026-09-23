@@ -93,10 +93,7 @@ export const INTERPOLATION_DELAY_MS = 100;
 /** How long received views are kept for interpolation, in milliseconds (docs/architecture.md, §13). */
 export const INTERPOLATION_BUFFER_MS = 1000;
 
-/** Largest gap the local cursor catches up smoothly, in logical units (docs/architecture.md, §13). */
-export const CORRECTION_SNAP_DISTANCE = 48;
-
-/** How long the local cursor takes to rejoin its predicted place, in ms (docs/architecture.md, §13). */
+/** How long a correction of the local cursor takes to fade, in ms (docs/architecture.md, §13). */
 export const CORRECTION_SMOOTHING_MS = 100;
 
 /** Beyond this jump, another cursor is redrawn without interpolation (docs/architecture.md, §13). */
