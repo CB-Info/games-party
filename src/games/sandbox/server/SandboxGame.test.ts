@@ -2,35 +2,13 @@ import { describe, expect, it } from "vitest";
 
 import { NO_SEQ_PROCESSED } from "../../../shared/cursor/cursorInput";
 import { ARENA_HEIGHT, ARENA_WIDTH } from "../../../shared/constants";
-import type { GameContext, GamePlayer } from "../../gameServer.types";
-import { SANDBOX_CURSOR_RADIUS, SANDBOX_SPEED_DEFAULT } from "../shared/constants";
-import type { SandboxView } from "../shared/types";
+import { SANDBOX_CURSOR_RADIUS } from "../shared/constants";
 import { SandboxGame } from "./SandboxGame";
-
-const DURATION_S = 60;
-const OPTIONS = { durationS: DURATION_S, maxSpeed: SANDBOX_SPEED_DEFAULT };
+import { contextOver, OPTIONS, person, viewOf } from "./SandboxGame.fixture";
 
 /** The central pillar of the Cursor Tag map: 120 × 120 around the middle of the arena (§6.5). */
 const CENTRE = { x: ARENA_WIDTH / 2, y: ARENA_HEIGHT / 2 };
 const PILLAR_HALF_SIDE = 60;
-
-function contextOver(players: GamePlayer[]): GameContext {
-  return {
-    players: () => players,
-    emitEvent: () => undefined,
-    getHostId: () => players[0]?.playerId ?? null,
-    // Fixed, so that spawn points are dealt the same way in every run (règle d'or 7).
-    random: () => 0.42,
-  };
-}
-
-function person(playerId: string, connected = true): GamePlayer {
-  return { playerId, color: "c1", isBot: false, connected };
-}
-
-function viewOf(game: SandboxGame, playerId: string): SandboxView {
-  return game.getViewFor({ playerId });
-}
 
 /** Moves a player far enough to reach any wall, over as many inputs as the budget needs. */
 function push(game: SandboxGame, playerId: string, dx: number, dy: number, times = 40): void {

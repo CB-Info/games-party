@@ -5,6 +5,7 @@ import { NO_SEQ_PROCESSED } from "../../../shared/cursor/cursorInput";
 import { SANDBOX_SPEED_DEFAULT } from "../shared/constants";
 import {
   applyInput,
+  payBacklogs,
   rechargePlayers,
   roundPosition,
   spawnPlayers,
@@ -24,9 +25,15 @@ function playerAt(x: number, y: number, budget = 1000): SandboxPlayer {
     position: { x, y },
     budget,
     lastProcessedSeq: NO_SEQ_PROCESSED,
+    backlog: { x: 0, y: 0 },
     distance: 0,
   };
 }
+
+/** The mode the engine has everywhere else: what the budget refuses is lost. */
+const TODAY = { catchUpMs: 0, maxSpeed: SANDBOX_SPEED_DEFAULT };
+/** « Rattrapage » at 300 ms: at 1000 units a second, up to three hundred units kept. */
+const CATCHING_UP = { catchUpMs: 300, maxSpeed: SANDBOX_SPEED_DEFAULT };
 
 describe("spawnPlayers", () => {
   it("gives everyone a spawn point and an empty budget", () => {
@@ -56,7 +63,7 @@ describe("applyInput", () => {
     const moved = applyInput(
       playerAt(400, 400),
       { seq: 0, dx: 30, dy: 40 },
-      { walls: [], connected: true, maxSpeed: SANDBOX_SPEED_DEFAULT },
+      { walls: [], connected: true, ...TODAY },
     );
 
     expect(moved.position.x).toBeCloseTo(430, 6);
@@ -68,7 +75,7 @@ describe("applyInput", () => {
     const moved = applyInput(
       playerAt(400, 400),
       { seq: 5, dx: 10, dy: 0 },
-      { walls: [], connected: true, maxSpeed: SANDBOX_SPEED_DEFAULT },
+      { walls: [], connected: true, ...TODAY },
     );
 
     // Whether that input was new is the caller's decision: a bot has no sequence to check.
@@ -79,7 +86,7 @@ describe("applyInput", () => {
     const away = applyInput(
       playerAt(400, 400),
       { seq: 3, dx: 100, dy: 0 },
-      { walls: [], connected: false, maxSpeed: SANDBOX_SPEED_DEFAULT },
+      { walls: [], connected: false, ...TODAY },
     );
 
     // Their cursor stays put, but the sequence moves on: nothing replays when they come back.
@@ -93,7 +100,7 @@ describe("applyInput", () => {
     const blocked = applyInput(
       playerAt(400, 400),
       { seq: 0, dx: 300, dy: 0 },
-      { walls: wall, connected: true, maxSpeed: SANDBOX_SPEED_DEFAULT },
+      { walls: wall, connected: true, ...TODAY },
     );
 
     expect(blocked.distance).toBeLessThan(100);
@@ -119,5 +126,46 @@ describe("roundPosition", () => {
     expect(roundPosition(812.3456)).toBe(812.3);
     expect(roundPosition(812.35)).toBe(812.4);
     expect(roundPosition(-0.04)).toBe(-0);
+  });
+});
+
+describe("« Rattrapage »", () => {
+  it("keeps what the budget refused instead of losing it", () => {
+    const moved = applyInput(
+      playerAt(400, 400, 33),
+      { seq: 0, dx: 100, dy: 0 },
+      { walls: [], connected: true, ...CATCHING_UP },
+    );
+
+    expect(moved.position.x).toBeCloseTo(433, 6);
+    expect(moved.backlog.x).toBeCloseTo(67, 6);
+  });
+
+  it("loses it, as today, when the mode is off", () => {
+    const moved = applyInput(
+      playerAt(400, 400, 33),
+      { seq: 0, dx: 100, dy: 0 },
+      { walls: [], connected: true, ...TODAY },
+    );
+
+    expect(moved.backlog).toEqual({ x: 0, y: 0 });
+  });
+
+  it("pays what a present player owes, and counts it as distance", () => {
+    const owing = { ...playerAt(400, 400, 33), backlog: { x: 60, y: 0 } };
+
+    const [paid] = payBacklogs([owing], { walls: [], ...CATCHING_UP }, () => true);
+
+    expect(paid?.position.x).toBeCloseTo(433, 6);
+    expect(paid?.backlog.x).toBeCloseTo(27, 6);
+    expect(paid?.distance).toBeCloseTo(33, 6);
+  });
+
+  it("leaves a player who is away exactly where they were", () => {
+    const owing = { ...playerAt(400, 400, 33), backlog: { x: 60, y: 0 } };
+
+    const [kept] = payBacklogs([owing], { walls: [], ...CATCHING_UP }, () => false);
+
+    expect(kept).toEqual(owing);
   });
 });

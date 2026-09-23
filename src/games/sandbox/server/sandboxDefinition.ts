@@ -3,6 +3,10 @@ import { z } from "zod";
 import { cursorInputSchema, type CursorInput } from "../../../shared/cursor/cursorInput";
 import { defineGame, type RegisteredGame } from "../../defineGame";
 import {
+  SANDBOX_CATCH_UP_MS_DEFAULT,
+  SANDBOX_CATCH_UP_MS_MAX,
+  SANDBOX_CATCH_UP_MS_MIN,
+  SANDBOX_CATCH_UP_MS_STEP,
   SANDBOX_DURATION_S_DEFAULT,
   SANDBOX_DURATION_S_MAX,
   SANDBOX_DURATION_S_MIN,
@@ -39,6 +43,7 @@ export const sandboxGame: RegisteredGame = defineGame<
   defaultOptions: () => ({
     durationS: SANDBOX_DURATION_S_DEFAULT,
     maxSpeed: SANDBOX_SPEED_DEFAULT,
+    catchUpMs: SANDBOX_CATCH_UP_MS_DEFAULT,
   }),
   normalizeOptions: (options) => ({
     durationS: onStep(
@@ -48,6 +53,12 @@ export const sandboxGame: RegisteredGame = defineGame<
       SANDBOX_DURATION_S_STEP,
     ),
     maxSpeed: onStep(options.maxSpeed, SANDBOX_SPEED_MIN, SANDBOX_SPEED_MAX, SANDBOX_SPEED_STEP),
+    catchUpMs: onStep(
+      options.catchUpMs,
+      SANDBOX_CATCH_UP_MS_MIN,
+      SANDBOX_CATCH_UP_MS_MAX,
+      SANDBOX_CATCH_UP_MS_STEP,
+    ),
   }),
   create: (ctx, options) => new SandboxGame(ctx, options),
   bot: sandboxBot,

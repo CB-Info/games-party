@@ -14,6 +14,17 @@ export const SANDBOX_SPEED_MAX = 8000;
 export const SANDBOX_SPEED_DEFAULT = 1000;
 export const SANDBOX_SPEED_STEP = 1000;
 
+/**
+ * The « Rattrapage »: how long a cursor may keep catching up once the hand has stopped, in
+ * milliseconds of travel at top speed (`shared/cursor/backlog.ts`). Zero is the engine as it is
+ * everywhere else, where what the budget refuses is lost. An experiment of this sandbox, to be
+ * compared by hand with the current mode before anything is decided for Cursor Tag.
+ */
+export const SANDBOX_CATCH_UP_MS_MIN = 0;
+export const SANDBOX_CATCH_UP_MS_MAX = 500;
+export const SANDBOX_CATCH_UP_MS_DEFAULT = 0;
+export const SANDBOX_CATCH_UP_MS_STEP = 100;
+
 /** Shortest, longest, default and step of the length of a game, in seconds. */
 export const SANDBOX_DURATION_S_MIN = 30;
 export const SANDBOX_DURATION_S_MAX = 300;
