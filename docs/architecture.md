@@ -239,7 +239,9 @@ LOBBY ──(hôte lance)──► PLAYING ──(jeu terminé)──► RESULTS
 ### 6.4 Arène
 
 - Coordonnées logiques : `ARENA_WIDTH` × `ARENA_HEIGHT`, origine en haut à gauche. Le serveur ne raisonne qu'en unités logiques.
-- Le client affiche l'arène en gardant le ratio, la plus grande possible dans la zone de jeu, centrée. `scale = largeur affichée / ARENA_WIDTH`.
+- Le client affiche l'arène en gardant le ratio, la plus grande possible dans la zone de jeu, centrée. `scale = largeur affichée / ARENA_WIDTH`, **en pixels CSS**.
+- **Écrans haute densité :** le canvas est dimensionné en pixels physiques (`devicePixelRatio`, plafonné à 3) et son contexte mis à l'échelle une fois, de sorte que le code de dessin continue de raisonner en pixels CSS. Cette densité **n'entre jamais** dans la conversion des inputs (section 6.5) : elle ne change que la netteté, jamais la distance parcourue.
+- L'écran de jeu ne défile pas : l'arène se dimensionne sur la hauteur disponible sous l'en-tête.
 
 ### 6.5 Curseur virtuel (jeux au curseur)
 
@@ -247,12 +249,14 @@ LOBBY ──(hôte lance)──► PLAYING ──(jeu terminé)──► RESULTS
 - Le curseur système est masqué dans l'arène (`cursor: none`).
 - Au clic dans l'arène, le client appelle `requestPointerLock()` **sans** `unadjustedMovement`. L'accélération et la sensibilité du système d'exploitation de chaque joueur s'appliquent donc : le curseur virtuel se comporte comme son curseur habituel.
 - La sensibilité est commune à tous : `CURSOR_SENSITIVITY`, sans réglage par joueur.
-- **Pointer Lock perdu** (Échap, alt-tab) : overlay « Clique pour reprendre ». Aucun input n'est envoyé, donc le curseur reste immobile côté serveur.
+- **Tant que la souris n'a jamais été capturée** dans cette partie : voile d'arène avec « Clique pour capturer ta souris » (`docs/design-system.md`, sections 11.19 et 12). Sans lui, un joueur arrive devant un curseur immobile sans savoir qu'un clic le démarre.
+- **Pointer Lock perdu** (Échap, alt-tab) : écran « Clique pour reprendre » (section 11.18). Aucun input n'est envoyé, donc le curseur reste immobile côté serveur, mais **la partie continue derrière le voile** et le rendu ne s'arrête pas.
+- Un spectateur ne voit ni l'un ni l'autre : il n'a pas de curseur, donc aucune capture à demander ni à perdre.
 
 **Inputs**
-- Le client convertit chaque `movementX/Y` en unités logiques : `delta / scale × CURSOR_SENSITIVITY`.
+- Le client convertit chaque `movementX/Y` en unités logiques : `delta / scale × CURSOR_SENSITIVITY`. **`scale` est en pixels CSS**, comme `movementX/Y` : sinon la sensibilité différerait entre un écran Retina et un autre, ce que « la sensibilité est commune à tous » interdit.
 - Il additionne ces deltas et envoie `game:input` `{ seq, dx, dy }` toutes les `1000 / INPUT_SEND_RATE` ms si la somme n'est pas nulle.
-- `seq` est un entier qui augmente de 1 à chaque envoi. Il repart de 0 au début de chaque partie et à chaque reconnexion, et le serveur remet alors le dernier `seq` traité de ce joueur à −1. Le serveur ignore tout input dont `seq` est inférieur ou égal au dernier `seq` traité pour ce joueur.
+- `seq` est un entier qui augmente de 1 à chaque envoi. Il repart de 0 au début de chaque partie et à chaque reconnexion, et le serveur remet alors le dernier `seq` traité de ce joueur à −1. **Ces deux moments seulement :** perdre puis retrouver la capture de la souris n'y touche pas, car le compteur du serveur ne bouge pas non plus — repartir de 0 lui ferait rejeter tous les inputs jusqu'à rattraper l'ancien compte. Le serveur ignore tout input dont `seq` est inférieur ou égal au dernier `seq` traité pour ce joueur.
 - Schéma Zod : `seq` entier ≥ 0, `dx` et `dy` nombres finis entre −`MAX_INPUT_DELTA` et `MAX_INPUT_DELTA`.
 
 **Déplacement : `shared/cursor/moveCursor.ts`**
@@ -263,16 +267,34 @@ Fonction pure utilisée à l'identique par le serveur et par la prédiction clie
   - Une fois par tick serveur, à la fin de `tick(dt)` et donc avant les inputs du tick suivant : `budget = min(budget + maxSpeed × dt / 1000, maxSpeed × MOVE_BUDGET_CAP_MS / 1000)`.
   - Pour un input de longueur `L` : distance autorisée `A = min(L, budget)`. Le delta est réduit dans la proportion `A / L`, puis `budget -= A`.
   - `maxSpeed` est fourni par le jeu (unités logiques par seconde).
+  - **Pourquoi le plafond est court.** Il vaut deux envois (`2 × 1000 / INPUT_SEND_RATE`, arrondi à 66 ms) : assez pour qu'un envoi arrivé en retard ne soit pas tronqué, trop peu pour mettre un geste en réserve. Un plafond de 200 ms laissait une souris immobile accumuler 200 unités, dépensées d'un seul tick au premier coup sec — un bond de 148 px à l'écran avant de retomber au plafond. Mesuré à l'étape 3b.
 - **Collisions.** Le curseur est un disque de rayon `radius` fourni par le jeu.
   - Le delta autorisé est découpé en pas d'au plus `MOVE_SUBSTEP` unités.
   - Pour chaque pas : appliquer la composante X ; si le disque chevauche un mur ou sort de l'arène, annuler la composante X de ce pas. Faire de même pour Y. Le curseur glisse ainsi le long des murs.
   - Un mur est un rectangle `{ x, y, width, height }`. Chevauchement : distance entre le centre du disque et le point le plus proche du rectangle strictement inférieure à `radius`.
   - Bords : le centre reste entre `radius` et `ARENA_WIDTH − radius` en X, `radius` et `ARENA_HEIGHT − radius` en Y.
 
+**Rattrapage : `shared/cursor/backlog.ts` (bac à sable uniquement, à l'essai)**
+
+Le moteur jette ce que le budget refuse : un geste plus rapide que le plafond arrive court. Le rattrapage le garde à la place, pour que le curseur arrive là où la main l'a envoyé, à la vitesse de la règle. C'est un essai : seul le bac à sable l'active (option `catchUpMs`), à comparer à la main avec le mode actuel. Cursor Tag n'en dépend pas tant que rien n'est décidé.
+
+- `moveWithBacklog` paie ensemble le **reste** des déplacements précédents et le nouveau geste, avec le budget, par la règle de `moveCursor`. Ce que le budget refuse est gardé, dans la limite d'une **laisse** de `maxSpeed × catchUpMs / 1000` unités, puis payé par les inputs et les ticks suivants. Avec une laisse nulle, le résultat est exactement celui de `moveCursor`.
+- **Le reste n'est pas du budget.** Il est payé par le même budget que tout le reste, et le tick paie le reste **avant** de recharger le budget. Un curseur ne va donc jamais plus loin en un tick qu'aujourd'hui : dans l'ordre inverse, un curseur resté immobile irait une fois et demie plus loin au premier tick de son geste. La laisse borne en outre ce qu'un client peut faire jouer après son dernier input.
+- **Contre un mur ou un bord**, la part du reste arrêtée sur un axe est jetée et l'autre gardée : le reste glisse le long du mur comme le curseur, au lieu d'y pousser en brûlant le budget.
+- **Le reste vient de la vue**, dans `me`, comme le budget et pour la même raison : le serveur en a autorité, et un reste tenu par le client dériverait au premier input perdu. La prédiction repart du reste officiel et le paie avec le budget qui se recharge entre deux vues : le curseur glisse entre les vues au lieu d'avancer par marches.
+- Remis à zéro là où le budget l'est : au début de la partie et à la reconnexion.
+
 **Prédiction du curseur local**
-- Chaque vue contient la position officielle du joueur et le dernier `seq` traité.
-- À réception d'une vue, le client repart de la position officielle et rejoue avec `moveCursor` ses inputs envoyés mais pas encore traités, puis le delta en cours d'accumulation. Le budget client se recharge selon le temps réel écoulé, avec les mêmes formules.
-- Si l'écart entre la position affichée et la nouvelle position prédite est inférieur ou égal à `CORRECTION_SNAP_DISTANCE`, la position affichée rejoint la position prédite en `CORRECTION_SMOOTHING_MS` (interpolation linéaire). Au-delà, elle est replacée immédiatement.
+- Chaque vue contient la position officielle du joueur, le dernier `seq` traité **et son budget de déplacement**. Le budget vient de la vue, comme la position : le serveur en a autorité (règle d'or 1), et un budget tenu localement dériverait au premier input perdu.
+- À réception d'une vue, le client repart de la position, du budget et du reste officiels, puis rejoue avec `moveWithBacklog` (qui est `moveCursor` tant que rien n'est gardé) ses inputs envoyés mais pas encore traités, et enfin le delta en cours d'accumulation.
+- **Le rejeu suit le rythme des envois**, parce que c'est à ce rythme que les inputs arrivent au serveur. Chaque input reçoit le budget que le serveur aura rechargé depuis le précédent, c'est-à-dire l'écart entre leurs heures d'envoi ; le premier reçoit le temps écoulé depuis le tick de la vue. Le budget de la vue est celui que le serveur dépensera à son tick suivant : au tick de la vue même, il avait une recharge de moins. Sur l'horloge des envois, le tick de la vue se situe un délai d'acquittement avant l'arrivée de la vue ; ce délai est le plus court mesuré sur les derniers acquittements (`client/engine/inputLedger.ts`). Avant le premier acquittement, un tick est supposé.
+  - **Pourquoi pas une seule recharge depuis la vue**, comme au départ : quand les vues cessent d'arriver — un paquet perdu, que TCP retient puis livre d'un bloc avec tout ce qui le suit —, le serveur continue d'appliquer les inputs, mais une recharge unique plafonnée à la réserve fige la prédiction, et la vue qui finit par arriver la fait bondir. Mesuré à l'étape 3b : un saut à chaque trou de 200 ms ou plus, et un curseur figé jusqu'à 380 ms pendant le trou.
+- **Inputs retenus en route.** Un input qu'une vue aurait dû acquitter — envoyé plus d'un délai d'acquittement et deux ticks avant son tick — et qu'elle n'a pas acquitté est retenu sur la voie montante : tout ce qui le suit arrivera au serveur d'un bloc, payé sur le budget d'un seul tick. Le rejeu pose ces inputs ensemble et retient avec eux le delta en cours. C'est le cas inverse du précédent : le client ne voit une voie montante bouchée qu'au bout d'un aller-retour, et d'ici là il suppose ses inputs arrivés ; l'erreur est bornée par cet aller-retour et reprise en douceur, alors que supposer l'inverse ferait une erreur qui grandirait avec la durée du trou.
+- **Affichage du curseur local.** La position dessinée est la position prédite **plus un décalage** qui s'efface en `CORRECTION_SMOOTHING_MS`, et non une position qui glisse vers la prédiction.
+  - À l'arrivée d'une vue, la prédiction est calculée deux fois au même instant : une fois avec la vue précédente, une fois avec la nouvelle. Leur différence est ce que le serveur a corrigé, et elle seule ; le mouvement du joueur est dans les deux et s'annule.
+  - Cette différence s'ajoute au décalage, qui décroît ensuite vers zéro. Le geste du joueur est donc dessiné immédiatement et en entier ; seule la correction est lissée.
+  - **Pourquoi pas un glissement vers la prédiction :** il lisse aussi le geste du joueur, le curseur traîne derrière la main de tout le temps de lissage, et au-delà d'environ 580 unités par seconde ce retard dépasse le seuil de reprise immédiate : le curseur est alors téléporté sept à quinze fois par seconde. Mesuré à l'étape 3b.
+  - Une correction supérieure à **deux fois la réserve de budget plus un aller-retour de déplacement** (`2 × maxSpeed × MOVE_BUDGET_CAP_MS / 1000 + maxSpeed × délai d'acquittement / 1000`) est reprise d'un coup. Une correction est la différence entre deux prédictions, chacune à une réserve près de la position que sa propre vue lui a donnée, plus ce que le rejeu a d'avance sur le serveur : au plus un aller-retour de déplacement, repris d'un coup quand une vue montre des inputs retenus en route. Au-delà, c'est le jeu qui a déplacé le curseur, et lisser sur toute l'arène serait pire qu'arriver. Le plus court saut de portail de Cursor Tag, 1511 unités, reste loin au-dessus.
 - Les effets décidés par le jeu (gel, téléportation) viennent uniquement du serveur. Le client ne les prédit pas.
 
 **Affichage des autres curseurs**
@@ -340,19 +362,24 @@ interface BotPolicy<Input, Action, View> {
 
 ```ts
 // src/games/gameClient.types.ts
-interface GameClientDefinition<Input, Action, View, Options> {
-  id: string;
+interface GameClientDefinition {      // frontières en `unknown`, comme RegisteredGame côté serveur
+  meta: GameMeta;                     // le même objet que la définition serveur
+  Icon: React.ComponentType;          // la marque de 48 px de la carte de jeu (design system, 11.7)
+  Preview: React.ComponentType;       // l'image fixe de l'arène dans le lobby (design system, 13)
+  scoreHint: string;                  // la phrase du jeu dans la colonne « Le jeu »
   Screen: React.FC<{
-    viewStore: ViewStore<View>;        // buffer des vues, lu par le moteur sans re-render
-    sendInput(input: Input): void;
-    sendAction(action: Action): Promise<{ ok: boolean }>;
+    viewStore: ViewStore;              // buffer des vues, lu par le moteur sans re-render
+    sendInput(input: unknown): void;
+    sendAction(action: unknown): Promise<{ ok: boolean }>;
     me: { playerId: string } | { spectator: true };
+    players: ReadonlyArray<{ playerId: string; pseudo: string; color: PlayerColorId }>;
+    onLeave(): void;                   // l'écran possède ce qui se pose sur l'arène (11.18, 11.19)
   }>;
   OptionsForm: React.FC<{               // affiché dans le lobby, modifiable par l'hôte uniquement
-    options: Options;
+    options: unknown;
     playerCount: number;
     editable: boolean;
-    onChange(options: Options): void;
+    onChange(options: unknown): void;
   }> | null;                            // null si le jeu n'a pas d'option
 }
 ```
@@ -368,7 +395,10 @@ interface GameClientDefinition<Input, Action, View, Options> {
   - **Budget cible : environ 200 octets pour 10 joueurs**, trame Socket.IO comprise.
   - **Le volume est mesuré avant de clore l'étape du jeu**, et le chiffre est reporté dans le rapport de l'étape. Une vue qui dépasse largement le budget se corrige avant la fusion, pas après.
   - Le bac à sable (`games/sandbox`) **n'y est pas soumis** : réservé au développement, il n'est jamais enregistré en production et ne consomme donc rien sur Render. Sa vue reste lisible plutôt que compacte.
-- `ViewStore` (`client/engine/viewStore.ts`) garde les vues reçues avec leur heure de réception et expose `latest()` et `sampleAt(time)`.
+- **`ViewStore`** : son contrat est déclaré dans `games/gameView.types.ts`, à côté de l'interface de jeu, et implémenté dans `client/engine/viewStore.ts` — le moteur peut atteindre les types d'un jeu, un jeu ne peut pas atteindre le moteur. Il garde les vues des `INTERPOLATION_BUFFER_MS` dernières millisecondes avec leur heure de réception, et expose :
+  - `latest()` : le dernier échantillon reçu, ou `null` ;
+  - `sampleAt(serverTime)` : **les deux échantillons qui encadrent cet instant et le facteur entre eux**, jamais une position. Le temps est celui du serveur (`GameViewPayload.serverTime`). Le moteur ne sait pas lire une vue : c'est le code du jeu qui en extrait ce qu'il connaît, avec les fonctions pures de `client/engine/`.
+- **Les frontières du client sont en `unknown`**, comme celles de `RegisteredGame`. Contrairement au serveur il n'y a rien à valider ici — une vue vient de notre propre serveur, pas du réseau — et chaque jeu reconnaît la sienne avec une garde de type, jamais une conversion forcée.
 - Le serveur appelle `onInput` et `onAction` uniquement pour les joueurs de la partie, jamais pour les spectateurs.
 - **Registre des jeux :** le serveur garde des jeux dont les types `Input`, `Action`, `View` et `Options` diffèrent. `games/defineGame.ts` convertit une `GameDefinition` typée en une entrée dont les frontières sont en `unknown`, chaque valeur étant validée par le schéma Zod du jeu avant de lui être transmise. C'est le seul endroit du code avec une conversion de type forcée.
 
@@ -382,6 +412,15 @@ interface GameClientDefinition<Input, Action, View, Options> {
 - **Un bot est toujours prêt**, dès sa création et après chaque retour au lobby. Il n'attend personne, et Cursor Tag le fait déjà se déclarer prêt dès le début d'une préparation (`rules.md`, section 4.1). Sans cela, l'hôte d'une room de bots devrait cliquer « Lancer quand même » sans raison.
 - Un bot ne peut être ajouté que **dans le lobby** : pendant une partie, un arrivant est spectateur (section 5.4) et un bot n'aurait rien à jouer. Il peut être retiré à tout moment.
 - Les événements `dev:*` sont **refusés** en production plutôt qu'ignorés en silence : un accusé de réception qui n'arrive jamais laisserait l'appelant en attente.
+
+### 8.1 Simulateur de latence
+
+- **Développement uniquement.** `?lag=200` sur n'importe quelle URL du site retarde de 200 ms **tout ce que le client envoie et tout ce qu'il reçoit**. Une demande avec accusé coûte donc deux fois la latence, comme sur un vrai réseau. Seule exception : l'avis de session remplacée (section 4), que le serveur fait suivre aussitôt d'une coupure de la connexion, que le simulateur ne peut pas retarder.
+- Lu **une seule fois** au chargement de la page, donc conservé en passant de l'accueil à la room. Borné par `MAX_SIMULATED_LAG_MS`, pour qu'un chiffre saisi à la main ne fige pas la page.
+- Ouvrir un onglet avec `?lag=` et un autre sans, sur la même room, est la façon de voir travailler la prédiction et l'interpolation : dans l'onglet ralenti, ton propre curseur reste collé à ta souris pendant que les autres accusent leur retard.
+- **Trous.** `?holeIn=250` et `?holeOut=250` ouvrent, toutes les `SIMULATED_HOLE_EVERY_MS`, un trou de 250 ms dans un sens : rien ne passe, puis tout ce qui a été retenu passe d'un coup, dans l'ordre, comme après un paquet perdu. `holeIn` retient ce que le client reçoit (les vues et les réponses), `holeOut` ce qu'il envoie (les inputs et les demandes). Le trou occupe la fin de chaque période : le premier arrive quelques secondes après le chargement, le temps de rejoindre une room. Combinables avec `?lag`, bornés comme lui.
+- **Pourquoi des trous et pas seulement `?lag`** : `?lag` retarde chaque message du même délai, donc les vues gardent leur espacement de 33 ms. Il ne reproduit jamais ce qu'un réseau réel fait après une perte, et que le moteur doit encaisser (section 6.5).
+- Comme les bots, tout cela quitte le build de production : la branche est gardée par `import.meta.env.DEV`.
 
 ## 9. Sécurité
 
@@ -474,13 +513,15 @@ Valeurs exactes à utiliser dans `src/shared/constants.ts`. Chaque constante est
 | `ARENA_HEIGHT` | `900` |
 | `CURSOR_SENSITIVITY` | `1` |
 | `MAX_INPUT_DELTA` | `2000` |
-| `MOVE_BUDGET_CAP_MS` | `200` |
+| `MOVE_BUDGET_CAP_MS` | `66` |
 | `MOVE_SUBSTEP` | `7` |
 | `INTERPOLATION_DELAY_MS` | `100` |
 | `INTERPOLATION_BUFFER_MS` | `1000` |
-| `CORRECTION_SNAP_DISTANCE` | `48` |
 | `CORRECTION_SMOOTHING_MS` | `100` |
 | `TELEPORT_SNAP_DISTANCE` | `200` |
+| `ARENA_WALL_RADIUS` | `8` |
+| `MAX_SIMULATED_LAG_MS` | `2000` |
+| `SIMULATED_HOLE_EVERY_MS` | `3000` |
 | `SOCKET_PING_INTERVAL_MS` | `5000` |
 | `SOCKET_PING_TIMEOUT_MS` | `5000` |
 | `RATE_LIMIT_MESSAGES_PER_SECOND` | `60` |

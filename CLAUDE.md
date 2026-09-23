@@ -80,6 +80,7 @@ src/
     cursor/
       collision.ts              disque contre mur, disque contre bords
       moveCursor.ts             déplacement d'un curseur (budget, murs, bords)
+      backlog.ts                rattrapage : le reste d'un geste coupé, payé ensuite (bac à sable)
       cursorInput.ts            type et schéma de `game:input`
   server/
     index.ts                    démarrage uniquement : assemble http + socket
@@ -114,6 +115,12 @@ src/
       connection/
         components/             ConnectionStatus.tsx…
         hooks/                  useConnectionStatus.ts…
+      devTools/                 développement uniquement : panneau de bots du lobby
+        components/             DevTools.tsx, BotPanel.tsx
+        hooks/                  useBots.ts
+      game/                     écran de jeu, voiles, capture de la souris
+        components/             GameHost.tsx, PauseOverlay.tsx, CaptureInvite.tsx…
+        hooks/                  useGameView.ts, usePointerLock.ts, useArenaSurface.ts…
       demo/
         components/             DemoArena.tsx (illustration fixe de l'arène)
       home/
@@ -138,6 +145,9 @@ src/
     services/                   effets de bord hors React
       socketClient.ts           connexion typée, jeton du handshake, abonnements
       roomRequests.ts           une fonction par message envoyé au serveur
+      gameRequests.ts           inputs, actions et les deux événements de développement
+      delayedTransport.ts       la latence et les trous simulés, appliqués dans les deux sens
+      simulatedLatency.ts       lit `?lag`, `?holeIn`, `?holeOut` une fois au démarrage (développement)
       sessionIdentity.ts        dernière identité reçue, relue par un abonné tardif
       sessionStorage.ts         jeton de session
       preferences.ts            pseudo, couleur préférée, son
@@ -145,16 +155,27 @@ src/
       pointerCapability.ts      détection d'un appareil sans souris
       audio.ts
     engine/                     moteur temps réel, sans React
-      pointerLock.ts
-      arenaScale.ts
-      interpolation.ts
-      prediction.ts
+      pointerLock.ts            capture de la souris
+      arenaScale.ts             taille de l'arène et du canvas
+      arenaTheme.ts             couleurs et tailles lues dans les variables CSS
+      canvasSurface.ts          dimensionnement en pixels physiques
+      renderLoop.ts             boucle `requestAnimationFrame`
+      inputAccumulator.ts       mouvements de souris en unités logiques
+      inputSender.ts            envoi à `INPUT_SEND_RATE`, numérotation, acquittement
+      inputLedger.ts            inputs en attente, heures d'envoi, délai d'acquittement
+      viewStore.ts              tampon des vues reçues
+      interpolation.ts          position des autres curseurs
+      prediction.ts             rejeu des inputs non traités
+      correction.ts             rapprochement du curseur affiché
+      predictionStats.ts        relevé de développement (F9) : fenêtre de 3 s et maxima de partie
+      gestureMeter.ts           pointe du geste et rattrapage, cadre par cadre (développement)
     utils/                      fonctions pures génériques, nommées par sujet
                                 (lobbyPlayers.ts, readyCounter.ts, roomUrl.ts…)
   games/
     gameServer.types.ts         interfaces GameDefinition, GameInstance…
     gameClient.types.ts         interface GameClientDefinition
     gameMeta.ts                 nom, description et bornes, lus des deux côtés
+    gameView.types.ts           contrat du tampon de vues, implémenté par le moteur
     defineGame.ts               efface les types d'un jeu pour le registre
     registry.server.ts
     registry.client.ts
@@ -162,8 +183,9 @@ src/
     sandbox/                    développement uniquement : bac à sable du moteur curseur
       rules.md
       shared/                   meta.ts, constants.ts, types.ts, schemas.ts
-      logic/                    sandboxState.ts + tests
+      logic/                    sandboxState.ts, sandboxView.ts + tests
       server/                   SandboxGame.ts, bot.ts, sandboxDefinition.ts
+      client/                   SandboxScreen.tsx, hooks/, render/
     cursor-tag/
       rules.md                  règles du jeu (source de vérité du gameplay)
       shared/                   constants.ts, types.ts, schemas.ts, map.ts
@@ -264,6 +286,6 @@ Ces restrictions sont vérifiées par `npm run lint` (`no-restricted-imports` pa
 - [x] **Étape 2a : design system dans le code.** Tokens (`@theme`), polices hébergées, icônes, logo, composants de base de `client/components/ui/`, page de démonstration `/dev/ui` (développement uniquement).
 - [x] **Étape 2b : rooms côté serveur.** Sessions, création, aperçu, rejoindre, lobby, statut prêt, options des jeux, hôte, spectateurs, reconnexion, départ, classement cumulé, avec leurs tests.
 - [x] **Étape 2c : écrans de l'accueil et du lobby.** Accueil, invitation, erreurs, lobby (joueurs, palette, jeu, réglages, prêt, lancement), confirmation « Quitter la room », notifications, message « ordinateur uniquement » (règle d'or 10). Resserrer la CSP (`style-src` sans `'unsafe-inline'`) une fois ces écrans construits.
-- [ ] **Étape 3 : moteur curseur.** Pointer Lock, curseur virtuel, arène, synchronisation, prédiction, interpolation, bots.
+- [x] **Étape 3 : moteur curseur.** Pointer Lock, curseur virtuel, arène, synchronisation, prédiction, interpolation, bots.
 - [ ] **Étape 4 : Cursor Tag complet.** Écran de jeu, préparation, écran de résultats.
 - [ ] **Étape 5 : finitions.** Sons, animations, transitions, démo animée de chaque jeu (accueil et lobby, jouée par le moteur du jeu à partir d'une séquence écrite à l'avance, avec des joueurs fictifs fixes, au moins 4, sans lien avec les joueurs de la room), puis test avec le groupe.
