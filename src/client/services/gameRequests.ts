@@ -3,8 +3,9 @@ import { fireAndForget, request } from "./delayedTransport";
 import { getSocket } from "./socketClient";
 
 /**
- * What a running game sends (docs/architecture.md, §6.2). One function per message, as everywhere
- * else: a generic sender would lose the payload types the protocol exists to enforce.
+ * What a running game sends (docs/architecture.md, §6.2), and the two development events that add
+ * or remove a bot (§8). One function per message, as everywhere else: a generic sender would lose
+ * the payload types the protocol exists to enforce.
  */
 
 /**
@@ -19,4 +20,12 @@ export function sendGameInput(input: unknown): void {
 /** A one-off action, defined by the game. Reliable, unlike an input. */
 export function sendGameAction(action: unknown): Promise<AckStatus> {
   return request(() => getSocket().emitWithAck("game:action", action));
+}
+
+export function addBot(): Promise<AckStatus> {
+  return request(() => getSocket().emitWithAck("dev:addBot"));
+}
+
+export function removeBot(playerId: string): Promise<AckStatus> {
+  return request(() => getSocket().emitWithAck("dev:removeBot", { playerId }));
 }

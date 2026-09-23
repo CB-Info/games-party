@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router";
 
 import type { RoomState } from "../../shared/types";
 import { AppShell } from "../features/appShell/components/AppShell";
+import { DevTools } from "../features/devTools/components/DevTools";
 import { GameHost } from "../features/game/components/GameHost";
 import { ResultsPlaceholder } from "../features/game/components/ResultsPlaceholder";
 import { useGameCatalog } from "../features/game/hooks/useGameCatalog";
@@ -116,6 +117,13 @@ function RoomContent({ code }: { code: string }) {
         onCopyLink={copyLink}
         onStart={actions.start}
         onLeave={leave}
+        devPanel={
+          // `DevTools` decides whether anything exists at all: outside development it is not even
+          // in the bundle (docs/architecture.md, §8).
+          playerId !== null && playerId === state.hostId ? (
+            <DevTools players={state.players} />
+          ) : null
+        }
       />
     );
   }

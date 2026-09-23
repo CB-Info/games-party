@@ -1,7 +1,40 @@
+import type { Player } from "../../../../shared/types";
+import { BotPanel } from "../../devTools/components/BotPanel";
 import { CaptureInvite } from "../../game/components/CaptureInvite";
 import { PauseOverlay } from "../../game/components/PauseOverlay";
 import { DemoArena } from "../../demo/components/DemoArena";
 import { GallerySection } from "./GallerySection";
+
+/** Three bots and a person, as the development panel lists them. */
+const PLAYERS: Player[] = [
+  {
+    playerId: "p1",
+    pseudo: "Mika",
+    color: "c2",
+    isHost: true,
+    isBot: false,
+    connected: true,
+    isSpectator: false,
+  },
+  {
+    playerId: "b1",
+    pseudo: "Bot 1",
+    color: "c5",
+    isHost: false,
+    isBot: true,
+    connected: true,
+    isSpectator: false,
+  },
+  {
+    playerId: "b2",
+    pseudo: "Bot 2",
+    color: "c7",
+    isHost: false,
+    isBot: true,
+    connected: true,
+    isSpectator: false,
+  },
+];
 
 export function GameSection() {
   return (
@@ -30,6 +63,8 @@ export function GameSection() {
           />
         </div>
       </div>
+
+      <BotPanel players={PLAYERS} onAdd={() => undefined} onRemove={() => undefined} />
     </GallerySection>
   );
 }

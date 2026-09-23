@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 import type { GameClientDefinition } from "../../../../games/gameClient.types";
 import { ROOM_CAPACITY } from "../../../../shared/constants";
 import type { PlayerColorId, RoomState } from "../../../../shared/types";
@@ -18,6 +20,8 @@ interface LobbyScreenProps {
   onSelectGame: (gameId: string) => void;
   onOptionsChange: (options: unknown) => void;
   games: readonly GameClientDefinition[];
+  /** The development bot panel, absent from a production build (docs/architecture.md, §8). */
+  devPanel?: ReactNode;
 }
 
 /** The lobby (docs/design-system.md, §13): the players, then the game chooser or the chosen game. */
@@ -32,6 +36,7 @@ export function LobbyScreen({
   onSelectGame,
   onOptionsChange,
   games,
+  devPanel,
 }: LobbyScreenProps) {
   const host = state.players.find((player) => player.playerId === state.hostId);
   const amHost = myPlayerId !== null && myPlayerId === state.hostId;
@@ -88,6 +93,8 @@ export function LobbyScreen({
           onStart={onStart}
         />
       </div>
+
+      {devPanel}
     </main>
   );
 }
