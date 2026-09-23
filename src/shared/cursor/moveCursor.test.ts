@@ -63,10 +63,13 @@ describe("moveCursor and the budget", () => {
   });
 
   it("recharges with elapsed time, up to the cap", () => {
+    // Written against the rule rather than the figures: the cap is a setting, and reading it back
+    // from the constant is what lets it be tuned without rewriting the arithmetic here.
     const cap = (MAX_SPEED * MOVE_BUDGET_CAP_MS) / 1000;
+    const halfway = MOVE_BUDGET_CAP_MS / 2;
 
-    expect(rechargeBudget(0, MAX_SPEED, 100)).toBeCloseTo(100, 6);
-    expect(rechargeBudget(150, MAX_SPEED, 100)).toBe(cap);
+    expect(rechargeBudget(0, MAX_SPEED, halfway)).toBeCloseTo(cap / 2, 6);
+    expect(rechargeBudget(cap * 0.75, MAX_SPEED, halfway)).toBe(cap);
     // A cursor that stood still banks no more than the cap, so it cannot cross the arena at once.
     expect(rechargeBudget(0, MAX_SPEED, 10000)).toBe(cap);
   });

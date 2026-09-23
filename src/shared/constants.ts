@@ -82,7 +82,7 @@ export const CURSOR_SENSITIVITY = 1;
 export const MAX_INPUT_DELTA = 2000;
 
 /** How much movement a cursor may bank, in milliseconds of travel (docs/architecture.md, §13). */
-export const MOVE_BUDGET_CAP_MS = 200;
+export const MOVE_BUDGET_CAP_MS = 66;
 
 /** Longest step a move is cut into before testing walls, in logical units (docs/architecture.md, §13). */
 export const MOVE_SUBSTEP = 7;
