@@ -233,6 +233,7 @@ Tous les événements sont envoyés à toute la room.
 - **Un Chat se déconnecte :** un Coureur connecté est immédiatement tiré au sort avec `ctx.random` pour le remplacer. Le remplaçant devient Chat **sans gel**. Le joueur déconnecté devient Coureur. Événement `chatReplaced`. S'il n'existe aucun Coureur connecté, il n'y a pas de remplacement.
 - **Un Coureur se déconnecte :** son curseur reste à sa position mais n'est pas dessiné par les clients (`connected: false` dans la vue). Il ne peut pas être touché, et son score est en pause jusqu'à son retour.
 - **Reconnexion :** le joueur retrouve sa position, son rôle actuel et son score. Son `lastProcessedSeq` repart à −1 (architecture 6.5). Si la partie est en préparation (étape attente), il voit le bouton « Je suis prêt ».
+- **Reprise de la place sans déconnexion**, par un second onglet ou par une reconnexion arrivée avant que le serveur ait constaté la coupure (architecture 4) : pour le jeu, c'est une reconnexion, et son `lastProcessedSeq` repart à −1. Mais aucune déconnexion ne l'a précédée : les autres joueurs ne voient rien, et rien de ce qui arrive à un joueur qui se déconnecte ne s'applique — le Chat n'est pas remplacé, le score du Coureur continue, le statut prêt reste. Rouvrir un onglet ne doit offrir ni pause ni échappatoire.
 - **Retrait :** le joueur est supprimé de la partie et n'apparaît plus dans la vue ni dans le classement. Si le nombre de joueurs passe sous `MIN_PLAYERS`, la partie est abandonnée (architecture 5.2).
 
 ## 12. Bot

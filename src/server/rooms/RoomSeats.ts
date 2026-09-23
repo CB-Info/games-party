@@ -108,7 +108,13 @@ export class RoomSeats {
     return true;
   }
 
-  /** Gives a seat back to a player who came back within the grace delay. */
+  /**
+   * Gives a seat to a new connection: a player who came back within the grace delay, or one whose
+   * seat was taken over while it still looked in use — another tab, or a reconnection that reached
+   * the server before its heartbeat had given up on the old socket (docs/architecture.md, §4). The
+   * others see nothing in the second case, but the game is told in both: a new connection numbers
+   * its inputs from zero, and a game that kept the old count would ignore them (§6.5).
+   */
   reconnect(playerId: string): void {
     const member = this.deps.members.find(playerId);
     if (member === null) {
@@ -120,8 +126,9 @@ export class RoomSeats {
     if (!member.connected) {
       member.connected = true;
       this.deps.members.reelectHost();
-      this.deps.gameInstance()?.onPlayerReconnect(playerId);
     }
+
+    this.deps.gameInstance()?.onPlayerReconnect(playerId);
   }
 
   /** Removes a player for good: on `room:leave`, or at the end of the grace delay. */
