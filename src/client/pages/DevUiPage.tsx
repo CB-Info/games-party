@@ -2,6 +2,7 @@ import { BadgesSection } from "../features/uiGallery/components/BadgesSection";
 import { ButtonsSection } from "../features/uiGallery/components/ButtonsSection";
 import { CardsSection } from "../features/uiGallery/components/CardsSection";
 import { FeedbackSection } from "../features/uiGallery/components/FeedbackSection";
+import { GameSection } from "../features/uiGallery/components/GameSection";
 import { FieldsSection } from "../features/uiGallery/components/FieldsSection";
 import { LobbySection } from "../features/uiGallery/components/LobbySection";
 import { PlayersSection } from "../features/uiGallery/components/PlayersSection";
@@ -26,6 +27,7 @@ export function DevUiPage() {
       <BadgesSection />
       <PlayersSection />
       <LobbySection />
+      <GameSection />
       <FeedbackSection />
     </main>
   );
