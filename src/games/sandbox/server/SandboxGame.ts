@@ -8,6 +8,7 @@ import {
   rechargePlayers,
   roundPosition,
   spawnPlayers,
+  type MoveSettings,
   type SandboxPlayer,
 } from "../logic/sandboxState";
 import type { SandboxOptions } from "../shared/schemas";
@@ -19,11 +20,13 @@ import type { SandboxView } from "../shared/types";
  */
 export class SandboxGame implements GameInstance<CursorInput, never, SandboxView> {
   private readonly ctx: GameContext;
+  private readonly settings: MoveSettings;
   private players: SandboxPlayer[];
   private timeLeftMs: number;
 
   constructor(ctx: GameContext, options: SandboxOptions) {
     this.ctx = ctx;
+    this.settings = { walls: WALLS, maxSpeed: options.maxSpeed };
     this.timeLeftMs = options.durationS * 1000;
     this.players = spawnPlayers(
       ctx.players().map((player) => player.playerId),
@@ -46,7 +49,10 @@ export class SandboxGame implements GameInstance<CursorInput, never, SandboxView
       return;
     }
 
-    this.players[index] = applyInput(player, input, WALLS, member?.connected ?? false);
+    this.players[index] = applyInput(player, input, {
+      ...this.settings,
+      connected: member?.connected ?? false,
+    });
   }
 
   /** The sandbox has no action: nothing a player could ask for outside their own movement. */
@@ -56,7 +62,7 @@ export class SandboxGame implements GameInstance<CursorInput, never, SandboxView
 
   tick(dtMs: number): void {
     this.timeLeftMs = Math.max(0, this.timeLeftMs - dtMs);
-    this.players = rechargePlayers(this.players, dtMs);
+    this.players = rechargePlayers(this.players, dtMs, this.settings.maxSpeed);
   }
 
   /** The cursor stays where it is; the view says it is away and the clients stop drawing it. */

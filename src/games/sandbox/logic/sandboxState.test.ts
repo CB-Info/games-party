@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import type { Point, Wall } from "../../../shared/cursor/collision";
 import { NO_SEQ_PROCESSED } from "../../../shared/cursor/cursorInput";
-import { SANDBOX_MAX_SPEED } from "../shared/constants";
+import { SANDBOX_SPEED_DEFAULT } from "../shared/constants";
 import {
   applyInput,
   rechargePlayers,
@@ -53,7 +53,11 @@ describe("spawnPlayers", () => {
 
 describe("applyInput", () => {
   it("moves the cursor and counts the distance", () => {
-    const moved = applyInput(playerAt(400, 400), { seq: 0, dx: 30, dy: 40 }, [], true);
+    const moved = applyInput(
+      playerAt(400, 400),
+      { seq: 0, dx: 30, dy: 40 },
+      { walls: [], connected: true, maxSpeed: SANDBOX_SPEED_DEFAULT },
+    );
 
     expect(moved.position.x).toBeCloseTo(430, 6);
     expect(moved.distance).toBeCloseTo(50, 6);
@@ -61,14 +65,22 @@ describe("applyInput", () => {
   });
 
   it("records the sequence number it was given", () => {
-    const moved = applyInput(playerAt(400, 400), { seq: 5, dx: 10, dy: 0 }, [], true);
+    const moved = applyInput(
+      playerAt(400, 400),
+      { seq: 5, dx: 10, dy: 0 },
+      { walls: [], connected: true, maxSpeed: SANDBOX_SPEED_DEFAULT },
+    );
 
     // Whether that input was new is the caller's decision: a bot has no sequence to check.
     expect(moved.lastProcessedSeq).toBe(5);
   });
 
   it("records the sequence of a player who is away without moving them", () => {
-    const away = applyInput(playerAt(400, 400), { seq: 3, dx: 100, dy: 0 }, [], false);
+    const away = applyInput(
+      playerAt(400, 400),
+      { seq: 3, dx: 100, dy: 0 },
+      { walls: [], connected: false, maxSpeed: SANDBOX_SPEED_DEFAULT },
+    );
 
     // Their cursor stays put, but the sequence moves on: nothing replays when they come back.
     expect(away.position).toEqual({ x: 400, y: 400 });
@@ -78,7 +90,11 @@ describe("applyInput", () => {
 
   it("counts only the distance actually travelled when a wall gets in the way", () => {
     const wall: Wall[] = [{ x: 500, y: 0, width: 40, height: 900 }];
-    const blocked = applyInput(playerAt(400, 400), { seq: 0, dx: 300, dy: 0 }, wall, true);
+    const blocked = applyInput(
+      playerAt(400, 400),
+      { seq: 0, dx: 300, dy: 0 },
+      { walls: wall, connected: true, maxSpeed: SANDBOX_SPEED_DEFAULT },
+    );
 
     expect(blocked.distance).toBeLessThan(100);
     expect(blocked.position.x).toBeLessThan(500);
@@ -87,10 +103,14 @@ describe("applyInput", () => {
 
 describe("rechargePlayers", () => {
   it("refills every budget", () => {
-    const recharged = rechargePlayers([playerAt(0, 0, 0), playerAt(0, 0, 10)], 50);
+    const recharged = rechargePlayers(
+      [playerAt(0, 0, 0), playerAt(0, 0, 10)],
+      50,
+      SANDBOX_SPEED_DEFAULT,
+    );
 
-    expect(recharged[0]?.budget).toBeCloseTo((SANDBOX_MAX_SPEED * 50) / 1000, 6);
-    expect(recharged[1]?.budget).toBeCloseTo(10 + (SANDBOX_MAX_SPEED * 50) / 1000, 6);
+    expect(recharged[0]?.budget).toBeCloseTo((SANDBOX_SPEED_DEFAULT * 50) / 1000, 6);
+    expect(recharged[1]?.budget).toBeCloseTo(10 + (SANDBOX_SPEED_DEFAULT * 50) / 1000, 6);
   });
 });
 

@@ -1,8 +1,9 @@
 import { z } from "zod";
 
-/** The only option of the sandbox: how long a game lasts (rules.md, §3). */
+/** The options of the sandbox (rules.md, §3): how long a game lasts, how fast a cursor may go. */
 export const sandboxOptionsSchema = z.strictObject({
   durationS: z.number().int(),
+  maxSpeed: z.number().int(),
 });
 
 export type SandboxOptions = z.infer<typeof sandboxOptionsSchema>;

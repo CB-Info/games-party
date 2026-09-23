@@ -2,7 +2,7 @@ import type { Point, Wall } from "../../../shared/cursor/collision";
 import { distance } from "../../../shared/cursor/collision";
 import { NO_SEQ_PROCESSED, type CursorInput } from "../../../shared/cursor/cursorInput";
 import { moveCursor, rechargeBudget } from "../../../shared/cursor/moveCursor";
-import { SANDBOX_CURSOR_RADIUS, SANDBOX_MAX_SPEED } from "../shared/constants";
+import { SANDBOX_CURSOR_RADIUS } from "../shared/constants";
 
 /** A cursor of the sandbox, with everything the game keeps about it. */
 export interface SandboxPlayer {
@@ -35,6 +35,18 @@ export function spawnPlayers(
   }));
 }
 
+/** What a move depends on besides the player: the map and the speed the host chose. */
+export interface MoveSettings {
+  walls: readonly Wall[];
+  /** Set by the host in the lobby, so that several speeds can be tried against a real mouse. */
+  maxSpeed: number;
+}
+
+/** A move of one player, who may be away. */
+export interface MoveContext extends MoveSettings {
+  connected: boolean;
+}
+
 /**
  * Applies one input and records its sequence number. Whether the input is new is decided by the
  * caller, which is the only one that knows a bot from a human (`isNewInput`, §6.5). An input from
@@ -44,11 +56,10 @@ export function spawnPlayers(
 export function applyInput(
   player: SandboxPlayer,
   input: CursorInput,
-  walls: readonly Wall[],
-  connected: boolean,
+  context: MoveContext,
 ): SandboxPlayer {
   const seen = { ...player, lastProcessedSeq: input.seq };
-  if (!connected) {
+  if (!context.connected) {
     return seen;
   }
 
@@ -56,9 +67,9 @@ export function applyInput(
     position: player.position,
     delta: { x: input.dx, y: input.dy },
     budget: player.budget,
-    maxSpeed: SANDBOX_MAX_SPEED,
+    maxSpeed: context.maxSpeed,
     radius: SANDBOX_CURSOR_RADIUS,
-    walls,
+    walls: context.walls,
   });
 
   return {
@@ -70,10 +81,14 @@ export function applyInput(
 }
 
 /** Refills every budget for the inputs of the next tick (docs/architecture.md, §6.5). */
-export function rechargePlayers(players: readonly SandboxPlayer[], dtMs: number): SandboxPlayer[] {
+export function rechargePlayers(
+  players: readonly SandboxPlayer[],
+  dtMs: number,
+  maxSpeed: number,
+): SandboxPlayer[] {
   return players.map((player) => ({
     ...player,
-    budget: rechargeBudget(player.budget, SANDBOX_MAX_SPEED, dtMs),
+    budget: rechargeBudget(player.budget, maxSpeed, dtMs),
   }));
 }
 

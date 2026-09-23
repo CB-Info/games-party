@@ -3,7 +3,7 @@ import { ARENA_HEIGHT, ARENA_WIDTH } from "../../../shared/constants";
 import type { CursorInput } from "../../../shared/cursor/cursorInput";
 import { WALLS } from "../../cursor-tag/shared/map";
 import type { BotPolicy } from "../../gameServer.types";
-import { SANDBOX_CURSOR_RADIUS, SANDBOX_MAX_SPEED } from "../shared/constants";
+import { SANDBOX_CURSOR_RADIUS, SANDBOX_SPEED_DEFAULT } from "../shared/constants";
 import type { SandboxView } from "../shared/types";
 
 /** How fast a bot swings its heading round, in radians per second. */
@@ -37,7 +37,10 @@ export const sandboxBot: BotPolicy<CursorInput, never, SandboxView> = {
     // nudged by a fifth of a radian could point straight back into the wall it was avoiding.
     const wander = phaseOf(botPlayerId) - (view.timeLeftMs / 1000) * TURN_RATE + wobble(random);
     const heading = freeHeading(me, wander) ?? wander;
-    const length = (SANDBOX_MAX_SPEED * dtMs) / 1000;
+    // Always the default speed, whatever the host chose for the humans: a bot moving at a known,
+    // unchanging pace is the fixed point you compare your own cursor against while trying the
+    // speed option, and it is the only speed the view carries no word of anyway.
+    const length = (SANDBOX_SPEED_DEFAULT * dtMs) / 1000;
 
     // A bot's input never crosses the network, so it needs no sequence number: the game applies it
     // without the guard that protects a human's inputs from being replayed (§6.5).
