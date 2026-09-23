@@ -22,10 +22,17 @@ import type { SandboxView } from "../shared/types";
 import { SandboxGame } from "./SandboxGame";
 import { sandboxBot } from "./bot";
 
-/** Brings a value back inside its bounds and onto a valid step, as every game's options are (§5.3). */
+/**
+ * Brings a value back inside its bounds and onto a valid step, as every game's options are (§5.3).
+ * Halfway between two steps it goes to the lower one: the sandbox follows the rule of Cursor Tag's
+ * options (§3 of both rules.md), where `Math.round` would go up.
+ */
 function onStep(value: number, min: number, max: number, step: number): number {
   const bounded = Math.min(max, Math.max(min, value));
-  return min + Math.round((bounded - min) / step) * step;
+  const steps = (bounded - min) / step;
+  const lower = Math.floor(steps);
+
+  return min + (steps - lower > 0.5 ? lower + 1 : lower) * step;
 }
 
 /** The sandbox, as the registry holds it. Never listed in a production build (§8). */

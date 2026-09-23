@@ -58,6 +58,15 @@ describe("the sandbox's options, as the host sends them", () => {
     expect(received({ ...VALID, catchUpMs: 260 })?.catchUpMs).toBe(300);
   });
 
+  it("sends a value halfway between two steps to the lower one", () => {
+    // Cursor Tag's rule, which the sandbox follows: « en cas d'égalité à la valeur inférieure ».
+    // A step of 15 s from 30 s has no whole number halfway, so the duration cannot tie.
+    expect(received({ ...VALID, maxSpeed: 1500 })?.maxSpeed).toBe(1000);
+    expect(received({ ...VALID, maxSpeed: 7500 })?.maxSpeed).toBe(7000);
+    expect(received({ ...VALID, catchUpMs: 50 })?.catchUpMs).toBe(0);
+    expect(received({ ...VALID, catchUpMs: 250 })?.catchUpMs).toBe(200);
+  });
+
   it("turns down options with a value missing, rather than making one up", () => {
     // Each option on its own. A key left out and a key sent as null are the two ways a value can
     // be absent once the message has crossed the network.
