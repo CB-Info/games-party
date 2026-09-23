@@ -194,6 +194,21 @@ export const layerRules = [
     rules: deny(NO_CLIENT, NO_PAGES, NO_TRANSPORT),
   },
   {
+    // The two client-side files of the registry sit beside the server ones, so the block above
+    // would ban React and every screen they exist to describe. They still reach no server code.
+    name: "layers/games-client-root",
+    files: ["src/games/gameClient.types.ts", "src/games/registry.client.ts"],
+    rules: deny(NO_SERVER, NO_PAGES, NO_SERVICES, NO_ENGINE),
+  },
+  {
+    // A game's root screen sits directly in its client/ folder, beside components/ and hooks/.
+    // Without this it would only match the generic client block and could reach a service or the
+    // engine, which the layer table forbids every component.
+    name: "layers/games-client-screen",
+    files: ["src/games/*/client/*.ts", "src/games/*/client/*.tsx"],
+    rules: deny(NO_SERVER, NO_PAGES, NO_SERVICES, NO_ENGINE),
+  },
+  {
     name: "layers/pure",
     files: [
       "src/shared/**",

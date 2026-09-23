@@ -3,6 +3,9 @@ import { useNavigate, useParams } from "react-router";
 
 import type { RoomState } from "../../shared/types";
 import { AppShell } from "../features/appShell/components/AppShell";
+import { GameHost } from "../features/game/components/GameHost";
+import { ResultsPlaceholder } from "../features/game/components/ResultsPlaceholder";
+import { useGameCatalog } from "../features/game/hooks/useGameCatalog";
 import { InvitationScreen } from "../features/room/components/InvitationScreen";
 import { LobbyScreen } from "../features/room/components/LobbyScreen";
 import { fieldErrorOf, screenErrorOf } from "../features/room/errorMessages";
@@ -62,6 +65,7 @@ function RoomContent({ code }: { code: string }) {
   const flow = useJoinFlow();
   const { state, actions, copyLink } = useRoomActions(code);
   const { preview, refresh } = useRoomPreview(code);
+  const games = useGameCatalog();
 
   // The pseudo the room turned down, so that the preview can point at whoever already wears it.
   const [takenPseudo, setTakenPseudo] = useState<string | null>(null);
@@ -87,6 +91,19 @@ function RoomContent({ code }: { code: string }) {
   }
 
   if (membership === "member" && state !== null) {
+    const leave = (): void => {
+      actions.leave();
+      void navigate("/");
+    };
+
+    if (state.status === "playing") {
+      return <GameHost state={state} myPlayerId={playerId} games={games} onLeave={leave} />;
+    }
+
+    if (state.status === "results") {
+      return <ResultsPlaceholder />;
+    }
+
     return (
       <LobbyScreen
         state={state}
@@ -95,10 +112,7 @@ function RoomContent({ code }: { code: string }) {
         onToggleReady={actions.toggleReady}
         onCopyLink={copyLink}
         onStart={actions.start}
-        onLeave={() => {
-          actions.leave();
-          void navigate("/");
-        }}
+        onLeave={leave}
       />
     );
   }

@@ -137,6 +137,37 @@ export function subscribeToSessionReplaced(onChange: () => void): () => void {
 // `delayed`, as the listeners above do, so that the latency simulator holds back everything the
 // server says and hands it over in the order it was said.
 
+/** One view per tick, the busiest message of the whole protocol (§6.3). */
+export function subscribeToGameView(listener: ServerToClientEvents["game:view"]): () => void {
+  const currentSocket = getSocket();
+  const wrapped = delayed(listener);
+
+  currentSocket.on("game:view", wrapped);
+  return () => {
+    currentSocket.off("game:view", wrapped);
+  };
+}
+
+export function subscribeToGameEvent(listener: ServerToClientEvents["game:event"]): () => void {
+  const currentSocket = getSocket();
+  const wrapped = delayed(listener);
+
+  currentSocket.on("game:event", wrapped);
+  return () => {
+    currentSocket.off("game:event", wrapped);
+  };
+}
+
+export function subscribeToGameResults(listener: ServerToClientEvents["game:results"]): () => void {
+  const currentSocket = getSocket();
+  const wrapped = delayed(listener);
+
+  currentSocket.on("game:results", wrapped);
+  return () => {
+    currentSocket.off("game:results", wrapped);
+  };
+}
+
 export function subscribeToGameChanged(
   listener: ServerToClientEvents["lobby:gameChanged"],
 ): () => void {

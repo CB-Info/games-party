@@ -66,6 +66,9 @@ export const ARENA_WIDTH = 1600;
 /** Logical height of the arena (docs/architecture.md, §13). */
 export const ARENA_HEIGHT = 900;
 
+/** Corner radius of a wall, in logical units (docs/design-system.md, §12). */
+export const ARENA_WALL_RADIUS = 8;
+
 /** Server loop steps per second (docs/architecture.md, §13). */
 export const SERVER_TICK_RATE = 30;
 

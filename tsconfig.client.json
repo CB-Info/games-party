@@ -26,6 +26,9 @@
     "src/shared",
     "src/games/*/shared",
     "src/games/*/logic",
-    "src/games/*/client"
+    "src/games/*/client",
+    "src/games/gameMeta.ts",
+    "src/games/gameClient.types.ts",
+    "src/games/registry.client.ts"
   ]
 }
