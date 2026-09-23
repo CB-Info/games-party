@@ -108,6 +108,12 @@ export const SOCKET_PING_INTERVAL_MS = 5000;
 /** Silence after a ping before a socket is given up, in milliseconds (docs/architecture.md, §13). */
 export const SOCKET_PING_TIMEOUT_MS = 5000;
 
+/** Largest delay the development latency simulator accepts, in milliseconds (§13). */
+export const MAX_SIMULATED_LAG_MS = 2000;
+
+/** How often the development latency simulator opens a hole, in milliseconds (§13). */
+export const SIMULATED_HOLE_EVERY_MS = 3000;
+
 /** Messages accepted per sliding second and per socket (docs/architecture.md, §13). */
 export const RATE_LIMIT_MESSAGES_PER_SECOND = 60;
 

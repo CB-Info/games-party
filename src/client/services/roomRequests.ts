@@ -1,6 +1,7 @@
 import type { AckResponse, AckStatus, RoomCodeData } from "../../shared/protocol";
 import type { PlayerColorId, RoomPreview } from "../../shared/types";
 import { roomState } from "./roomState";
+import { fireAndForget, request } from "./delayedTransport";
 import { getSocket } from "./socketClient";
 
 /**
@@ -12,11 +13,11 @@ export function createRoom(payload: {
   pseudo: string;
   preferredColor: PlayerColorId;
 }): Promise<AckResponse<RoomCodeData>> {
-  return getSocket().emitWithAck("room:create", payload);
+  return request(() => getSocket().emitWithAck("room:create", payload));
 }
 
 export function previewRoom(code: string): Promise<AckResponse<RoomPreview>> {
-  return getSocket().emitWithAck("room:preview", { code });
+  return request(() => getSocket().emitWithAck("room:preview", { code }));
 }
 
 export function joinRoom(payload: {
@@ -24,7 +25,7 @@ export function joinRoom(payload: {
   pseudo: string;
   preferredColor: PlayerColorId;
 }): Promise<AckResponse<RoomCodeData>> {
-  return getSocket().emitWithAck("room:join", payload);
+  return request(() => getSocket().emitWithAck("room:join", payload));
 }
 
 /**
@@ -33,25 +34,25 @@ export function joinRoom(payload: {
  */
 export function leaveRoom(): void {
   roomState.forget();
-  getSocket().emit("room:leave");
+  fireAndForget(() => getSocket().emit("room:leave"));
 }
 
 export function setColor(color: PlayerColorId): Promise<AckStatus> {
-  return getSocket().emitWithAck("lobby:setColor", { color });
+  return request(() => getSocket().emitWithAck("lobby:setColor", { color }));
 }
 
 export function selectGame(gameId: string): Promise<AckStatus> {
-  return getSocket().emitWithAck("lobby:selectGame", { gameId });
+  return request(() => getSocket().emitWithAck("lobby:selectGame", { gameId }));
 }
 
 export function setGameOptions(options: unknown): Promise<AckStatus> {
-  return getSocket().emitWithAck("lobby:setOptions", { options });
+  return request(() => getSocket().emitWithAck("lobby:setOptions", { options }));
 }
 
 export function setReady(ready: boolean): Promise<AckStatus> {
-  return getSocket().emitWithAck("lobby:setReady", { ready });
+  return request(() => getSocket().emitWithAck("lobby:setReady", { ready }));
 }
 
 export function startGame(force: boolean): Promise<AckStatus> {
-  return getSocket().emitWithAck("lobby:start", { force });
+  return request(() => getSocket().emitWithAck("lobby:start", { force }));
 }
