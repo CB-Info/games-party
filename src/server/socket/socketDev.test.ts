@@ -1,13 +1,13 @@
 import { afterEach, describe, expect, it } from "vitest";
 
 import { ARENA_HEIGHT, ARENA_WIDTH } from "../../shared/constants";
-import { WALLS } from "../../games/cursor-tag/shared/map";
 import { SANDBOX_CURSOR_RADIUS } from "../../games/sandbox/shared/constants";
 import { SANDBOX_META } from "../../games/sandbox/shared/meta";
 import type { SandboxView } from "../../games/sandbox/shared/types";
 import {
   ask,
   createRoom,
+  receivedViews,
   startTestServer,
   waitForNextState,
   waitForNextView,
@@ -34,6 +34,14 @@ function mustServer(): TestServer {
 
 function sandboxView(payload: { view: unknown }): SandboxView {
   return payload.view as SandboxView;
+}
+
+/** How many players sit somewhere else than they did in `first`. */
+function movedSince(first: SandboxView, later: SandboxView): number {
+  return later.players.filter((player) => {
+    const before = first.players.find((other) => other.playerId === player.playerId);
+    return before !== undefined && (before.x !== player.x || before.y !== player.y);
+  }).length;
 }
 
 /** Creates a room with `botCount` bots, selects the sandbox and starts it. */
@@ -117,32 +125,21 @@ describe("a sandbox game driven by bots", () => {
     const first = sandboxView(await waitForView(host));
     expect(first.players).toHaveLength(4);
 
-    // Half a second of play: at top speed that is already a third of the arena. Kept well inside
-    // the two-second deadline of the inbox, so that a loaded machine does not fail the test.
-    const later = sandboxView(
-      await waitForNextView(host, (payload) => sandboxView(payload).timeLeftMs < 59_500),
-    );
+    // Waiting for a fact rather than for a duration: the room's clock is capped at MAX_TICK_DT_MS,
+    // so a loaded machine plays a second of game in much more than a second of real time, and a
+    // test written against the game clock would time out for no defect.
+    await waitForNextView(host, (payload) => movedSince(first, sandboxView(payload)) >= 3);
 
-    const moved = later.players.filter((player) => {
-      const before = first.players.find((other) => other.playerId === player.playerId);
-      return before !== undefined && (before.x !== player.x || before.y !== player.y);
-    });
-    expect(moved.length).toBeGreaterThanOrEqual(3);
-
-    for (const player of later.players) {
-      expect(player.x).toBeGreaterThanOrEqual(SANDBOX_CURSOR_RADIUS);
-      expect(player.x).toBeLessThanOrEqual(ARENA_WIDTH - SANDBOX_CURSOR_RADIUS);
-      expect(player.y).toBeGreaterThanOrEqual(SANDBOX_CURSOR_RADIUS);
-      expect(player.y).toBeLessThanOrEqual(ARENA_HEIGHT - SANDBOX_CURSOR_RADIUS);
-
-      for (const wall of WALLS) {
-        const insideX =
-          player.x > wall.x - SANDBOX_CURSOR_RADIUS &&
-          player.x < wall.x + wall.width + SANDBOX_CURSOR_RADIUS;
-        const insideY =
-          player.y > wall.y - SANDBOX_CURSOR_RADIUS &&
-          player.y < wall.y + wall.height + SANDBOX_CURSOR_RADIUS;
-        expect(insideX && insideY).toBe(false);
+    // Every view received so far, not just one. Only the arena's edges are checked here: the
+    // walls are covered where they can be aimed at — `moveCursor.test.ts` and the pillar test of
+    // `SandboxGame.test.ts` — and a wandering bot may simply never meet one in the few ticks this
+    // test lasts. Asserting it here would be a check that passes for the wrong reason.
+    for (const payload of receivedViews(host)) {
+      for (const player of sandboxView(payload).players) {
+        expect(player.x).toBeGreaterThanOrEqual(SANDBOX_CURSOR_RADIUS);
+        expect(player.x).toBeLessThanOrEqual(ARENA_WIDTH - SANDBOX_CURSOR_RADIUS);
+        expect(player.y).toBeGreaterThanOrEqual(SANDBOX_CURSOR_RADIUS);
+        expect(player.y).toBeLessThanOrEqual(ARENA_HEIGHT - SANDBOX_CURSOR_RADIUS);
       }
     }
   });

@@ -2,13 +2,16 @@ import { describe, expect, it } from "vitest";
 
 import { NO_SEQ_PROCESSED } from "../../../shared/cursor/cursorInput";
 import { ARENA_HEIGHT, ARENA_WIDTH } from "../../../shared/constants";
-import { WALLS } from "../../cursor-tag/shared/map";
 import type { GameContext, GamePlayer } from "../../gameServer.types";
 import { SANDBOX_CURSOR_RADIUS } from "../shared/constants";
 import type { SandboxView } from "../shared/types";
 import { SandboxGame } from "./SandboxGame";
 
 const DURATION_S = 60;
+
+/** The central pillar of the Cursor Tag map: 120 × 120 around the middle of the arena (§6.5). */
+const CENTRE = { x: ARENA_WIDTH / 2, y: ARENA_HEIGHT / 2 };
+const PILLAR_HALF_SIDE = 60;
 
 function contextOver(players: GamePlayer[]): GameContext {
   return {
@@ -61,36 +64,46 @@ describe("SandboxGame", () => {
     expect(viewOf(game, "a").timeLeftMs).toBe(0);
   });
 
-  it("never lets a cursor through a wall or out of the arena", () => {
+  it("never lets a cursor into the central pillar, whatever it is asked", () => {
     const game = new SandboxGame(contextOver([person("a")]), { durationS: DURATION_S });
 
-    // Eight directions, one after another: whatever the spawn point, some of them hit something.
-    for (const [dx, dy] of [
-      [500, 0],
-      [-500, 0],
-      [0, 500],
-      [0, -500],
-      [400, 400],
-      [-400, -400],
-      [400, -400],
-      [-400, 400],
-    ]) {
-      push(game, "a", dx ?? 0, dy ?? 0, 10);
+    // The pillar is 120 × 120 around the middle of the arena, so its edge is 60 units from the
+    // centre. Aiming straight at the centre from any spawn point must stop short of it, which is
+    // what says the game hands the walls to `moveCursor` rather than moving on its own.
+    for (let index = 0; index < 60; index += 1) {
+      game.tick(100);
+      const me = viewOf(game, "a").players[0];
+      game.onInput("a", {
+        seq: index,
+        dx: CENTRE.x - (me?.x ?? 0),
+        dy: CENTRE.y - (me?.y ?? 0),
+      });
     }
 
     const me = viewOf(game, "a").players[0];
-    expect(me).toBeDefined();
+    const toCentre = Math.hypot((me?.x ?? 0) - CENTRE.x, (me?.y ?? 0) - CENTRE.y);
+    expect(toCentre).toBeGreaterThanOrEqual(PILLAR_HALF_SIDE);
+  });
+
+  it("keeps every cursor inside the arena, whatever it is asked", () => {
+    const game = new SandboxGame(contextOver([person("a")]), { durationS: DURATION_S });
+
+    for (const [dx, dy] of [
+      [900, 0],
+      [-900, 0],
+      [0, 900],
+      [0, -900],
+      [700, 700],
+      [-700, -700],
+    ]) {
+      push(game, "a", dx ?? 0, dy ?? 0, 12);
+    }
+
+    const me = viewOf(game, "a").players[0];
     expect(me?.x).toBeGreaterThanOrEqual(SANDBOX_CURSOR_RADIUS);
     expect(me?.x).toBeLessThanOrEqual(ARENA_WIDTH - SANDBOX_CURSOR_RADIUS);
-
-    const inAWall = WALLS.some(
-      (wall) =>
-        (me?.x ?? 0) > wall.x - SANDBOX_CURSOR_RADIUS &&
-        (me?.x ?? 0) < wall.x + wall.width + SANDBOX_CURSOR_RADIUS &&
-        (me?.y ?? 0) > wall.y - SANDBOX_CURSOR_RADIUS &&
-        (me?.y ?? 0) < wall.y + wall.height + SANDBOX_CURSOR_RADIUS,
-    );
-    expect(inAWall).toBe(false);
+    expect(me?.y).toBeGreaterThanOrEqual(SANDBOX_CURSOR_RADIUS);
+    expect(me?.y).toBeLessThanOrEqual(ARENA_HEIGHT - SANDBOX_CURSOR_RADIUS);
   });
 
   it("leaves a player who is away exactly where they were", () => {
