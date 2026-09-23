@@ -1,14 +1,13 @@
+import type { ReactNode } from "react";
+
+import type { GameClientDefinition } from "../../../../games/gameClient.types";
 import { ROOM_CAPACITY } from "../../../../shared/constants";
 import type { PlayerColorId, RoomState } from "../../../../shared/types";
 import { countReady } from "../../../utils/lobbyPlayers";
 import { CopyLinkButton } from "./CopyLinkButton";
-import { GameGrid } from "./GameGrid";
 import { LeaveRoomButton } from "./LeaveRoomButton";
+import { LobbyGameArea } from "./LobbyGameArea";
 import { PlayerList } from "./PlayerList";
-import { ReadyToggle } from "./ReadyToggle";
-import { SettingsColumn } from "./SettingsColumn";
-import { StartGameButton } from "./StartGameButton";
-import { WaitingMessage } from "./WaitingMessage";
 
 interface LobbyScreenProps {
   state: RoomState;
@@ -18,10 +17,14 @@ interface LobbyScreenProps {
   onCopyLink: () => Promise<boolean>;
   onLeave: () => void;
   onStart: (force: boolean) => void;
+  onSelectGame: (gameId: string) => void;
+  onOptionsChange: (options: unknown) => void;
+  games: readonly GameClientDefinition[];
+  /** The development bot panel, absent from a production build (docs/architecture.md, §8). */
+  devPanel?: ReactNode;
 }
 
-/** The lobby (docs/design-system.md, §13). No game is registered before step 4, so the room stays
- * in its "aucun jeu choisi" shape: two columns, with the grid or the waiting message. */
+/** The lobby (docs/design-system.md, §13): the players, then the game chooser or the chosen game. */
 export function LobbyScreen({
   state,
   myPlayerId,
@@ -30,6 +33,10 @@ export function LobbyScreen({
   onCopyLink,
   onLeave,
   onStart,
+  onSelectGame,
+  onOptionsChange,
+  games,
+  devPanel,
 }: LobbyScreenProps) {
   const host = state.players.find((player) => player.playerId === state.hostId);
   const amHost = myPlayerId !== null && myPlayerId === state.hostId;
@@ -72,32 +79,22 @@ export function LobbyScreen({
           />
         </div>
 
-        {state.selectedGameId === null ? (
-          amHost ? (
-            <GameGrid isEmpty />
-          ) : (
-            <div className="flex flex-1 items-center justify-center rounded-xl border border-line bg-surface p-6 shadow-1">
-              <WaitingMessage>{`${host?.pseudo ?? "L’hôte"} choisit un jeu…`}</WaitingMessage>
-            </div>
-          )
-        ) : (
-          <SettingsColumn
-            ready={ready}
-            total={total}
-            action={
-              amHost ? (
-                <StartGameButton
-                  everyoneIsReady={ready === total}
-                  disabled={false}
-                  onStart={onStart}
-                />
-              ) : (
-                <ReadyToggle ready={amReady} onToggle={onToggleReady} />
-              )
-            }
-          />
-        )}
+        <LobbyGameArea
+          state={state}
+          amHost={amHost}
+          amReady={amReady}
+          hostPseudo={host?.pseudo ?? "L’hôte"}
+          games={games}
+          ready={ready}
+          total={total}
+          onSelectGame={onSelectGame}
+          onOptionsChange={onOptionsChange}
+          onToggleReady={onToggleReady}
+          onStart={onStart}
+        />
       </div>
+
+      {devPanel}
     </main>
   );
 }

@@ -66,6 +66,9 @@ export const ARENA_WIDTH = 1600;
 /** Logical height of the arena (docs/architecture.md, §13). */
 export const ARENA_HEIGHT = 900;
 
+/** Corner radius of a wall, in logical units (docs/design-system.md, §12). */
+export const ARENA_WALL_RADIUS = 8;
+
 /** Server loop steps per second (docs/architecture.md, §13). */
 export const SERVER_TICK_RATE = 30;
 
@@ -82,7 +85,7 @@ export const CURSOR_SENSITIVITY = 1;
 export const MAX_INPUT_DELTA = 2000;
 
 /** How much movement a cursor may bank, in milliseconds of travel (docs/architecture.md, §13). */
-export const MOVE_BUDGET_CAP_MS = 200;
+export const MOVE_BUDGET_CAP_MS = 66;
 
 /** Longest step a move is cut into before testing walls, in logical units (docs/architecture.md, §13). */
 export const MOVE_SUBSTEP = 7;
@@ -93,10 +96,7 @@ export const INTERPOLATION_DELAY_MS = 100;
 /** How long received views are kept for interpolation, in milliseconds (docs/architecture.md, §13). */
 export const INTERPOLATION_BUFFER_MS = 1000;
 
-/** Largest gap the local cursor catches up smoothly, in logical units (docs/architecture.md, §13). */
-export const CORRECTION_SNAP_DISTANCE = 48;
-
-/** How long the local cursor takes to rejoin its predicted place, in ms (docs/architecture.md, §13). */
+/** How long a correction of the local cursor takes to fade, in ms (docs/architecture.md, §13). */
 export const CORRECTION_SMOOTHING_MS = 100;
 
 /** Beyond this jump, another cursor is redrawn without interpolation (docs/architecture.md, §13). */
@@ -107,6 +107,12 @@ export const SOCKET_PING_INTERVAL_MS = 5000;
 
 /** Silence after a ping before a socket is given up, in milliseconds (docs/architecture.md, §13). */
 export const SOCKET_PING_TIMEOUT_MS = 5000;
+
+/** Largest delay the development latency simulator accepts, in milliseconds (§13). */
+export const MAX_SIMULATED_LAG_MS = 2000;
+
+/** How often the development latency simulator opens a hole, in milliseconds (§13). */
+export const SIMULATED_HOLE_EVERY_MS = 3000;
 
 /** Messages accepted per sliding second and per socket (docs/architecture.md, §13). */
 export const RATE_LIMIT_MESSAGES_PER_SECOND = 60;

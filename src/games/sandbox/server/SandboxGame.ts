@@ -5,9 +5,11 @@ import { SPAWN_POINTS, WALLS } from "../../cursor-tag/shared/map";
 import type { GameContext, GamePlayer, GameInstance } from "../../gameServer.types";
 import {
   applyInput,
+  payBacklogs,
   rechargePlayers,
   roundPosition,
   spawnPlayers,
+  type MoveSettings,
   type SandboxPlayer,
 } from "../logic/sandboxState";
 import type { SandboxOptions } from "../shared/schemas";
@@ -19,11 +21,13 @@ import type { SandboxView } from "../shared/types";
  */
 export class SandboxGame implements GameInstance<CursorInput, never, SandboxView> {
   private readonly ctx: GameContext;
+  private readonly settings: MoveSettings;
   private players: SandboxPlayer[];
   private timeLeftMs: number;
 
   constructor(ctx: GameContext, options: SandboxOptions) {
     this.ctx = ctx;
+    this.settings = { walls: WALLS, maxSpeed: options.maxSpeed, catchUpMs: options.catchUpMs };
     this.timeLeftMs = options.durationS * 1000;
     this.players = spawnPlayers(
       ctx.players().map((player) => player.playerId),
@@ -46,7 +50,10 @@ export class SandboxGame implements GameInstance<CursorInput, never, SandboxView
       return;
     }
 
-    this.players[index] = applyInput(player, input, WALLS, member?.connected ?? false);
+    this.players[index] = applyInput(player, input, {
+      ...this.settings,
+      connected: member?.connected ?? false,
+    });
   }
 
   /** The sandbox has no action: nothing a player could ask for outside their own movement. */
@@ -54,9 +61,17 @@ export class SandboxGame implements GameInstance<CursorInput, never, SandboxView
     return { ok: false, error: "INVALID_STATE" };
   }
 
+  /**
+   * What is owed is paid first, from what the budget has left, and only then is the budget
+   * refilled for the next inputs. The other way round, a cursor could move further in one tick
+   * than it can today (`payBacklogs`).
+   */
   tick(dtMs: number): void {
     this.timeLeftMs = Math.max(0, this.timeLeftMs - dtMs);
-    this.players = rechargePlayers(this.players, dtMs);
+    this.players = payBacklogs(this.players, this.settings, (playerId) =>
+      this.isConnected(playerId),
+    );
+    this.players = rechargePlayers(this.players, dtMs, this.settings.maxSpeed);
   }
 
   /** The cursor stays where it is; the view says it is away and the clients stop drawing it. */
@@ -64,13 +79,22 @@ export class SandboxGame implements GameInstance<CursorInput, never, SandboxView
     // Nothing to undo: the seat is kept, and the position with it (docs/architecture.md, §5.5).
   }
 
-  /** A returning client counts from zero again, so the server must forget what it saw (§6.5). */
+  /**
+   * A returning client counts from zero again, so the server must forget what it saw (§6.5) —
+   * including a remainder, which would otherwise finish a gesture made before the connection
+   * dropped.
+   */
   onPlayerReconnect(playerId: string): void {
     const index = this.players.findIndex((player) => player.playerId === playerId);
     const player = this.players[index];
 
     if (player !== undefined) {
-      this.players[index] = { ...player, lastProcessedSeq: NO_SEQ_PROCESSED, budget: 0 };
+      this.players[index] = {
+        ...player,
+        lastProcessedSeq: NO_SEQ_PROCESSED,
+        budget: 0,
+        backlog: { x: 0, y: 0 },
+      };
     }
   }
 
@@ -87,10 +111,13 @@ export class SandboxGame implements GameInstance<CursorInput, never, SandboxView
         playerId: player.playerId,
         x: roundPosition(player.position.x),
         y: roundPosition(player.position.y),
-        connected: this.member(player.playerId)?.connected ?? false,
+        connected: this.isConnected(player.playerId),
         distance: Math.round(player.distance),
       })),
-      me: me === undefined ? null : { lastProcessedSeq: me.lastProcessedSeq, budget: me.budget },
+      me:
+        me === undefined
+          ? null
+          : { lastProcessedSeq: me.lastProcessedSeq, budget: me.budget, backlog: me.backlog },
     };
   }
 
@@ -110,5 +137,9 @@ export class SandboxGame implements GameInstance<CursorInput, never, SandboxView
 
   private member(playerId: string): GamePlayer | undefined {
     return this.ctx.players().find((player) => player.playerId === playerId);
+  }
+
+  private isConnected(playerId: string): boolean {
+    return this.member(playerId)?.connected ?? false;
   }
 }

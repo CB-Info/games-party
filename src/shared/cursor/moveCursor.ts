@@ -47,8 +47,12 @@ export function moveCursor(input: MoveCursorInput): MoveCursorResult {
  * stops a cursor that stood still from crossing the arena in one input (§6.5).
  */
 export function rechargeBudget(budget: number, maxSpeed: number, dtMs: number): number {
-  const cap = (maxSpeed * MOVE_BUDGET_CAP_MS) / 1000;
-  return Math.min(budget + (maxSpeed * dtMs) / 1000, cap);
+  return Math.min(budget + (maxSpeed * dtMs) / 1000, budgetCap(maxSpeed));
+}
+
+/** The most a cursor can have in hand at once: `MOVE_BUDGET_CAP_MS` of travel at top speed. */
+export function budgetCap(maxSpeed: number): number {
+  return (maxSpeed * MOVE_BUDGET_CAP_MS) / 1000;
 }
 
 /**

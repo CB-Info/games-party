@@ -42,6 +42,20 @@ export function useRoomActions(code: string) {
         [actions, report],
       ),
 
+      selectGame: useCallback(
+        (gameId: string) => {
+          void actions.selectGame(gameId).then(report);
+        },
+        [actions, report],
+      ),
+
+      setOptions: useCallback(
+        (options: unknown) => {
+          void actions.setOptions(options).then(report);
+        },
+        [actions, report],
+      ),
+
       toggleReady: useCallback(
         (ready: boolean) => {
           void actions.setReady(ready).then(report);

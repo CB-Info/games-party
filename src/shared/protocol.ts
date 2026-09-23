@@ -52,8 +52,8 @@ export interface ClientToServerEvents {
   "lobby:start": (payload: { force: boolean }, ack: (r: AckStatus) => void) => void;
   "results:backToLobby": (ack: (r: AckStatus) => void) => void;
 
-  // Bots arrive at step 3 (docs/architecture.md, §8): these two events are declared so that the
-  // protocol matches §6.2, but no handler listens to them yet.
+  // Development only (docs/architecture.md, §8): outside a development build the server refuses
+  // both rather than staying silent, so a caller is never left waiting on an acknowledgement.
   "dev:addBot": (ack: (r: AckStatus) => void) => void;
   "dev:removeBot": (payload: { playerId: string }, ack: (r: AckStatus) => void) => void;
 

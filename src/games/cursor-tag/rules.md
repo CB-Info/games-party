@@ -100,6 +100,8 @@ Un joueur **gelé** ne peut pas bouger. Seul un Chat peut être gelé.
 
 ### 6.3 Toucher
 
+> **En attente :** l'instant où la distance est testée (15.1) et les positions contre lesquelles elle l'est (15.2).
+
 - Un Chat touche un Coureur quand la distance entre leurs centres est inférieure ou égale à `TAG_DISTANCE`.
 - Seuls peuvent toucher les Chats **non gelés et connectés**. Seuls peuvent être touchés les Coureurs **connectés**.
 - **Résolution dans un tick :**
@@ -231,6 +233,7 @@ Tous les événements sont envoyés à toute la room.
 - **Un Chat se déconnecte :** un Coureur connecté est immédiatement tiré au sort avec `ctx.random` pour le remplacer. Le remplaçant devient Chat **sans gel**. Le joueur déconnecté devient Coureur. Événement `chatReplaced`. S'il n'existe aucun Coureur connecté, il n'y a pas de remplacement.
 - **Un Coureur se déconnecte :** son curseur reste à sa position mais n'est pas dessiné par les clients (`connected: false` dans la vue). Il ne peut pas être touché, et son score est en pause jusqu'à son retour.
 - **Reconnexion :** le joueur retrouve sa position, son rôle actuel et son score. Son `lastProcessedSeq` repart à −1 (architecture 6.5). Si la partie est en préparation (étape attente), il voit le bouton « Je suis prêt ».
+- **Reprise de la place sans déconnexion**, par un second onglet ou par une reconnexion arrivée avant que le serveur ait constaté la coupure (architecture 4) : pour le jeu, c'est une reconnexion, et son `lastProcessedSeq` repart à −1. Mais aucune déconnexion ne l'a précédée : les autres joueurs ne voient rien, et rien de ce qui arrive à un joueur qui se déconnecte ne s'applique — le Chat n'est pas remplacé, le score du Coureur continue, le statut prêt reste. Rouvrir un onglet ne doit offrir ni pause ni échappatoire.
 - **Retrait :** le joueur est supprimé de la partie et n'apparaît plus dans la vue ni dans le classement. Si le nombre de joueurs passe sous `MIN_PLAYERS`, la partie est abandonnée (architecture 5.2).
 
 ## 12. Bot
@@ -296,4 +299,26 @@ Vitesses, rayons et durées sont des valeurs de départ, à ajuster après le te
 
 ## 15. À DÉCIDER
 
-Aucun point en attente.
+Trois points relevés à l'étape 3b, en éprouvant le moteur curseur dans le bac à sable. Les deux premiers ne dépendent pas de la valeur de `RUNNER_MAX_SPEED` : ils existent déjà à la valeur actuelle et s'aggravent quand elle monte. Le troisième est cette valeur elle-même. Tous sont à trancher avant ou pendant l'étape 4.
+
+### 15.1 Toucher manqué entre deux ticks
+
+- **Le problème.** Le toucher (6.3) compare la distance entre les centres une fois par tick, sur les positions de fin de tick. Deux curseurs qui se croisent peuvent donc se chevaucher entre deux ticks sans jamais se chevaucher à un tick. À `RUNNER_MAX_SPEED` = 1000 et `CHAT_SPEED_MULTIPLIER` = 1,15, un Chat et un Coureur face à face se rapprochent de 72 unités par tick, alors que la zone de toucher mesure au plus 56 unités de long (2 × `TAG_DISTANCE`).
+- **L'ampleur.** Parmi les passages où les disques se chevauchent vraiment, le serveur n'en voit pas 39 % de face et 16 % à angle droit ; en poursuite, aucun ne lui échappe. À 2000, 69 % de face. Calculé à l'étape 3b en échantillonnant, aux instants des ticks, des passages en ligne droite de décalage et de phase aléatoires. À l'écran, les joueurs voient pourtant les disques se traverser : les autres curseurs y sont interpolés entre deux vues (architecture 6.5).
+- **La piste.** Tester le segment parcouru pendant le tick, comme le font déjà les portails (6.4) : la plus petite distance entre les deux curseurs quand chacun va en ligne droite de sa position de début de tick à celle de fin.
+- **À décider :** ce test ; le Coureur retenu quand plusieurs sont à portée sur le segment (6.3 prend aujourd'hui le plus proche en fin de tick) ; le cas d'un joueur téléporté pendant le tick, dont le trajet fait alors deux segments.
+
+### 15.2 Retard d'affichage des autres curseurs
+
+- **Le problème.** Un joueur voit les autres curseurs `INTERPOLATION_DELAY_MS` dans le passé, plus le temps de trajet de la vue. Son propre curseur, prédit, est en avance sur le serveur du temps de trajet de ses inputs (architecture 6.5). Le serveur, lui, décide du toucher sur ses propres positions.
+- **L'ampleur.** En poursuite, l'écart entre ce que voit le Chat et ce que sait le serveur vaut `vitesse × (INTERPOLATION_DELAY_MS + trajet de la vue + CHAT_SPEED_MULTIPLIER × trajet des inputs)`. Pour 50 ms d'aller-retour, cela fait 154 unités à 1000, soit 5,5 × `TAG_DISTANCE`. Le Chat voit son curseur au contact du Coureur, puis devant lui, pendant environ une seconde avant que le serveur n'accorde le toucher. Cette durée ne dépend pas de la vitesse, puisque l'écart et le rattrapage grandissent ensemble. Calcul tiré des formules de l'architecture 6.5 à l'étape 3b ; ce n'est pas une mesure.
+- **Les pistes.** La compensation de latence : le serveur teste le toucher contre les positions que le Chat voyait, en remontant le temps de son retard, ce qui demande un historique des positions et une estimation du retard de chaque joueur. Réduire `INTERPOLATION_DELAY_MS`, au risque de saccades quand une vue arrive en retard. Ou les deux.
+- **À décider :** la piste retenue, et ce qui reste acceptable pour le Coureur, qui peut alors être touché alors que, sur son écran, le Chat est encore derrière lui.
+
+### 15.3 Vitesse maximale et rattrapage
+
+- **Le problème.** À `RUNNER_MAX_SPEED` = 1000, un geste plus rapide que le plafond arrive court. Le bac à sable permet d'essayer d'autres vitesses et un mode « rattrapage », où ce que le budget refuse est gardé, dans une limite, puis payé ensuite (architecture 6.5). Mais le bon réglage dépend d'une vraie poursuite, avec un Chat, des portails et un gel. Les mesures de l'étape 3b, faites au trackpad, ne suffisent pas à fixer une règle de jeu.
+- **À décider à l'étape 4, en partie réelle :** la valeur de `RUNNER_MAX_SPEED`, et l'adoption ou non du rattrapage pour Cursor Tag.
+- **Si le rattrapage est retenu :**
+  - le reste est remis à zéro au gel, à la téléportation par un portail, au début de chaque manche et à la reconnexion — sinon un joueur dégelé ou téléporté reprendrait un geste d'avant ;
+  - le tick paie le reste **avant** de recharger le budget, pour que la borne de l'architecture 9 reste celle d'aujourd'hui.

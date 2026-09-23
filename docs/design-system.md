@@ -17,12 +17,13 @@
 
 ## 2. Mise en œuvre technique
 
-- Tous les tokens sont déclarés **une seule fois**, en variables CSS dans le bloc `@theme` de Tailwind, dans `src/client/styles.css`. Les noms de variables sont ceux des tableaux ci-dessous.
+- Tous les tokens sont déclarés **une seule fois**, en variables CSS dans le bloc `@theme` de Tailwind. `src/client/styles.css` n'est qu'un manifeste d'imports : les déclarations vivent dans `src/client/styles/theme.css` et `src/client/styles/typography.css`. Les noms de variables sont ceux des tableaux ci-dessous.
 - Les palettes par défaut de Tailwind (couleurs, rayons, ombres) sont désactivées dans `@theme`, pour que seules les valeurs de ce document soient utilisables.
 - **Espacements :** l'échelle par défaut de Tailwind (pas de 4 px) est conservée, mais seuls les multiples listés en section 6 sont autorisés.
 - **Point de rupture « wide » :** fenêtre d'au moins **1440 px de large et 850 px de haut** (variante Tailwind `wide:`). Partout dans ce document, « en 1440 » ou « 1440 × 900 » désigne les valeurs appliquées en wide, et « en 1366 » ou « 1366 × 768 » les valeurs par défaut, appliquées sous ce seuil. La hauteur compte, car les écrans sont limités verticalement (arène 16:9, dix lignes de classement, podium).
 - **Typographie :** chaque style de la section 5 est une classe utilitaire composite `t-…`, déclarée une seule fois dans `src/client/styles.css` : elle applique la famille, la taille, l'interligne, l'interlettrage et la graisse en reprenant les variables du `@theme`, sans aucune valeur en dur. **Seules les classes `t-…` servent à la typographie.** Les valeurs sont déclarées dans `@theme` avec le préfixe neutre `--type-<style>-size`, `--type-<style>-line-height`, `--type-<style>-letter-spacing` et `--type-<style>-font-weight` (jamais `--text-*`), pour que Tailwind ne génère aucune classe `text-<style>` en parallèle. Les classes `t-display`, `t-countdown` et `t-logo` intègrent elles-mêmes leur changement de taille au point de rupture wide.
-- **Canvas (arène) :** le moteur de rendu lit les couleurs de l'arène et des joueurs dans les variables CSS au démarrage (fonction dédiée dans `client/engine/`). Aucune valeur de couleur n'est écrite en dur dans le code de rendu.
+- **Canvas (arène) :** le moteur de rendu lit dans les variables CSS, **au démarrage et une seule fois**, les couleurs de l'arène et des joueurs, ainsi que les quelques tailles dont il a besoin — rayon de l'arène, rayon et taille de texte des étiquettes, famille de police (fonction dédiée dans `client/engine/`). Aucune couleur ni aucune taille du design system n'est réécrite dans le code de rendu.
+- **Typographie dans le canvas :** un canvas ne peut pas porter une classe `t-…`. La police y est composée en chaîne `ctx.font` à partir des mêmes variables que ces classes, ce qui reste la seule déclaration. Aucune attente n'est nécessaire : l'arène est redessinée à chaque image, donc les étiquettes prennent la bonne police dès qu'elle est chargée.
 - **Polices :** fichiers `.woff2` hébergés par le site dans `public/fonts/` (licence OFL), jamais chargés depuis Google Fonts (la CSP l'interdit). `font-display: swap`.
 - Vérifier la syntaxe exacte de `@theme` dans la documentation de la version de Tailwind installée avant d'écrire la configuration.
 
@@ -388,27 +389,34 @@ Communes : hauteur **38 px en 1440** et **30 px en 1366**, rayon md, fond Surfac
 ### 11.18 Écran « Clique pour reprendre »
 
 - Motif voile d'arène (11.19). Contenu centré : « Clique pour reprendre » (titre-1, Arène texte), message d'avertissement (pilule Avertissement doux, texte corps-fort Avertissement, point de 8 px), puis les boutons principal « Reprendre » et secondaire « Quitter la room » (icône sortie), séparés de 16 px.
+- **Le texte de l'avertissement vient du jeu**, qui seul sait ce que perdre la souris coûte : « Ton curseur ne bouge plus. » pour le bac à sable, « Ton curseur ne bouge plus : tu peux te faire attraper » pour Cursor Tag.
+- **Cet écran est réservé à la perte de capture.** Tant que la souris n'a **jamais** été capturée dans la partie, c'est l'invitation de la section 12 qui s'affiche — « Clique pour capturer ta souris » — parce qu'un joueur qui arrive n'a rien perdu et ne sait pas encore qu'il doit cliquer. L'une invite, l'autre avertit.
+- Le voile ne couvre que l'arène (11.19) : **le bouton du son de l'en-tête reste cliquable**, et « Quitter la room » ouvre sa boîte de confirmation habituelle, qui, elle, couvre toute la fenêtre (11.17).
+- **Un spectateur ne voit ni cet écran ni l'invitation :** il n'a pas de curseur, donc aucune capture à demander ni à perdre.
 
 ### 11.19 Motif « voile d'arène »
 
 - **Le seul moyen de poser un contenu sur l'arène.** Le voile Arène voile couvre toute l'arène et rien d'autre ; le contenu est centré au-dessus, sans être assombri.
 - Jamais de panneau ou de fond posé derrière un texte sur l'arène.
 - Utilisé pour : « Tu es le Chat ! », la phase de préparation, le compte à rebours, « Clique pour reprendre ».
-- Apparition et disparition : animation ample.
+- Apparition et disparition : animation ample, **en fondu seul**. Le §9 n'autorise que `transform` et `opacity`, et un voile qui glisserait se battrait avec l'arène qu'il recouvre.
+- **La partie continue derrière.** Le voile est une couche posée sur le canvas, pas une pause : le rendu tourne toujours, et c'est ce qui donne son sens à l'avertissement de 11.18 — on voit son propre curseur rester immobile.
 
 ## 12. Éléments de jeu (arène)
 
-- Coordonnées logiques 1600 × 900 (`docs/architecture.md`, section 6.4) ; tout ce qui est défini en unités d'arène suit la taille d'affichage.
-- **Arène :** fond Arène fond, rayon xl à l'écran, format 16:9, affichée la plus grande possible.
+- Coordonnées logiques 1600 × 900 (`docs/architecture.md`, section 6.4) ; tout ce qui est défini en unités d'arène suit la taille d'affichage. **Les tailles qui n'y obéissent pas sont marquées une à une** ci-dessous : tout ce qui n'est pas marqué est en unités d'arène.
+- **Écrans haute densité :** le canvas est dimensionné en pixels physiques et son contexte mis à l'échelle une fois, de sorte que le code de dessin raisonne en pixels CSS. Cela ne change que la netteté (`docs/architecture.md`, section 6.4).
+- **Arène :** fond Arène fond, rayon xl à l'écran, format 16:9, affichée la plus grande possible. Le dessin est **découpé à ce rayon** : un curseur poussé dans un angle y est rogné plutôt que de déborder du cadre. Rentrer le terrain de jeu aurait changé la géométrie que le serveur applique.
 - **Murs :** Arène mur, rayon 8 en unités d'arène.
 - **Curseur :** disque de rayon 14 (unités d'arène), couleur du joueur.
 - **Ton curseur :** anneau de 3 px Arène texte autour du disque (épaisseur à l'écran).
 - **Chat :** disque avec deux oreilles de la couleur du joueur, et halo de la couleur du joueur en deux couronnes (4 px à 28 % d'opacité, puis 9 px à 12 %), en boucle portail.
 - **Gelé :** disque recouvert de Gel remplissage, anneau de 3 px Gel anneau, halo de 7 px Gel halo, décompte en secondes au centre (micro, Gel encre).
-- **Portails :** anneau de rayon 36 (unités d'arène), trait 2 px à l'écran, couleur Portail, lettre A ou B au centre (micro, Portail). Paire A : anneau plein. Paire B : anneau pointillé. Pulsation en boucle portail.
-- **Étiquettes de pseudo :** à droite du curseur, fond Arène étiquette, rayon xs, marge intérieure 4 × 8, texte micro Arène texte, **12 px à l'écran quelle que soit la taille de l'arène**. Pour un Chat, le pseudo est suivi de « · chat » en Arène texte secondaire.
+- **Portails :** anneau de rayon 36 (unités d'arène), trait 2 px à l'écran, couleur Portail, lettre A ou B au centre (micro, **à l'écran** comme l'étiquette de pseudo). Paire A : anneau plein. Paire B : anneau pointillé. Pulsation en boucle portail — la pulsation dit « utilisable », donc un portail sans effet, comme ceux du bac à sable, est dessiné sans elle.
+- **Étiquettes de pseudo :** à droite du curseur, fond Arène étiquette, rayon xs, marge intérieure 4 × 8, texte micro Arène texte. **L'étiquette entière est en pixels d'écran** — texte, boîte, rayon et marges —, quelle que soit la taille de l'arène : un texte de 12 px dans une boîte en unités d'arène se disloquerait quand l'arène rétrécit. Pour un Chat, le pseudo est suivi de « · chat » en Arène texte secondaire.
 - Joueur déconnecté : curseur non dessiné.
 - **Annonce « Tu es le Chat ! »** : motif voile d'arène, titre en titre-1 Arène texte, phrase « Attrape un Coureur pour lui passer le rôle » en corps-l Arène texte. Visible uniquement par le joueur concerné, pendant son gel.
+- **Avant la première capture de la souris :** motif voile d'arène, avec le bouton principal « Clique pour capturer ta souris ». Il s'affiche tant que la souris n'a **jamais** été capturée dans cette partie ; la perdre ensuite affiche l'écran « Clique pour reprendre » (11.18), qui avertit au lieu d'inviter. Un spectateur ne voit ni l'un ni l'autre.
 - **Phase de préparation :** motif voile d'arène, ligne de rappel (réglages avant la manche 1, « Manche 1 terminée · Tu es 2e avec 58 s » ensuite) en corps-l Arène texte, bouton bascule « Je suis prêt », aide « Clique pour capturer ta souris » puis « Souris capturée, on attend les autres » en petit Arène texte secondaire. Le spectateur voit la ligne de rappel sans bouton ni aide.
 - **Compte à rebours :** motif voile d'arène, chiffre seul en style compte à rebours, Arène texte.
 

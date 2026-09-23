@@ -56,6 +56,19 @@ describe("a running game", () => {
     expect(lastFakeGameInstance?.reconnected).toEqual([nova]);
   });
 
+  it("tells the game when a new connection takes the seat of a player still there", () => {
+    // Another tab, or a reconnection the server had not seen coming: the new connection numbers
+    // its inputs from zero, so the game must forget what it saw, while nobody sees Nova leave.
+    const { room, host, nova, outbound } = startableRoom();
+    room.start(host, false);
+
+    room.reconnect(nova);
+
+    expect(lastFakeGameInstance?.disconnected).toEqual([]);
+    expect(lastFakeGameInstance?.reconnected).toEqual([nova]);
+    expect(outbound.lastState?.players.every((player) => player.connected)).toBe(true);
+  });
+
   it("abandons the game when too few players are left", () => {
     const { room, host, nova, zippy, outbound } = startableRoom();
     room.start(host, false);

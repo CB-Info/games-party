@@ -2,6 +2,7 @@ import { io, type Socket } from "socket.io-client";
 
 import type { ClientToServerEvents, ServerToClientEvents } from "../../shared/protocol";
 import { roomState } from "./roomState";
+import { delayed } from "./delayedTransport";
 import { sessionIdentity } from "./sessionIdentity";
 import { readSessionToken, writeSessionToken } from "./sessionStorage";
 
@@ -33,17 +34,23 @@ export function getSocket(): GameSocket {
     // makes a returning player find their seat again; keeping the whole identity is what lets a
     // screen mounted later — the lobby, right after the home screen created the room — still know
     // who it is.
-    socket.on("session:init", (identity) => {
-      writeSessionToken(identity.sessionToken);
-      sessionIdentity.remember(identity);
-    });
+    socket.on(
+      "session:init",
+      delayed((identity) => {
+        writeSessionToken(identity.sessionToken);
+        sessionIdentity.remember(identity);
+      }),
+    );
 
     // The room the server broadcasts is kept here rather than handed to whoever is listening:
     // room:create answers with room:state before its acknowledgement, so it arrives while the home
     // screen is still showing and nothing would ever send it again.
-    socket.on("room:state", (state) => {
-      roomState.remember(state);
-    });
+    socket.on(
+      "room:state",
+      delayed((state) => {
+        roomState.remember(state);
+      }),
+    );
 
     // A new connection tells everything again, room included. Forgetting it here, and not from an
     // effect, is what guarantees the old room is gone before the server's answer for the new
@@ -62,7 +69,9 @@ export function getSocket(): GameSocket {
 
     // The seat has moved to another tab (§4). This connection is over for good: closing it here
     // rather than relying on the library means this tab can never take the seat back, which would
-    // leave the two tabs stealing it from each other.
+    // leave the two tabs stealing it from each other. The one message the latency simulator never
+    // delays: the server closes the connection right after sending it, and the socket's own
+    // events are not delayed, so holding this back would announce the takeover after the cut.
     socket.on("session:replaced", () => {
       sessionReplaced = true;
       roomState.forget();
@@ -123,17 +132,50 @@ export function subscribeToSessionReplaced(onChange: () => void): () => void {
   };
 }
 
-/**
- * One subscriber per event rather than a generic one: a generic event name does not narrow the
- * listener type, and the protocol types are what make these calls safe.
- */
+// One subscriber per event rather than a generic one: a generic event name does not narrow the
+// listener type, and the protocol types are what make these calls safe. Each goes through
+// `delayed`, as the listeners above do, so that the latency simulator holds back everything the
+// server says and hands it over in the order it was said.
+
+/** One view per tick, the busiest message of the whole protocol (§6.3). */
+export function subscribeToGameView(listener: ServerToClientEvents["game:view"]): () => void {
+  const currentSocket = getSocket();
+  const wrapped = delayed(listener);
+
+  currentSocket.on("game:view", wrapped);
+  return () => {
+    currentSocket.off("game:view", wrapped);
+  };
+}
+
+export function subscribeToGameEvent(listener: ServerToClientEvents["game:event"]): () => void {
+  const currentSocket = getSocket();
+  const wrapped = delayed(listener);
+
+  currentSocket.on("game:event", wrapped);
+  return () => {
+    currentSocket.off("game:event", wrapped);
+  };
+}
+
+export function subscribeToGameResults(listener: ServerToClientEvents["game:results"]): () => void {
+  const currentSocket = getSocket();
+  const wrapped = delayed(listener);
+
+  currentSocket.on("game:results", wrapped);
+  return () => {
+    currentSocket.off("game:results", wrapped);
+  };
+}
+
 export function subscribeToGameChanged(
   listener: ServerToClientEvents["lobby:gameChanged"],
 ): () => void {
   const currentSocket = getSocket();
+  const wrapped = delayed(listener);
 
-  currentSocket.on("lobby:gameChanged", listener);
+  currentSocket.on("lobby:gameChanged", wrapped);
   return () => {
-    currentSocket.off("lobby:gameChanged", listener);
+    currentSocket.off("lobby:gameChanged", wrapped);
   };
 }
