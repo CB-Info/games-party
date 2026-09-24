@@ -30,6 +30,8 @@ export class GameSession {
   private readonly outbound: RoomOutbound;
   private readonly now: () => number;
   private readonly pendingInputs: Array<{ playerId: string; input: unknown }> = [];
+  /** The events of the tick being played, held back until its views are out (§6.3). */
+  private heldEvents: Array<{ event: GameEvent; to?: string[] }> | null = null;
   private loop: ReturnType<typeof setInterval> | null = null;
   private lastTickAt: number;
   private tickNumber = 0;
@@ -53,7 +55,7 @@ export class GameSession {
 
     const ctx: GameContext = {
       players: () => this.players(),
-      emitEvent: (event: GameEvent, to?: string[]) => outbound.gameEvent(event, to),
+      emitEvent: (event: GameEvent, to?: string[]) => this.emitEvent(event, to),
       getHostId,
       random,
     };
@@ -86,26 +88,38 @@ export class GameSession {
    * One step of the loop, exposed so that tests drive it without a timer. Applies the inputs
    * received since the previous tick in their arrival order, ticks the game, and either reports
    * that it is over or sends every player and every spectator their own view (§6.3).
+   *
+   * The events of the tick go out last, after the views. Socket.IO drops a volatile view sent while
+   * a reliable message still occupies the connection, so an event sent first would cost the whole
+   * room the view of its tick. They leave before this returns, even on the last tick, which sends
+   * no view: the results the room sends next must come after them.
    */
   tickOnce(dtMs: number): boolean {
-    // Bots decide from the state the last view showed, then their inputs join the others: as far
-    // as the game is concerned a bot is a player like any other (§8).
-    this.bots.play(dtMs);
+    this.heldEvents = [];
 
-    for (const { playerId, input } of this.pendingInputs) {
-      this.instance.onInput(playerId, input);
+    try {
+      // Bots decide from the state the last view showed, then their inputs join the others: as
+      // far as the game is concerned a bot is a player like any other (§8).
+      this.bots.play(dtMs);
+
+      for (const { playerId, input } of this.pendingInputs) {
+        this.instance.onInput(playerId, input);
+      }
+      this.pendingInputs.length = 0;
+
+      this.instance.tick(dtMs);
+      this.tickNumber += 1;
+
+      if (this.instance.isOver()) {
+        return true;
+      }
+
+      this.sendViews(this.spectators());
+      return false;
+    } finally {
+      // Released even when the tick failed: held for good, every later event would be lost.
+      this.releaseEvents();
     }
-    this.pendingInputs.length = 0;
-
-    this.instance.tick(dtMs);
-    this.tickNumber += 1;
-
-    if (this.instance.isOver()) {
-      return true;
-    }
-
-    this.sendViews(this.spectators());
-    return false;
   }
 
   /** Queues an input, already validated by the game's own schema (règle d'or 3). */
@@ -143,6 +157,24 @@ export class GameSession {
     for (const spectatorId of spectatorIds) {
       const view = this.instance.getViewFor({ spectator: true });
       this.outbound.gameView(spectatorId, { ...payload, view });
+    }
+  }
+
+  /** Outside a tick an event goes at once: the next view is a whole tick away (§6.3). */
+  private emitEvent(event: GameEvent, to?: string[]): void {
+    if (this.heldEvents === null) {
+      this.outbound.gameEvent(event, to);
+    } else {
+      this.heldEvents.push(to === undefined ? { event } : { event, to });
+    }
+  }
+
+  private releaseEvents(): void {
+    const held = this.heldEvents ?? [];
+    this.heldEvents = null;
+
+    for (const { event, to } of held) {
+      this.outbound.gameEvent(event, to);
     }
   }
 }

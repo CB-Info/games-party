@@ -1,4 +1,4 @@
-import { fakeGame, otherFakeGame } from "../../games/fakeGame.fixture";
+import { chattyFakeGame, fakeGame, otherFakeGame } from "../../games/fakeGame.fixture";
 import type { GameEvent } from "../../shared/protocol";
 import type { GameResults, GameViewPayload, PlayerColorId, RoomState } from "../../shared/types";
 import { RoomManager } from "./RoomManager";
@@ -11,25 +11,35 @@ export class RecordingOutbound implements RoomOutbound {
   readonly views: Array<{ playerId: string; payload: GameViewPayload }> = [];
   readonly events: Array<{ event: GameEvent; playerIds?: string[] }> = [];
   readonly results: GameResults[] = [];
+  /**
+   * One entry per message, in the order the room sent them — `state`, `gameChanged`, `view`,
+   * `event:<type>` or `results` — for the tests about what goes out before what (§6.3).
+   */
+  readonly order: string[] = [];
 
   roomState(state: RoomState): void {
     this.states.push(state);
+    this.order.push("state");
   }
 
   gameChanged(playerIds: string[], gameId: string): void {
     this.gameChanges.push({ playerIds, gameId });
+    this.order.push("gameChanged");
   }
 
   gameView(playerId: string, payload: GameViewPayload): void {
     this.views.push({ playerId, payload });
+    this.order.push("view");
   }
 
   gameEvent(event: GameEvent, playerIds?: string[]): void {
     this.events.push(playerIds === undefined ? { event } : { event, playerIds });
+    this.order.push(`event:${event.type}`);
   }
 
   gameResults(results: GameResults): void {
     this.results.push(results);
+    this.order.push("results");
   }
 
   get lastState(): RoomState | undefined {
@@ -40,14 +50,15 @@ export class RecordingOutbound implements RoomOutbound {
 let nextId = 0;
 
 /**
- * A room holding the two fake games, with deterministic randomness. The clock follows the fake
+ * A room holding the fake games, with deterministic randomness. The clock follows the fake
  * timers of the test, so that advancing them also advances the game's own time.
  */
 export function createTestRoom(overrides: Partial<{ now: () => number }> = {}) {
   const outbound = new RecordingOutbound();
   const manager = new RoomManager({
     outboundFor: () => outbound,
-    findGame: (gameId) => [fakeGame, otherFakeGame].find((game) => game.meta.id === gameId) ?? null,
+    findGame: (gameId) =>
+      [fakeGame, otherFakeGame, chattyFakeGame].find((game) => game.meta.id === gameId) ?? null,
     random: () => 0.5,
     now: overrides.now ?? (() => Date.now()),
   });
