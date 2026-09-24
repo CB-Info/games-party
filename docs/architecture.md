@@ -275,15 +275,17 @@ Fonction pure utilisée à l'identique par le serveur et par la prédiction clie
   - Un mur est un rectangle `{ x, y, width, height }`. Chevauchement : distance entre le centre du disque et le point le plus proche du rectangle strictement inférieure à `radius`.
   - Bords : le centre reste entre `radius` et `ARENA_WIDTH − radius` en X, `radius` et `ARENA_HEIGHT − radius` en Y.
 
-**Rattrapage : `shared/cursor/backlog.ts` (bac à sable uniquement, à l'essai)**
+**Rattrapage : `shared/cursor/backlog.ts` (à l'essai)**
 
-Le moteur jette ce que le budget refuse : un geste plus rapide que le plafond arrive court. Le rattrapage le garde à la place, pour que le curseur arrive là où la main l'a envoyé, à la vitesse de la règle. C'est un essai : seul le bac à sable l'active (option `catchUpMs`), à comparer à la main avec le mode actuel. Cursor Tag n'en dépend pas tant que rien n'est décidé.
+Le moteur jette ce que le budget refuse : un geste plus rapide que le plafond arrive court. Le rattrapage le garde à la place, pour que le curseur arrive là où la main l'a envoyé, à la vitesse de la règle. C'est un essai, câblé dans deux jeux : le bac à sable, par son option `catchUpMs`, et Cursor Tag, par sa constante `CATCH_UP_MS`, qui vaut 0 tant que la partie réelle n'a pas tranché (son `rules.md`, section 15.3). À 0, les deux jeux se déplacent exactement comme avec `moveCursor`.
 
 - `moveWithBacklog` paie ensemble le **reste** des déplacements précédents et le nouveau geste, avec le budget, par la règle de `moveCursor`. Ce que le budget refuse est gardé, dans la limite d'une **laisse** de `maxSpeed × catchUpMs / 1000` unités, puis payé par les inputs et les ticks suivants. Avec une laisse nulle, le résultat est exactement celui de `moveCursor`.
 - **Le reste n'est pas du budget.** Il est payé par le même budget que tout le reste, et le tick paie le reste **avant** de recharger le budget. Un curseur ne va donc jamais plus loin en un tick qu'aujourd'hui : dans l'ordre inverse, un curseur resté immobile irait une fois et demie plus loin au premier tick de son geste. La laisse borne en outre ce qu'un client peut faire jouer après son dernier input.
 - **Contre un mur ou un bord**, la part du reste arrêtée sur un axe est jetée et l'autre gardée : le reste glisse le long du mur comme le curseur, au lieu d'y pousser en brûlant le budget.
-- **Le reste vient de la vue**, dans `me`, comme le budget et pour la même raison : le serveur en a autorité, et un reste tenu par le client dériverait au premier input perdu. La prédiction repart du reste officiel et le paie avec le budget qui se recharge entre deux vues : le curseur glisse entre les vues au lieu d'avancer par marches.
-- Remis à zéro là où le budget l'est : au début de la partie et à la reconnexion.
+- **Le reste vient de la vue**, dans `me`, comme le budget et pour la même raison : le serveur en a autorité, et un reste tenu par le client dériverait au premier input perdu. La prédiction repart du reste officiel et le paie avec le budget qui se recharge entre deux vues : le curseur glisse entre les vues au lieu d'avancer par marches. Un jeu dont la vue est compacte (section 7) ne l'envoie que lorsqu'il n'est pas nul.
+- Remis à zéro là où le budget l'est : au début de la partie et à chaque reconnexion, reprise de place comprise (section 4). Chaque jeu y ajoute ce que ses règles demandent : Cursor Tag le remet aussi à zéro au gel, à la téléportation et au début de chaque manche.
+- **La laisse suit la vitesse du joueur** à chaque déplacement : un jeu où la vitesse change avec le rôle (Cursor Tag) ramène un reste devenu trop long à la nouvelle laisse au déplacement suivant.
+- **Un jeu qui teste des contacts sur le trajet du tick paie le reste avant ce test**, puis vérifie ce qui dépend de la position (les portails de Cursor Tag). Sinon le trajet payé ne serait jamais testé, et la position testée ne serait pas celle que montre la vue.
 
 **Prédiction du curseur local**
 - Chaque vue contient la position officielle du joueur, le dernier `seq` traité **et son budget de déplacement**. Le budget vient de la vue, comme la position : le serveur en a autorité (règle d'or 1), et un budget tenu localement dériverait au premier input perdu.
