@@ -30,6 +30,15 @@ export const SETTINGS = settingsFor(defaultOptions());
  */
 export const CATCH_UP_TEST_MS = 300;
 
+/**
+ * The rewind the tests play at: the game's own `TAG_REWIND_TICKS` is 0 until a real game has
+ * decided (rules.md, §15.2), and at 0 there is nothing to rewind.
+ */
+export const REWIND_TEST_TICKS = 2;
+
+/** The default game, with the tests' rewind. */
+export const REWINDING: TagSettings = { ...SETTINGS, rewindTicks: REWIND_TEST_TICKS };
+
 /** The default game, with the tests' catch-up leash. */
 export const CATCHING_UP: TagSettings = { ...SETTINGS, catchUpMs: CATCH_UP_TEST_MS };
 
@@ -61,6 +70,8 @@ function roundPlayer(
     backlog: { x: 0, y: 0 },
     frozenMsLeft: 0,
     portalCooldownMs: { A: 0, B: 0 },
+    pastPaths: [],
+    pathBroken: false,
     ...changes,
   };
 }

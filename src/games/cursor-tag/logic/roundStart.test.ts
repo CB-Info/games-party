@@ -90,6 +90,7 @@ describe("startRound", () => {
       expect(player.budget).toBe(0);
       expect(player.backlog).toEqual({ x: 0, y: 0 });
       expect(player.portalCooldownMs).toEqual({ A: 0, B: 0 });
+      expect(player).toMatchObject({ pastPaths: [], pathBroken: false });
     }
   });
 

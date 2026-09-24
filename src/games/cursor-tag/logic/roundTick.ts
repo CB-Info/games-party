@@ -21,8 +21,11 @@ export function playRoundTick(state: RoundState, dtMs: number, rules: RuleContex
   const tagged = resolveTags(scored, findContacts(scored, rules), rules.settings.freezeMs);
   // 5. Budgets for the next tick's inputs.
   const recharged = rechargeBudgets(tagged.players, dtMs);
-  // 6. Where everyone stands starts their next path.
-  const next: RoundState = { ...counted, players: closePaths(recharged) };
+  // 6. Where everyone stands starts their next path; the one just run is kept for the rewind.
+  const next: RoundState = {
+    ...counted,
+    players: closePaths(recharged, rules.settings.rewindTicks),
+  };
   const events = [...paid.events, ...tagged.events];
 
   if (next.timeLeftMs > 0) {

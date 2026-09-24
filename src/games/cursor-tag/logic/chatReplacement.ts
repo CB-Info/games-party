@@ -5,6 +5,7 @@ import {
   type RoundState,
   type RuleContext,
 } from "./cursorTagState";
+import { breakPaths } from "./tickPaths";
 
 /**
  * Replaces a Chat who left a round, by losing their connection or being removed: one rule for
@@ -15,7 +16,7 @@ import {
  * the last connected Runner is never taken. One departure has one replacement at most, so a round
  * never has more Chats than it started with, and no other limit needs checking. The replacement
  * becomes a Chat with no freeze and keeps what they owe. A Chat who is away and replaced becomes a
- * Runner, with no freeze, since only a Chat can be frozen.
+ * Runner, with no freeze, since only a Chat can be frozen. Both role changes cut the rewind.
  */
 export function replaceDepartedChat(
   state: RoundState,
@@ -32,11 +33,11 @@ export function replaceDepartedChat(
   // At least two Runners to draw from, so the index always falls on one.
   const newChat = runners[Math.floor(rules.random() * runners.length)] as RoundPlayer;
   const withNewChat = updatePlayer(state.players, newChat.playerId, (player): RoundPlayer => ({
-    ...player,
+    ...breakPaths(player),
     role: "chat",
   }));
   const players = updatePlayer(withNewChat, departedId, (player): RoundPlayer => ({
-    ...player,
+    ...breakPaths(player),
     role: "runner",
     frozenMsLeft: 0,
   }));

@@ -2,25 +2,32 @@ import type { PortalEvent } from "../shared/types";
 import type { RoundPlayer, RoundState, RuleContext } from "./cursorTagState";
 import { rechargeAtRoleSpeed } from "./movement";
 import { moveAndTeleport } from "./portals";
+import { breakPaths } from "./tickPaths";
 
 /**
  * The steps of a round's tick that touch every player the same way (rules.md, §6.6). The tick
  * itself, which runs them in their order, is `roundTick.ts`.
  */
 
-/** Step 1: the round's time, the freezes and the portal cooldowns run down, never below zero. */
+/**
+ * Step 1: the round's time, the freezes and the portal cooldowns run down, never below zero. A
+ * freeze that ends cuts the player's rewind (rules.md, §6.3).
+ */
 export function countDownTimers(state: RoundState, dtMs: number): RoundState {
   return {
     ...state,
     timeLeftMs: Math.max(0, state.timeLeftMs - dtMs),
-    players: state.players.map((player) => ({
-      ...player,
-      frozenMsLeft: Math.max(0, player.frozenMsLeft - dtMs),
-      portalCooldownMs: {
-        A: Math.max(0, player.portalCooldownMs.A - dtMs),
-        B: Math.max(0, player.portalCooldownMs.B - dtMs),
-      },
-    })),
+    players: state.players.map((player) => {
+      const counted = {
+        ...player,
+        frozenMsLeft: Math.max(0, player.frozenMsLeft - dtMs),
+        portalCooldownMs: {
+          A: Math.max(0, player.portalCooldownMs.A - dtMs),
+          B: Math.max(0, player.portalCooldownMs.B - dtMs),
+        },
+      };
+      return player.frozenMsLeft > 0 && counted.frozenMsLeft === 0 ? breakPaths(counted) : counted;
+    }),
   };
 }
 

@@ -55,6 +55,9 @@ export function teleport(player: RoundPlayer, entry: PortalEntry): RoundPlayer {
     position: entry.exit,
     tickStart: entry.exit,
     backlog: { x: 0, y: 0 },
+    // The path from the exit is the first the rewind may use (§6.3).
+    pastPaths: [],
+    pathBroken: false,
     portalCooldownMs: { ...player.portalCooldownMs, [entry.pair]: PORTAL_COOLDOWN_MS },
   };
 }

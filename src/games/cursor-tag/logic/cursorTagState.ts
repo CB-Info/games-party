@@ -2,6 +2,7 @@ import type { Point } from "../../../shared/cursor/collision";
 import type { PortalPairId } from "../shared/map";
 import type { CursorTagEvent, Role } from "../shared/types";
 import type { TagSettings } from "./cursorTagOptions";
+import type { Segment } from "./pathGeometry";
 
 /**
  * The state of a game of Cursor Tag, and the small helpers every rule shares. Every rule is a pure
@@ -27,6 +28,14 @@ export interface RoundPlayer extends TagMember {
   backlog: Point;
   frozenMsLeft: number;
   portalCooldownMs: Record<PortalPairId, number>;
+  /**
+   * The player's last paths, oldest first, for the rewind (rules.md, §6.3): as many as it reaches
+   * back, and none begun before their last teleport, role change, freeze end, round start or
+   * reconnection.
+   */
+  pastPaths: Segment[];
+  /** This tick's path began before one of those events, so it will not be kept. */
+  pathBroken: boolean;
 }
 
 /** Between two rounds, and before the first one (rules.md, §4.1). */

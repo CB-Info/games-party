@@ -9,6 +9,7 @@ import {
   type RuleContext,
 } from "./cursorTagState";
 import { startCountdownIfAllReady } from "./preparation";
+import { breakPaths } from "./tickPaths";
 
 /**
  * A player lost their connection (rules.md, §4.1 and §11). Called once the room knows it:
@@ -50,7 +51,8 @@ export function disconnectPlayer(
  * seat over from another tab. The same for the game in both cases: the new connection numbers its
  * inputs from zero, and starts with nothing in hand and nothing owed. Position, role, score and
  * ready status are kept: after a real disconnection, the ready status was already lost; after a
- * takeover, nothing that happens to a player who leaves applies.
+ * takeover, nothing that happens to a player who leaves applies. The rewind never reaches back
+ * past a reconnection (§6.3).
  */
 export function reconnectPlayer(state: CursorTagState, playerId: string): CursorTagState {
   if (state.phase !== "round") {
@@ -62,7 +64,7 @@ export function reconnectPlayer(state: CursorTagState, playerId: string): Cursor
   }
 
   const players = updatePlayer(state.players, playerId, (player) => ({
-    ...player,
+    ...breakPaths(player),
     lastProcessedSeq: NO_SEQ_PROCESSED,
     budget: 0,
     backlog: { x: 0, y: 0 },

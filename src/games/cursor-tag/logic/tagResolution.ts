@@ -1,6 +1,7 @@
 import type { TagEvent } from "../shared/types";
 import { updatePlayer, type RoundPlayer } from "./cursorTagState";
 import type { Contact } from "./tagContacts";
+import { breakPaths } from "./tickPaths";
 
 /**
  * Applies the tick's contacts in their order (rules.md, §6.3). A Chat tags the first Runner they
@@ -9,7 +10,7 @@ import type { Contact } from "./tagContacts";
  *
  * The tagged Runner becomes a Chat, frozen where they stand, with nothing in hand and nothing
  * owed. The Chat who tagged becomes a Runner with no freeze, and keeps their remainder: it is cut
- * to a Runner's leash by their next move.
+ * to a Runner's leash by their next move. A role change cuts both players' rewind.
  */
 export function resolveTags(
   players: readonly RoundPlayer[],
@@ -25,9 +26,12 @@ export function resolveTags(
       continue;
     }
 
-    resolved = updatePlayer(resolved, chatId, (player) => ({ ...player, role: "runner" }));
+    resolved = updatePlayer(resolved, chatId, (player) => ({
+      ...breakPaths(player),
+      role: "runner",
+    }));
     resolved = updatePlayer(resolved, runnerId, (player) => ({
-      ...player,
+      ...breakPaths(player),
       role: "chat",
       frozenMsLeft: freezeMs,
       budget: 0,

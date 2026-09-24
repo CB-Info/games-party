@@ -30,6 +30,9 @@ export function startRound(preparation: PreparationState, rules: RuleContext): O
       backlog: { x: 0, y: 0 },
       frozenMsLeft: isChat ? rules.settings.freezeMs : 0,
       portalCooldownMs: { A: 0, B: 0 },
+      // Nothing to rewind to: the rewind never reaches back into the previous round (§6.3).
+      pastPaths: [],
+      pathBroken: false,
     };
   });
 

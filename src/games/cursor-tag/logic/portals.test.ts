@@ -99,6 +99,20 @@ describe("moveAndTeleport", () => {
     expect(carried.backlog).toEqual({ x: 0, y: 0 });
   });
 
+  it("makes the path from the exit the first one the rewind may use", () => {
+    // A path behind the player, and one broken earlier in the tick by a reconnection.
+    const behind = { from: rightOf(nearA, 30), to: nearA };
+    const player = runner("r", nearA, {
+      budget: budgetCap(maxSpeedOf("runner")),
+      pastPaths: [behind],
+      pathBroken: true,
+    });
+
+    const { player: carried } = moveAndTeleport(player, intoA, 0);
+
+    expect(carried).toMatchObject({ pastPaths: [], pathBroken: false });
+  });
+
   it("leaves a move that enters no portal as it was", () => {
     const player = runner("r", nearA, { budget: 20 });
 
