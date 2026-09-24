@@ -25,6 +25,9 @@ export const SETTINGS = settingsFor(defaultOptions());
  */
 export const CATCH_UP_TEST_MS = 300;
 
+/** The default game, with the tests' catch-up leash. */
+export const CATCHING_UP: TagSettings = { ...SETTINGS, catchUpMs: CATCH_UP_TEST_MS };
+
 /** A spot far from every wall and portal, with room to move around it (rules.md, §6.5). */
 export const OPEN_GROUND: Point = { x: 800, y: 250 };
 
