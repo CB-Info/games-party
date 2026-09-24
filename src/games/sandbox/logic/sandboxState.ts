@@ -3,6 +3,7 @@ import type { Point, Wall } from "../../../shared/cursor/collision";
 import { distance } from "../../../shared/cursor/collision";
 import { NO_SEQ_PROCESSED, type CursorInput } from "../../../shared/cursor/cursorInput";
 import { rechargeBudget } from "../../../shared/cursor/moveCursor";
+import { shuffle } from "../../../shared/shuffle";
 import { SANDBOX_CURSOR_RADIUS } from "../shared/constants";
 
 /** A cursor of the sandbox, with everything the game keeps about it. */
@@ -129,17 +130,4 @@ export function rechargePlayers(
 /** Positions travel thirty times a second: one decimal is invisible and halves the payload. */
 export function roundPosition(value: number): number {
   return Math.round(value * 10) / 10;
-}
-
-function shuffle(points: readonly Point[], random: () => number): Point[] {
-  const shuffled = [...points];
-
-  for (let index = shuffled.length - 1; index > 0; index -= 1) {
-    const other = Math.floor(random() * (index + 1));
-    const held = shuffled[index] as Point;
-    shuffled[index] = shuffled[other] as Point;
-    shuffled[other] = held;
-  }
-
-  return shuffled;
 }
