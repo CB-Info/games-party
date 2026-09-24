@@ -3,15 +3,12 @@ import { CHAT_COUNT_MIN } from "../shared/constants";
 
 /**
  * How many Chats a round starts with (rules.md, §4, step 2): the number the host set, but always
- * one Runner left among the players still in the game and among the connected ones, and never
- * fewer than one Chat.
+ * one Runner left among the connected players, and never fewer than one Chat. The connected
+ * players are never more than the players still in the game, so that leaves a Runner among them
+ * too.
  */
-export function chatCountFor(
-  chatCount: number,
-  playerCount: number,
-  connectedCount: number,
-): number {
-  return Math.max(CHAT_COUNT_MIN, Math.min(chatCount, playerCount - 1, connectedCount - 1));
+export function chatCountFor(chatCount: number, connectedCount: number): number {
+  return Math.max(CHAT_COUNT_MIN, Math.min(chatCount, connectedCount - 1));
 }
 
 /**

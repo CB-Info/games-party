@@ -31,7 +31,6 @@ describe("startRound", () => {
 
     expect(state.players.filter((player) => player.role === "chat")).toHaveLength(2);
     expect(state.players.filter((player) => player.role === "runner")).toHaveLength(3);
-    expect(state.chatsAtStart).toBe(2);
   });
 
   it("draws fewer Chats when few players are connected, among them, and remembers how many", () => {
@@ -49,7 +48,6 @@ describe("startRound", () => {
 
     expect(chatIds).toHaveLength(1);
     expect(["d", "e"]).toContain(chatIds[0]);
-    expect(state.chatsAtStart).toBe(1);
   });
 
   it("freezes the Chats for the freeze length the host set, and leaves the Runners free", () => {

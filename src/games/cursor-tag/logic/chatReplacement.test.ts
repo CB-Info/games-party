@@ -25,8 +25,8 @@ function rolesOf(players: readonly RoundPlayer[]): Record<string, string> {
 }
 
 describe("replaceDepartedChat", () => {
-  it("does not replace a Chat when the Chats left reach the cap (§11, first example)", () => {
-    // 4 players, 3 Chats; A leaves: 2 Chats left, for a cap of 2 (3 set, 3 connected − 1, 3).
+  it("does not replace a Chat when a single connected Runner is left (§11, first example)", () => {
+    // 4 players, 3 Chats; A leaves: B and C go on chasing D.
     const round = roundOf(lineUp(["a", "b", "c"], ["d"]));
     const rules = rulesWith({
       settings: { ...SETTINGS, chatCount: 3 },
@@ -38,7 +38,7 @@ describe("replaceDepartedChat", () => {
   });
 
   it("replaces a Chat by a connected Runner drawn at random (§11, second example)", () => {
-    // 5 players, 2 Chats set; A leaves: 1 Chat left, for a cap of 2 (2 set, 4 connected − 1, 2).
+    // 5 players, 2 Chats; A leaves: three connected Runners, one of them drawn.
     const round = roundOf(lineUp(["a", "b"], ["c", "d", "e"]));
     const rules = rulesWith({
       settings: { ...SETTINGS, chatCount: 2 },
@@ -58,9 +58,9 @@ describe("replaceDepartedChat", () => {
     });
   });
 
-  it("never replaces beyond the Chats the round started with (§11, third example)", () => {
+  it("keeps the Chats the round started with, one replacement for one departure (§11, third example)", () => {
     // 6 players, 3 Chats set, but the round started with 2 while few were connected. Everyone is
-    // back when A leaves: 1 Chat left, for a cap of 2 (3 set, 5 connected − 1, 2 at the start).
+    // back when A leaves: four connected Runners, and a single replacement.
     const round = roundOf(lineUp(["a", "b"], ["c", "d", "e", "f"]));
     const rules = rulesWith({
       settings: { ...SETTINGS, chatCount: 3 },
@@ -70,7 +70,6 @@ describe("replaceDepartedChat", () => {
 
     const { state, events } = replaceDepartedChat(round, "a", rules);
 
-    expect(round.chatsAtStart).toBe(2);
     expect(events).toHaveLength(1);
     expect(state.players.filter((player) => player.role === "chat")).toHaveLength(2);
   });

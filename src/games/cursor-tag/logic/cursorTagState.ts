@@ -46,8 +46,6 @@ export interface RoundState {
   round: number;
   players: RoundPlayer[];
   timeLeftMs: number;
-  /** How many Chats the round drew: a replacement never goes beyond it (rules.md, §11). */
-  chatsAtStart: number;
 }
 
 /** After the last round: the room shows the results (rules.md, §4). */

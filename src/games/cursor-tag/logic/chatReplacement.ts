@@ -1,4 +1,3 @@
-import { CHAT_COUNT_MIN } from "../shared/constants";
 import {
   updatePlayer,
   type Outcome,
@@ -12,28 +11,21 @@ import {
  * both (rules.md, §11). Called once the departure is known: the Chat is away, or already gone
  * from the players.
  *
- * The Chat is replaced if the connected Chats left are fewer than the smallest of the number the
- * host set, one fewer than the connected players (at least one), and the Chats the round started
- * with. The replacement is a connected Runner drawn at random, who becomes a Chat with no freeze
- * and keeps what they owe. One departure has one replacement at most, never the last connected
- * Runner: a replacement repairs a departure, and never adds a Chat. A Chat who is away and
- * replaced becomes a Runner, with no freeze, since only a Chat can be frozen.
+ * The Chat is replaced by a connected Runner drawn at random, as long as at least two are left:
+ * the last connected Runner is never taken. One departure has one replacement at most, so a round
+ * never has more Chats than it started with, and no other limit needs checking. The replacement
+ * becomes a Chat with no freeze and keeps what they owe. A Chat who is away and replaced becomes a
+ * Runner, with no freeze, since only a Chat can be frozen.
  */
 export function replaceDepartedChat(
   state: RoundState,
   departedId: string,
   rules: RuleContext,
 ): Outcome<RoundState> {
-  const connected = state.players.filter((player) => rules.isConnected(player.playerId));
-  const activeChats = connected.filter((player) => player.role === "chat").length;
-  const runners = connected.filter((player) => player.role === "runner");
-  const cap = Math.min(
-    rules.settings.chatCount,
-    Math.max(CHAT_COUNT_MIN, connected.length - 1),
-    state.chatsAtStart,
+  const runners = state.players.filter(
+    (player) => player.role === "runner" && rules.isConnected(player.playerId),
   );
-
-  if (activeChats >= cap || runners.length <= 1) {
+  if (runners.length < 2) {
     return { state, events: [] };
   }
 

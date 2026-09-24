@@ -86,9 +86,9 @@ describe("disconnectPlayer during a round", () => {
     ];
     const rules = (away: string[]) => rulesWith({ settings: TWO_CHATS, away, random: () => 0 });
 
-    // D and E lose their connection, then A: 1 Chat left, for a cap of 1. A is not replaced.
+    // D and E lose their connection, then A: C is the only connected Runner, so A is not replaced.
     const noOne = disconnectPlayer(roundOf(players), "a", rules(["a", "d", "e"]));
-    // D and E come back, then B leaves: no Chat left, for a cap of 2, and a single replacement.
+    // D and E come back, then B leaves: three connected Runners, and a single replacement.
     const back = reconnectPlayer(reconnectPlayer(noOne.state, "d"), "e");
     const one = disconnectPlayer(back, "b", rules(["a", "b"]));
     const roles = asRound(one.state).players.map((player) => `${player.playerId}:${player.role}`);

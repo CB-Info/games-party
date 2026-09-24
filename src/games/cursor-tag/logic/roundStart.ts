@@ -13,11 +13,7 @@ import type { Outcome, PreparationState, RoundState, RuleContext } from "./curso
 export function startRound(preparation: PreparationState, rules: RuleContext): Outcome<RoundState> {
   const spawns = shuffle(SPAWN_POINTS, rules.random);
   const playerIds = preparation.players.map((player) => player.playerId);
-  const count = chatCountFor(
-    rules.settings.chatCount,
-    playerIds.length,
-    playerIds.filter(rules.isConnected).length,
-  );
+  const count = chatCountFor(rules.settings.chatCount, playerIds.filter(rules.isConnected).length);
   const chatIds = drawChats(playerIds, count, rules.isConnected, rules.random);
 
   const players = preparation.players.map((member, index) => {
@@ -43,7 +39,6 @@ export function startRound(preparation: PreparationState, rules: RuleContext): O
       round: preparation.round,
       players,
       timeLeftMs: rules.settings.roundMs,
-      chatsAtStart: chatIds.length,
     },
     events: [{ type: "roundStart", round: preparation.round, chatIds }],
   };

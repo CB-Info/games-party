@@ -82,14 +82,13 @@ export function chat(
   return roundPlayer(playerId, "chat", position, changes);
 }
 
-/** A round in its first round of the default game, as many Chats as it started with. */
+/** The first round of the default game, with its whole length to play. */
 export function roundOf(players: RoundPlayer[], changes: Partial<RoundState> = {}): RoundState {
   return {
     phase: "round",
     round: 1,
     players,
     timeLeftMs: SETTINGS.roundMs,
-    chatsAtStart: players.filter((player) => player.role === "chat").length,
     ...changes,
   };
 }

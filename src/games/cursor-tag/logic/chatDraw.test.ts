@@ -5,21 +5,18 @@ import { chatCountFor, drawChats } from "./chatDraw";
 
 describe("chatCountFor", () => {
   it("gives the number the host set when the players allow it", () => {
-    expect(chatCountFor(2, 5, 5)).toBe(2);
-  });
-
-  it("leaves at least one Runner among the players still in the game", () => {
-    expect(chatCountFor(4, 4, 4)).toBe(3);
+    expect(chatCountFor(2, 5)).toBe(2);
   });
 
   it("leaves at least one Runner among the connected players", () => {
+    expect(chatCountFor(4, 4)).toBe(3);
     // Six players, but only three of them connected: two Chats, not four.
-    expect(chatCountFor(4, 6, 3)).toBe(2);
+    expect(chatCountFor(4, 3)).toBe(2);
   });
 
   it("never gives fewer than one Chat", () => {
-    expect(chatCountFor(3, 5, 1)).toBe(CHAT_COUNT_MIN);
-    expect(chatCountFor(3, 5, 0)).toBe(CHAT_COUNT_MIN);
+    expect(chatCountFor(3, 1)).toBe(CHAT_COUNT_MIN);
+    expect(chatCountFor(3, 0)).toBe(CHAT_COUNT_MIN);
   });
 });
 
