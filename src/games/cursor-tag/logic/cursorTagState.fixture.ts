@@ -1,9 +1,11 @@
+import { SERVER_TICK_RATE } from "../../../shared/constants";
 import type { Point } from "../../../shared/cursor/collision";
 import { NO_SEQ_PROCESSED } from "../../../shared/cursor/cursorInput";
 import { PREPARATION_AUTO_START_MS, PREPARATION_COUNTDOWN_MS } from "../shared/constants";
 import { defaultOptions, settingsFor } from "./cursorTagOptions";
 import type { TagSettings } from "./cursorTagOptions";
 import type {
+  CursorTagState,
   PreparationState,
   RoundPlayer,
   RoundState,
@@ -15,6 +17,9 @@ import type {
  * Builders shared by the tests of Cursor Tag's rules. Never imported by production code. Each
  * builder gives the state a rule starts from, with only what a test changes spelled out.
  */
+
+/** The length of a server tick, in milliseconds. */
+export const TICK_MS = 1000 / SERVER_TICK_RATE;
 
 /** The settings of a game with default options (rules.md, §3). */
 export const SETTINGS = settingsFor(defaultOptions());
@@ -30,6 +35,11 @@ export const CATCHING_UP: TagSettings = { ...SETTINGS, catchUpMs: CATCH_UP_TEST_
 
 /** A spot far from every wall and portal, with room to move around it (rules.md, §6.5). */
 export const OPEN_GROUND: Point = { x: 800, y: 250 };
+
+/** A point `dx` to the right of and `dy` below the open ground. */
+export function nearby(dx: number, dy = 0): Point {
+  return { x: OPEN_GROUND.x + dx, y: OPEN_GROUND.y + dy };
+}
 
 export function member(playerId: string, changes: Partial<TagMember> = {}): TagMember {
   return { playerId, scoreMs: 0, lastProcessedSeq: NO_SEQ_PROCESSED, ...changes };
@@ -128,4 +138,12 @@ export function rulesWith(
     isConnected: (playerId) => !away.includes(playerId),
     random: context.random ?? neverDrawn,
   };
+}
+
+/** A state a test expects to be a round, so that it can read the round's players. */
+export function asRound(state: CursorTagState): RoundState {
+  if (state.phase !== "round") {
+    throw new Error(`expected a round, got the ${state.phase} phase`);
+  }
+  return state;
 }
