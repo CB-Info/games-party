@@ -67,6 +67,7 @@ Toutes les options sont des nombres entiers, modifiés par l'hôte avec des bout
 - La condition « tous prêts » est vérifiée après chaque action `ready`, chaque déconnexion et chaque retrait. Un joueur déconnecté ne bloque donc jamais le démarrage.
 - **Compte à rebours :** il dure `PREPARATION_COUNTDOWN_MS`, ne peut pas être annulé et envoie l'événement `preparationCountdown`. À 0, la manche démarre (section 4, étapes 1 à 6). Les joueurs qui n'étaient pas prêts démarrent sans souris capturée : ils voient l'écran « Clique pour reprendre » (architecture 6.5) et peuvent cliquer à tout moment.
 - **Déconnexion pendant l'attente :** le joueur perd son statut « prêt », avec l'événement `readyChanged { ready: false }` s'il était prêt. Tant qu'il est déconnecté, il ne bloque pas le démarrage.
+- **Retrait pendant l'attente :** un joueur prêt qui est retiré (11) quitte la liste des joueurs prêts sans événement `readyChanged` : il n'est plus joueur.
 - **Reconnexion pendant l'attente :** le joueur n'est pas prêt, même s'il avait cliqué avant sa déconnexion. Il voit le bouton, et le démarrage attend de nouveau son clic, dans la limite du délai de départ automatique.
 - **Reconnexion pendant le compte à rebours :** le joueur rejoint simplement la manche.
 - Les bots envoient l'action `ready` dès le début de la préparation.
@@ -232,7 +233,7 @@ type CursorTagView = {
 | `roundEnd` | `{ round }` | Fin d'une manche |
 | `tag` | `{ chatId, taggedId }` | Un Coureur est touché |
 | `portal` | `{ playerId, pair: "A" \| "B" }` | Un joueur est téléporté |
-| `chatReplaced` | `{ previousChatId, newChatId }` | Un Chat déconnecté est remplacé |
+| `chatReplaced` | `{ previousChatId, newChatId }` | Un Chat déconnecté ou retiré est remplacé (11) |
 | `readyChanged` | `{ playerId, ready }` | Un joueur se déclare prêt ou ne l'est plus pendant la préparation |
 | `preparationCountdown` | `{ round, auto }` | Début du compte à rebours ; `auto: true` s'il est déclenché par le délai de départ automatique |
 
@@ -245,10 +246,11 @@ Tous les événements sont envoyés à toute la room.
 
 ## 11. Déconnexion, reconnexion, départ
 
-- **Remplacement d'un Chat**, une seule règle pour la déconnexion et le retrait, pendant une manche : on remplace tant que le nombre de Chats actifs (connectés) est inférieur au plus petit de ces trois nombres : le nombre réglé (`chatCount`), les joueurs connectés moins un (au moins 1), et le nombre de Chats au début de la manche. Chaque remplaçant est un Coureur connecté tiré au sort avec `ctx.random` ; il devient Chat **sans gel**, avec l'événement `chatReplaced`. S'il ne reste aucun Coureur connecté, on s'arrête. Un remplacement répare un départ : il n'ajoute jamais de Chats, et ne prend jamais le dernier Coureur connecté.
+- **Remplacement d'un Chat**, une seule règle pour la déconnexion et le retrait, pendant une manche : un Chat qui part est remplacé si le nombre de Chats actifs (connectés), lui parti, est inférieur au plus petit de ces trois nombres : le nombre réglé (`chatCount`), les joueurs connectés moins un (au moins 1), et le nombre de Chats au début de la manche. Le remplaçant est un Coureur connecté tiré au sort avec `ctx.random` ; il devient Chat **sans gel**, avec l'événement `chatReplaced`. Un départ a au plus un remplaçant : un remplacement répare ce départ, il n'ajoute jamais de Chats, et ne prend jamais le dernier Coureur connecté.
   - 4 joueurs, 3 Chats (A, B, C) et un Coureur (D) ; A se déconnecte ou part : 2 Chats actifs, pour un plafond de 2 (3 réglés, 3 connectés − 1, 3 au début) ; pas de remplacement, B et C continuent de chasser D.
   - 5 joueurs, 2 Chats réglés ; un Chat se déconnecte ou part : 1 Chat actif, pour un plafond de 2 (2 réglés, 4 connectés − 1, 2 au début) ; un Coureur connecté est tiré au sort pour le remplacer.
   - 6 joueurs, 3 Chats réglés, mais seulement 3 joueurs connectés au début de la manche, qui a donc commencé avec 2 Chats (section 4) ; les autres reviennent, puis un Chat part : 1 Chat actif, pour un plafond de 2 (3 réglés, 5 connectés − 1, 2 au début) ; un seul remplaçant.
+  - 5 joueurs, 2 Chats (A et B) ; deux Coureurs se déconnectent, puis A : 1 Chat actif, pour un plafond de 1 (2 réglés, 2 connectés − 1, 2 au début) ; A n'est pas remplacé. Les deux Coureurs reviennent, puis B se déconnecte : aucun Chat actif, pour un plafond de 2 ; un seul remplaçant, celui de B. A reste Chat pendant son absence : il redevient un Chat actif à son retour, ou il est remplacé s'il est retiré.
 - **Un Chat se déconnecte pendant une manche :** règle de remplacement ci-dessus. S'il est remplacé, il devient Coureur, sans gel s'il était gelé : seul un Chat peut l'être (6.1). S'il ne l'est pas, il reste Chat pendant son absence, sans pouvoir toucher, et redevient un Chat actif à son retour : se déconnecter ne permet pas d'échapper au rôle.
 - **Pendant la préparation, personne n'est remplacé** : entre deux manches, personne n'a de rôle, et les Chats sont tirés au début de chaque manche (4).
 - **Un Coureur se déconnecte :** son curseur reste à sa position mais n'est pas dessiné par les clients (`connected: false` dans la vue). Il ne peut pas être touché, et son score est en pause jusqu'à son retour.
@@ -298,7 +300,8 @@ Tous les événements sont envoyés à toute la room.
 - Un input qui arrive après la déconnexion de son joueur enregistre son `seq` sans le déplacer.
 - Portails : entrée qui déclenche, traversée rapide qui déclenche, recharge qui bloque, arrivée au centre qui ne déclenche pas.
 - Vitesse différente entre Chat et Coureur.
-- Remplacement d'un Chat, par la même règle à la déconnexion et au retrait : les trois exemples du §11 ; jamais le dernier Coureur connecté ; pas de remplacement pendant la préparation ; le remplaçant peut toucher dès le tick suivant.
+- Remplacement d'un Chat, par la même règle à la déconnexion et au retrait : les quatre exemples du §11 ; un seul remplaçant par départ ; jamais le dernier Coureur connecté ; pas de remplacement pendant la préparation ; le remplaçant peut toucher dès le tick suivant.
+- Joueur prêt retiré pendant l'attente : il quitte `readyPlayerIds` sans `readyChanged`, et le compte à rebours démarre si tous les connectés restants sont prêts.
 - Chat déconnecté remplacé : il devient Coureur, sans gel s'il était gelé. Non remplacé : il reste Chat, ne touche pas pendant son absence, et touche de nouveau à son retour.
 - Enchaînement des manches et fin de partie après `roundCount` manches.
 - Durée de manche égale à `roundDurationS`.
