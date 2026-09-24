@@ -77,6 +77,8 @@ src/
     schemas.ts                  schémas Zod des messages communs
     constants.ts                constantes réseau, room, arène
     types.ts                    types métier communs (Player, RoomState…)
+    snapToStep.ts               options des jeux : bornes, pas, égalité au pas inférieur
+    shuffle.ts                  mélange tiré de l'aléa fourni, jamais de Math.random
     cursor/
       collision.ts              disque contre mur, disque contre bords
       moveCursor.ts             déplacement d'un curseur (budget, murs, bords)
