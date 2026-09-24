@@ -190,7 +190,7 @@ src/
       client/                   SandboxScreen.tsx, hooks/, render/
     cursor-tag/
       rules.md                  règles du jeu (source de vérité du gameplay)
-      shared/                   constants.ts, types.ts, schemas.ts, map.ts
+      shared/                   meta.ts, constants.ts, types.ts, schemas.ts, map.ts
       logic/                    fonctions pures du jeu + leurs tests
       server/                   CursorTagGame.ts (orchestration), bot.ts
       client/
