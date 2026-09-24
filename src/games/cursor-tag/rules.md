@@ -13,6 +13,7 @@ Un ou plusieurs joueurs sont le **Chat** et doivent toucher les curseurs des aut
 |---|---|
 | `id` | `cursor-tag` |
 | Nom affiché | `Cursor Tag` |
+| Description (carte de jeu) | « Un jeu du chat à la souris. Esquive, prends les portails, ne te fais pas toucher. » |
 | Joueurs minimum | `MIN_PLAYERS` (3) |
 | Joueurs maximum | `MAX_PLAYERS` (10) |
 
@@ -22,12 +23,12 @@ Toutes les options sont des nombres entiers, modifiés par l'hôte avec des bout
 
 | Option | Clé | Minimum | Maximum | Pas | Défaut |
 |---|---|---|---|---|---|
-| Nombre de Chats | `chatCount` | `1` | nombre de joueurs − 1 | `1` | `1` |
+| Nombre de Chats | `chatCount` | `1` | nombre de joueurs − 1, et au moins 1 | `1` | `1` |
 | Nombre de manches | `roundCount` | `1` | `5` | `1` | `3` |
 | Durée d'une manche (secondes) | `roundDurationS` | `30` | `120` | `15` | `60` |
 | Durée du gel (secondes) | `freezeDurationS` | `1` | `5` | `1` | `3` |
 
-- **Nombre de Chats :** il faut toujours au moins un Chat et au moins un Coureur. Exemple : à 5 joueurs, de 1 à 4 Chats. Avec 2 joueurs, la seule valeur possible est 1.
+- **Nombre de Chats :** il faut toujours au moins un Chat et au moins un Coureur. Exemple : à 5 joueurs, de 1 à 4 Chats. Avec 2 joueurs, la seule valeur possible est 1. Avec un seul joueur, l'hôte seul dans le lobby, le maximum reste 1 : il faut toujours au moins un Chat, et la partie ne peut de toute façon pas démarrer sous `MIN_PLAYERS`.
 - **Durée du gel :** elle s'applique aux deux gels du jeu, le gel d'un joueur touché (6.3) et le gel des Chats au début de chaque manche (section 4).
 - **`normalizeOptions`**, appliquée à chaque réception d'options et à chaque changement du nombre de joueurs :
   - une valeur inférieure au minimum est ramenée au minimum, une valeur supérieure au maximum est ramenée au maximum ;
@@ -65,7 +66,7 @@ Toutes les options sont des nombres entiers, modifiés par l'hôte avec des bout
   - le délai de départ automatique atteint 0.
 - La condition « tous prêts » est vérifiée après chaque action `ready`, chaque déconnexion et chaque retrait. Un joueur déconnecté ne bloque donc jamais le démarrage.
 - **Compte à rebours :** il dure `PREPARATION_COUNTDOWN_MS`, ne peut pas être annulé et envoie l'événement `preparationCountdown`. À 0, la manche démarre (section 4, étapes 1 à 6). Les joueurs qui n'étaient pas prêts démarrent sans souris capturée : ils voient l'écran « Clique pour reprendre » (architecture 6.5) et peuvent cliquer à tout moment.
-- **Déconnexion pendant l'attente :** le joueur perd son statut « prêt ». Tant qu'il est déconnecté, il ne bloque pas le démarrage.
+- **Déconnexion pendant l'attente :** le joueur perd son statut « prêt », avec l'événement `readyChanged { ready: false }` s'il était prêt. Tant qu'il est déconnecté, il ne bloque pas le démarrage.
 - **Reconnexion pendant l'attente :** le joueur n'est pas prêt, même s'il avait cliqué avant sa déconnexion. Il voit le bouton, et le démarrage attend de nouveau son clic, dans la limite du délai de départ automatique.
 - **Reconnexion pendant le compte à rebours :** le joueur rejoint simplement la manche.
 - Les bots envoient l'action `ready` dès le début de la préparation.
@@ -98,7 +99,7 @@ Un joueur **gelé** ne peut pas bouger. Seul un Chat peut être gelé.
 - Sensibilité commune à tous les joueurs (`CURSOR_SENSITIVITY`, architecture 6.5). Aucun réglage par joueur.
 - **Rattrapage** (architecture 6.5, décision provisoire 15.3) : chaque déplacement passe par `moveWithBacklog`, avec une laisse de `CATCH_UP_MS` millisecondes de trajet à la vitesse du rôle. À 0, sa valeur de départ, c'est exactement `moveCursor` : ce que le budget refuse est perdu. Au-dessus de 0, ce que le budget refuse est gardé comme un **reste**, dans la limite de la laisse, et payé ensuite (6.6).
   - Le reste est remis à zéro au gel, à la téléportation par un portail, au début de chaque manche et à chaque reconnexion, reprise de place comprise. Sinon un joueur dégelé, téléporté ou revenu reprendrait un geste d'avant.
-  - Au changement de rôle sans gel (le Chat qui vient de toucher, le remplaçant d'un Chat déconnecté), le reste est gardé. Sa laisse suit la nouvelle vitesse : un reste devenu trop long est ramené à la nouvelle laisse à son prochain déplacement.
+  - Au changement de rôle sans gel (le Chat qui vient de toucher, le remplaçant d'un Chat déconnecté ou retiré), le reste est gardé. Sa laisse suit la nouvelle vitesse : un reste devenu trop long est ramené à la nouvelle laisse à son prochain déplacement.
 - Pendant un gel : les inputs du joueur sont ignorés, mais leur `seq` est enregistré comme traité. Le budget et le reste restent à 0 et la position ne change pas.
 
 ### 6.3 Toucher
@@ -107,13 +108,13 @@ Un joueur **gelé** ne peut pas bouger. Seul un Chat peut être gelé.
 - **Trajet pendant un tick :** chaque joueur va en ligne droite, à vitesse constante, de sa position de début de tick à sa position de fin de tick, et tous parcourent leur trajet au même rythme. Le test cherche le premier instant où les deux centres sont à `TAG_DISTANCE` ou moins, les deux joueurs avançant ensemble. Ce n'est pas la distance entre deux traits immobiles : deux trajets qui se croisent à des moments différents du tick ne se touchent pas.
 - **Position de début de tick :** la position de fin du tick précédent ; au début d'une manche, le point d'apparition ; après une téléportation, le centre du portail d'arrivée. **Seul le trajet après le portail compte** : atteindre le portail, c'est passer.
 - **Rembobinage** (`TAG_REWIND_TICKS`, décision provisoire 15.2) : le trajet du Chat est celui du tick en cours, celui du Coureur est le sien d'il y a `TAG_REWIND_TICKS` ticks. À 0, sa valeur de départ, les deux trajets sont ceux du tick en cours.
-  - Le rembobinage ne remonte jamais avant le dernier des événements suivants, pour l'un ou l'autre des deux joueurs : une téléportation, un changement de rôle, la fin d'un gel, le début de la manche, une reconnexion (reprise de place comprise). Il s'arrête au premier trajet qui suit cet événement.
+  - Le rembobinage ne remonte jamais avant le dernier des événements suivants, pour l'un ou l'autre des deux joueurs : une téléportation, un changement de rôle, la fin d'un gel, le début de la manche, une reconnexion (reprise de place comprise). Le rembobinage n'utilise jamais un trajet commencé avant l'événement.
   - Le Coureur touché est gelé là où il se trouve à la fin du tick, pas à sa position rembobinée.
 - Seuls peuvent toucher les Chats **non gelés et connectés**. Seuls peuvent être touchés les Coureurs **connectés**. Ces états sont lus une seule fois, au moment de résoudre les touchers (6.6), et valent pour tout le tick.
 - **Résolution dans un tick :**
   1. Tous les contacts du tick (un Chat, un Coureur, l'instant de leur premier contact) sont rangés du plus tôt au plus tard. À instant égal, leur ordre est tiré avec `ctx.random`.
   2. Ils sont appliqués dans cet ordre. Un Chat touche ainsi le premier Coureur qu'il rencontre, et un Coureur atteint par plusieurs Chats est touché par le premier.
-  3. Un joueur qui a changé de rôle pendant ce tick ne peut plus toucher ni être touché avant le tick suivant : tout contact qui le concerne est sauté.
+  3. Un joueur qui a changé de rôle pendant ce tick ne peut plus toucher ni être touché avant le tick suivant : tout contact qui le concerne est sauté. Seuls comptent les rôles échangés par les touchers de ce tick : le remplaçant d'un Chat déconnecté ou retiré (11), qui change de rôle entre deux ticks, peut toucher dès le tick suivant.
 - **Effet d'un toucher :**
   - le Coureur touché devient Chat et est gelé pendant `freezeDurationS` secondes ; son budget et son reste passent à 0 ;
   - le Chat qui a touché devient Coureur, sans gel ;
@@ -170,7 +171,7 @@ Pendant une manche :
 
 1. décrémenter de `dt` le temps restant de la manche, les gels et les recharges de portails (minimum 0) ;
 2. payer le reste du rattrapage de chaque joueur connecté et non gelé, avec ce qui reste de son budget, puis vérifier les portails sur ce déplacement ;
-3. ajouter `dt` au score de chaque Coureur connecté ;
+3. ajouter au score de chaque Coureur connecté le temps de manche écoulé pendant ce tick : `dt`, ou seulement ce qu'il restait de la manche au dernier tick. Un surplus de quelques millisecondes ne doit jamais donner un point au classement en secondes entières (7) ;
 4. résoudre les touchers (6.3), sur les trajets du tick, déplacement de l'étape 2 compris ;
 5. recharger le budget de déplacement de chaque joueur non gelé (formule architecture 6.5), pour les inputs du tick suivant ;
 6. retenir la position de chaque joueur comme position de début du tick suivant (6.3) ;
@@ -244,11 +245,17 @@ Tous les événements sont envoyés à toute la room.
 
 ## 11. Déconnexion, reconnexion, départ
 
-- **Un Chat se déconnecte :** un Coureur connecté est immédiatement tiré au sort avec `ctx.random` pour le remplacer. Le remplaçant devient Chat **sans gel**. Le joueur déconnecté devient Coureur. Événement `chatReplaced`. S'il n'existe aucun Coureur connecté, il n'y a pas de remplacement.
+- **Un Chat se déconnecte pendant une manche :** un Coureur connecté est immédiatement tiré au sort avec `ctx.random` pour le remplacer. Le remplaçant devient Chat **sans gel**. Le joueur déconnecté devient Coureur, sans gel s'il était gelé : seul un Chat peut l'être (6.1). Événement `chatReplaced`. S'il n'existe aucun Coureur connecté, il n'y a pas de remplacement.
+- **Pendant la préparation, personne n'est remplacé** : entre deux manches, personne n'a de rôle, et les Chats sont tirés au début de chaque manche (4).
 - **Un Coureur se déconnecte :** son curseur reste à sa position mais n'est pas dessiné par les clients (`connected: false` dans la vue). Il ne peut pas être touché, et son score est en pause jusqu'à son retour.
+- **Inputs d'un joueur déconnecté :** un input qui arrive encore après sa déconnexion enregistre son `seq` comme traité, sans déplacer son curseur.
 - **Reconnexion :** le joueur retrouve sa position, son rôle actuel et son score. Son `lastProcessedSeq` repart à −1, son budget et son reste à 0 (architecture 6.5 et 7). Si la partie est en préparation (étape attente), il voit le bouton « Je suis prêt ».
 - **Reprise de la place sans déconnexion**, par un second onglet ou par une reconnexion arrivée avant que le serveur ait constaté la coupure (architecture 4) : pour le jeu, c'est une reconnexion, et son `lastProcessedSeq` repart à −1, son budget et son reste à 0. Mais aucune déconnexion ne l'a précédée : les autres joueurs ne voient rien, et rien de ce qui arrive à un joueur qui se déconnecte ne s'applique — le Chat n'est pas remplacé, le score du Coureur continue, le statut prêt reste. Rouvrir un onglet ne doit offrir ni pause ni échappatoire.
-- **Retrait :** le joueur est supprimé de la partie et n'apparaît plus dans la vue ni dans le classement. Si le nombre de joueurs passe sous `MIN_PLAYERS`, la partie est abandonnée (architecture 5.2).
+- **Retrait :** le joueur est supprimé de la partie et n'apparaît plus dans la vue ni dans le classement : départ par « Quitter la room », bot retiré par l'hôte, ou fin du délai de reconnexion.
+  - Si le nombre de joueurs passe sous `MIN_PLAYERS`, la partie est abandonnée (architecture 5.2), et rien d'autre ne se passe dans le jeu : ni remplacement, ni fin de manche, ni compte à rebours. Sinon un `roundEnd` ou un `preparationCountdown` partirait juste avant l'abandon.
+  - **Un Chat retiré pendant une manche** n'est remplacé que s'il reste moins de Chats que le nombre réglé (`chatCount`), ramené au maximum que permettent les joueurs restants : joueurs restants − 1, et au moins 1. Les remplaçants sont tirés au sort avec `ctx.random` parmi les Coureurs connectés, comme à la déconnexion, jusqu'à atteindre ce nombre et jamais au-delà. Un remplacement ne supprime donc jamais le dernier Coureur : un joueur qui part ne met jamais fin à la manche des autres.
+    - 4 joueurs dont 3 Chats, un Chat part : il reste 2 Chats pour un maximum de 2 ; pas de remplacement, la manche continue.
+    - 5 joueurs, 2 Chats réglés, un Chat part : il reste 1 Chat pour un maximum de 2 ; un Coureur est tiré au sort pour le remplacer.
 
 ## 12. Bot
 
@@ -272,22 +279,25 @@ Tous les événements sont envoyés à toute la room.
 - Nombre de Chats au début d'une manche : borné par `chatCount`, P − 1 et C − 1, avec un minimum de 1.
 - `normalizeOptions` pour chaque option : valeur sous le minimum, au-dessus du maximum, hors pas (70 → 75, 67 → 60 pour la durée de manche), `chatCount` recalculé quand le nombre de joueurs baisse.
 - `freezeDurationS` appliqué au gel d'un joueur touché et au gel des Chats en début de manche.
-- `normalizeOptions` : valeur trop haute ramenée à « joueurs − 1 », valeur inférieure à 1 ramenée à 1.
+- `normalizeOptions` : valeur trop haute ramenée à « joueurs − 1 », valeur inférieure à 1 ramenée à 1, et 1 avec un seul joueur.
 - Gel des Chats au début d'une manche, Coureurs libres.
 - Coureur déconnecté : non touchable, score en pause.
 - La partie commence par la préparation de la manche 1, sans curseur.
 - Préparation : inputs ignorés, actions `ready` et `notReady` enregistrées, actions hors de l'étape attente refusées.
-- Joueur prêt qui se déconnecte : retiré de `readyPlayerIds`. À sa reconnexion pendant l'attente, il n'est pas prêt et bloque le démarrage jusqu'à son clic.
+- Joueur prêt qui se déconnecte : retiré de `readyPlayerIds`, avec `readyChanged { ready: false }`. À sa reconnexion pendant l'attente, il n'est pas prêt et bloque le démarrage jusqu'à son clic.
 - Compte à rebours déclenché quand tous les connectés sont prêts, non déclenché s'il manque un joueur connecté, déclenché quand le seul joueur non prêt se déconnecte, déclenché à la fin du délai de départ automatique (`auto: true`).
 - Délai de départ automatique non remis à zéro par une déconnexion ou une reconnexion.
 - Manche suivante lancée à la fin du compte à rebours, avec le gel des Chats.
 - Plus aucun Coureur après un retrait : fin de manche immédiate, puis préparation de la manche suivante ou fin de partie.
+- Retrait qui fait passer la partie sous `MIN_PLAYERS` : ni remplacement, ni fin de manche, ni compte à rebours.
 - Tirage des Chats avec moins de joueurs connectés que de Chats : complément parmi les déconnectés.
 - Un Chat gelé ne touche pas. Un joueur gelé ne bouge pas.
-- Score : un Coureur connecté gagne `dt`, un Chat et un Coureur déconnecté ne gagnent rien.
+- Score : un Coureur connecté gagne `dt`, un Chat et un Coureur déconnecté ne gagnent rien ; au dernier tick d'une manche, seulement le temps qui restait.
+- Un input qui arrive après la déconnexion de son joueur enregistre son `seq` sans le déplacer.
 - Portails : entrée qui déclenche, traversée rapide qui déclenche, recharge qui bloque, arrivée au centre qui ne déclenche pas.
 - Vitesse différente entre Chat et Coureur.
-- Remplacement d'un Chat déconnecté.
+- Remplacement d'un Chat déconnecté ; un Chat gelé remplacé devient Coureur sans gel ; pas de remplacement pendant la préparation ; le remplaçant peut toucher dès le tick suivant.
+- Chat retiré pendant une manche : à 4 joueurs dont 3 Chats, pas de remplacement et la manche continue ; à 5 joueurs avec 2 Chats réglés, un Coureur tiré au sort le remplace ; jamais au-delà du nombre réglé ramené aux joueurs restants, et jamais le dernier Coureur.
 - Enchaînement des manches et fin de partie après `roundCount` manches.
 - Durée de manche égale à `roundDurationS`.
 - `getRanking()` : scores en secondes entières arrondies à l'inférieur, triés par score décroissant ; deux joueurs à 42 100 et 42 900 ms sont à égalité (même place, mêmes points).
