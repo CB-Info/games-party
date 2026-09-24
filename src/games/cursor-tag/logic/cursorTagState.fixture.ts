@@ -2,7 +2,14 @@ import type { Point } from "../../../shared/cursor/collision";
 import { NO_SEQ_PROCESSED } from "../../../shared/cursor/cursorInput";
 import { PREPARATION_AUTO_START_MS } from "../shared/constants";
 import { defaultOptions, settingsFor } from "./cursorTagOptions";
-import type { PreparationState, RoundPlayer, RoundState, TagMember } from "./cursorTagState";
+import type { TagSettings } from "./cursorTagOptions";
+import type {
+  PreparationState,
+  RoundPlayer,
+  RoundState,
+  RuleContext,
+  TagMember,
+} from "./cursorTagState";
 
 /**
  * Builders shared by the tests of Cursor Tag's rules. Never imported by production code. Each
@@ -87,5 +94,26 @@ export function waitingOf(
     readyIds,
     step: { kind: "waiting", autoStartMsLeft: PREPARATION_AUTO_START_MS },
     ...changes,
+  };
+}
+
+/** Randomness a test does not expect to be drawn: any draw fails the test. */
+export function neverDrawn(): number {
+  throw new Error("no random draw expected");
+}
+
+/**
+ * What the rules read besides the state. Everyone is connected but the players listed as `away`,
+ * and randomness is not drawn unless a test gives some.
+ */
+export function rulesWith(
+  context: { settings?: TagSettings; away?: readonly string[]; random?: () => number } = {},
+): RuleContext {
+  const away = context.away ?? [];
+
+  return {
+    settings: context.settings ?? SETTINGS,
+    isConnected: (playerId) => !away.includes(playerId),
+    random: context.random ?? neverDrawn,
   };
 }
