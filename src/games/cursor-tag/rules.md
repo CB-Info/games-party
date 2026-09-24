@@ -378,6 +378,8 @@ Tous les événements sont envoyés à toute la room. Ceux d'un tick partent apr
 | `BOT_LOOK_AHEAD` | `90` (unités logiques) |
 | `CATCH_UP_MS` | `0` (millisecondes de trajet à la vitesse du rôle ; 0 = pas de rattrapage) |
 | `TAG_REWIND_TICKS` | `0` (ticks ; 0 = pas de rembobinage) |
+| `VIEW_STATE_CONNECTED` / `VIEW_STATE_CHAT_OR_READY` | `1` / `2` (bits de l'état `e` d'un joueur dans la vue compacte, 8.2) |
+| `VIEW_OWN_PRECISION` | `10` (dixièmes : précision de la position, du budget et du reste du destinataire, 8.2) |
 
 Vitesses, rayons et durées sont des valeurs de départ, à ajuster après le test avec le groupe en modifiant ce tableau. `RUNNER_MAX_SPEED`, `CHAT_SPEED_MULTIPLIER`, `CATCH_UP_MS` et `TAG_REWIND_TICKS` sont en outre des décisions provisoires, comparées en partie réelle à la sous-étape 4e (sections 15.2 et 15.3). Les tests sont écrits contre ces constantes, jamais contre leurs valeurs, pour qu'en changer une ne demande que ce tableau.
 

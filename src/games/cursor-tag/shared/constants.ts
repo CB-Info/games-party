@@ -74,3 +74,15 @@ export const CATCH_UP_MS = 0;
  * `logic/cursorTagOptions.ts` alone, like `CATCH_UP_MS`.
  */
 export const TAG_REWIND_TICKS = 0;
+
+/** A player's state bit in the compact view: they are connected (rules.md, §8.2). */
+export const VIEW_STATE_CONNECTED = 1;
+
+/** A player's state bit in the compact view: a Chat during a round, ready during a preparation. */
+export const VIEW_STATE_CHAT_OR_READY = 2;
+
+/**
+ * Steps per logical unit kept for what the recipient's prediction starts from — their own
+ * position, budget and remainder: tenths (rules.md, §8.2). Everything else is rounded to the unit.
+ */
+export const VIEW_OWN_PRECISION = 10;
