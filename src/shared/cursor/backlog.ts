@@ -11,8 +11,8 @@ export interface BacklogMoveInput extends MoveCursorInput {
   backlog: Point;
   /**
    * How long the cursor may keep catching up once the hand has stopped, in milliseconds of travel
-   * at top speed — the sandbox's « Rattrapage ». Zero keeps nothing, and the move is then exactly
-   * what `moveCursor` gives.
+   * at top speed — the « Rattrapage ». Zero keeps nothing, and the move is then exactly what
+   * `moveCursor` gives.
    */
   catchUpMs: number;
 }
@@ -24,10 +24,11 @@ export interface BacklogMoveResult extends MoveCursorResult {
 }
 
 /**
- * A move that does not throw away what the budget refuses (docs/architecture.md, §6.5, sandbox
- * only for now). The remainder of earlier moves and the new movement are paid together with the
- * budget; what the budget cannot pay is kept, up to a leash, and paid by the moves that follow.
- * Pure and shared, like `moveCursor`: the server and the client's prediction run it unchanged.
+ * A move that does not throw away what the budget refuses (docs/architecture.md, §6.5, on trial
+ * in the sandbox and in Cursor Tag). The remainder of earlier moves and the new movement are paid
+ * together with the budget; what the budget cannot pay is kept, up to a leash, and paid by the
+ * moves that follow. Pure and shared, like `moveCursor`: the server and the client's prediction
+ * run it unchanged.
  *
  * It grants no speed. The remainder is movement owed, not budget, and it is paid from the same
  * budget as everything else — so the cursor never travels further in a tick than it can today.

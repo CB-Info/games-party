@@ -12,6 +12,12 @@ import type { PreparationState, RoundPlayer, RoundState, TagMember } from "./cur
 /** The settings of a game with default options (rules.md, §3). */
 export const SETTINGS = settingsFor(defaultOptions());
 
+/**
+ * The catch-up leash the tests play at: the game's own `CATCH_UP_MS` is 0 until a real game has
+ * decided (rules.md, §15.3), and at 0 there is no remainder to test.
+ */
+export const CATCH_UP_TEST_MS = 300;
+
 /** A spot far from every wall and portal, with room to move around it (rules.md, §6.5). */
 export const OPEN_GROUND: Point = { x: 800, y: 250 };
 
