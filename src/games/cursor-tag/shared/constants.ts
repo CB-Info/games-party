@@ -55,11 +55,14 @@ export const PORTAL_RADIUS = 36;
 /** How long a pair of portals stays unusable for the player it has just carried. */
 export const PORTAL_COOLDOWN_MS = 2000;
 
-/** How often a wandering bot Runner picks a new direction, in milliseconds. */
+/** How often a wandering bot, Chat or Runner, picks a new direction, in milliseconds (§12). */
 export const BOT_WANDER_CHANGE_MS = 1000;
 
 /** Largest random angle a bot adds to its direction, in radians. */
 export const BOT_JITTER_RAD = 0.3;
+
+/** How far ahead a bot checks that its way is clear of walls and edges, in logical units. */
+export const BOT_LOOK_AHEAD = 90;
 
 /**
  * The catch-up leash, in milliseconds of travel at the role's speed (rules.md, §6.2). Zero is the
