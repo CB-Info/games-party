@@ -1,22 +1,15 @@
+import type { Point, Wall } from "../../../shared/cursor/collision";
+
 /**
- * The Cursor Tag arena, in logical units (rules.md, §6.5). Data only: the game logic arrives at
- * step 4, and the lobby illustration reads these coordinates today.
+ * The Cursor Tag arena, in logical units (rules.md, §6.5). Data only: the game's rules read it,
+ * and so do the lobby illustration and the sandbox. Points and walls are the cursor engine's
+ * types, so its collision helpers take them as they are.
  */
 
-export interface Wall {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}
-
-export interface Point {
-  x: number;
-  y: number;
-}
+export type PortalPairId = "A" | "B";
 
 export interface PortalPair {
-  pair: "A" | "B";
+  pair: PortalPairId;
   first: Point;
   second: Point;
 }
