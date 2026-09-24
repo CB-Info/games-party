@@ -36,6 +36,8 @@ export interface SocketServerOptions {
   pingTimeoutMs?: number;
   /** Bots exist in development only; a test may turn them off to check that (§8). */
   allowBots?: boolean;
+  /** What games draw from (règle d'or 7). A test passes a seeded one, so that its draws repeat (§11). */
+  random?: () => number;
   rateLimits?: RateLimiterOptions;
 }
 
@@ -72,7 +74,7 @@ export function createSocketServer(
     outboundFor: (code) =>
       createSocketOutbound(io, code, (playerId) => socketIdByPlayerId.get(playerId) ?? null),
     findGame: options.findGame ?? findGame,
-    random: () => Math.random(),
+    random: options.random ?? (() => Math.random()),
     now,
     reconnectGraceMs: options.reconnectGraceMs,
     resultsAutoReturnMs: options.resultsAutoReturnMs,
