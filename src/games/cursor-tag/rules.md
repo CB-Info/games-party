@@ -182,8 +182,9 @@ Pendant une manche :
 
 - Le score est un nombre de millisecondes passées en tant que Coureur connecté.
 - Les scores des manches s'additionnent.
-- `getRanking()` renvoie les joueurs non retirés, triés par score décroissant.
-- **Classement en direct** (affiché pendant la partie) : trié par score exact en millisecondes, décroissant. À égalité, ordre alphabétique des pseudos (architecture 5.6). Le tri sur le score exact évite que des joueurs affichant le même nombre de secondes échangent leur place en boucle.
+- **Secondes affichées :** partout où un score s'affiche, c'est en secondes entières, arrondies à l'inférieur comme sur un chronomètre (« 42 s » de 42 000 à 42 999 ms).
+- **Classement final : ce que les joueurs voient fait foi.** `getRanking()` renvoie les joueurs non retirés avec leur score en secondes entières affichées, triés par score décroissant. Deux joueurs à « 42 s » sont à égalité, avec la même place et les mêmes points (architecture 5.6), même si leurs millisecondes diffèrent.
+- **Classement en direct** (affiché pendant la partie) : trié par score exact en millisecondes, décroissant. À égalité, ordre alphabétique des pseudos (architecture 5.6). Le tri sur le score exact évite que des joueurs affichant le même nombre de secondes échangent leur place en boucle. Il ne distribue rien : seul le classement final compte pour les places et les points.
 - La conversion en points cumulés suit `docs/architecture.md`, section 5.6.
 
 ## 8. Ce que chacun voit
@@ -289,7 +290,7 @@ Tous les événements sont envoyés à toute la room.
 - Remplacement d'un Chat déconnecté.
 - Enchaînement des manches et fin de partie après `roundCount` manches.
 - Durée de manche égale à `roundDurationS`.
-- `getRanking()` trié par score décroissant.
+- `getRanking()` : scores en secondes entières arrondies à l'inférieur, triés par score décroissant ; deux joueurs à 42 100 et 42 900 ms sont à égalité (même place, mêmes points).
 
 ## 14. Constantes (`shared/constants.ts`)
 
