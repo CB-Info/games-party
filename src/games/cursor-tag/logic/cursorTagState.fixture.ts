@@ -1,6 +1,6 @@
 import type { Point } from "../../../shared/cursor/collision";
 import { NO_SEQ_PROCESSED } from "../../../shared/cursor/cursorInput";
-import { PREPARATION_AUTO_START_MS } from "../shared/constants";
+import { PREPARATION_AUTO_START_MS, PREPARATION_COUNTDOWN_MS } from "../shared/constants";
 import { defaultOptions, settingsFor } from "./cursorTagOptions";
 import type { TagSettings } from "./cursorTagOptions";
 import type {
@@ -95,6 +95,15 @@ export function waitingOf(
     step: { kind: "waiting", autoStartMsLeft: PREPARATION_AUTO_START_MS },
     ...changes,
   };
+}
+
+/** The countdown of a preparation, as it begins unless a test says otherwise. */
+export function countdownOf(
+  players: TagMember[],
+  countdownMsLeft = PREPARATION_COUNTDOWN_MS,
+  changes: Partial<PreparationState> = {},
+): PreparationState {
+  return waitingOf(players, [], { step: { kind: "countdown", countdownMsLeft }, ...changes });
 }
 
 /** Randomness a test does not expect to be drawn: any draw fails the test. */
