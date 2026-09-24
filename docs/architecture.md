@@ -15,6 +15,7 @@ Conséquences acceptées :
 - Un redémarrage du serveur (déploiement, mise en veille, redémarrage imposé par Render) ferme toutes les rooms en cours.
 - Après 15 minutes sans trafic, le serveur se met en veille. Le premier visiteur attend environ une minute qu'il redémarre.
 - **La bande passante est la ressource rare, pas le processeur.** Render applique un quota mensuel de trafic sortant — **5 Go par mois** sur l'offre utilisée ici — et le dépasser sans moyen de paiement enregistré suspend le service jusqu'à la fin du mois. Une room de 10 joueurs envoie une vue par joueur 30 fois par seconde : à 900 octets la vue, c'est déjà **environ 1 Go par heure de jeu**, soit le quota entier en quelques soirées. C'est pourquoi la section 7 impose une vue compacte à tout jeu temps réel.
+- **Trafic à surveiller.** Même compacte, la vue de Cursor Tag laisse environ 9 heures de jeu par mois à 10 joueurs et 30 à 5 (section 7). Après les premières soirées, relever le trafic sortant sur la page Billing de Render : c'est avec ce chiffre qu'on choisira entre optimiser la vue et enregistrer un moyen de paiement.
 
 ## 2. Vue d'ensemble
 
@@ -232,9 +233,11 @@ LOBBY ──(hôte lance)──► PLAYING ──(jeu terminé)──► RESULTS
 - À chaque tick :
   1. appliquer les inputs reçus depuis le tick précédent, dans leur ordre d'arrivée ;
   2. appeler `tick(dt)` ;
-  3. si `isOver()` : arrêter la boucle et passer à `RESULTS` ;
-  4. sinon, envoyer à chaque joueur et spectateur connecté `game:view` avec `{ tick, serverTime: Date.now(), view: getViewFor(destinataire) }`. Un spectateur reçoit `getViewFor({ spectator: true })`, jamais la vue d'un joueur.
+  3. si `isOver()` : envoyer les événements du tick, arrêter la boucle et passer à `RESULTS` ;
+  4. sinon, envoyer à chaque joueur et spectateur connecté `game:view` avec `{ tick, serverTime: Date.now(), view: getViewFor(destinataire) }`. Un spectateur reçoit `getViewFor({ spectator: true })`, jamais la vue d'un joueur ;
+  5. puis envoyer les événements émis pendant le tick, par les bots, les inputs et `tick(dt)`, dans leur ordre.
 
+- **Les événements d'un tick partent après ses vues.** Socket.IO jette une vue volatile envoyée pendant qu'un message fiable occupe encore la connexion, dans le même passage du code : envoyé avant les vues, chaque événement coûtait sa vue à toute la room. Mesuré à l'étape 4 : sur 30 événements suivis chacun de sa vue, 30 événements reçus et aucune vue ; dans l'ordre inverse, tout arrive. Un événement émis hors d'un tick (action, déconnexion, retrait, `aborted`) part aussitôt : la vue suivante part un tick plus tard, sur une connexion libre.
 - `isOver()` est consulté **après chaque tick et après chaque retrait de joueur** : une partie peut se terminer en dehors d'un tick.
 
 ### 6.4 Arène
@@ -392,10 +395,11 @@ interface GameClientDefinition {      // frontières en `unknown`, comme Registe
 - **Reconnexion d'un joueur :** dans `onPlayerReconnect`, un jeu au curseur doit remettre son `lastProcessedSeq` à −1 et son budget à 0. Le client qui revient repart de `seq` 0 (section 6.5) ; sans cette remise à zéro, le serveur ignorerait tous ses inputs jusqu'à ce qu'il rattrape l'ancien compteur. `onPlayerReconnect` est appelé à **chaque nouvelle connexion** à la place d'un joueur : après une déconnexion, mais aussi quand un autre onglet reprend la place, ou qu'une reconnexion arrive avant que le serveur ait vu mourir l'ancienne connexion (section 4). Dans ces deux derniers cas, aucun `onPlayerDisconnect` ne le précède.
 - **Vue compacte, pour tout jeu temps réel.** La vue part à chaque tick, à chaque joueur : c'est de loin le premier poste de trafic sortant, et ce trafic est limité (section 1). Elle est donc écrite pour être petite, pas pour être agréable à lire :
   - clés d'une ou deux lettres plutôt que des noms complets ;
-  - positions arrondies à l'entier, et plus généralement aucune décimale qui ne se verrait pas à l'écran ;
+  - positions arrondies à l'entier, et plus généralement aucune décimale qui ne se verrait pas à l'écran. Seule exception : ce dont repart la prédiction du destinataire (sa position, son budget, son reste), qui garde la précision dont elle a besoin (Cursor Tag : le dixième, son `rules.md` 8.2) ;
   - listes de joueurs en tableaux de valeurs (`[x, y, role]`) plutôt qu'en objets répétant leurs clés ;
   - rien qui ne change pas d'un tick à l'autre, ni rien que le client tient déjà de `room:state` (pseudos, couleurs) ou de son `map.ts`.
-  - **Budget cible : environ 200 octets pour 10 joueurs**, trame Socket.IO comprise.
+  - **Budget : environ 500 octets pour 10 joueurs**, trame Socket.IO comprise. C'est la taille mesurée de la vue de Cursor Tag à l'étape 4 : environ 235, 305 et 490 octets à 3, 5 et 10 joueurs pendant une manche (540 dans le pire cas à 10), moins pendant une préparation. Sur le quota de 5 Go (section 1), cela laisse environ 67 heures de jeu par mois à 3 joueurs, 30 à 5 et 9 à 10.
+  - La cible de départ, 200 octets, n'est pas atteignable en JSON : l'enveloppe de `game:view` en prend déjà 64, et un identifiant de joueur 14. La vue ne sera réduite davantage (numéros de joueur à la place des identifiants, vue binaire) que si le trafic relevé sur Render le demande (section 1).
   - **Le volume est mesuré avant de clore l'étape du jeu**, et le chiffre est reporté dans le rapport de l'étape. Une vue qui dépasse largement le budget se corrige avant la fusion, pas après.
   - Le bac à sable (`games/sandbox`) **n'y est pas soumis** : réservé au développement, il n'est jamais enregistré en production et ne consomme donc rien sur Render. Sa vue reste lisible plutôt que compacte.
 - **`ViewStore`** : son contrat est déclaré dans `games/gameView.types.ts`, à côté de l'interface de jeu, et implémenté dans `client/engine/viewStore.ts` — le moteur peut atteindre les types d'un jeu, un jeu ne peut pas atteindre le moteur. Il garde les vues des `INTERPOLATION_BUFFER_MS` dernières millisecondes avec leur heure de réception, et expose :
@@ -471,7 +475,7 @@ La configuration est versionnée dans `render.yaml`, à la racine du dépôt. Le
 - Aperçu : réponse sans chrono, rôle ni identifiant ; `status` correct pour chaque état de room ; code inexistant compté comme échec.
 - Options : valeurs par défaut au premier choix d'un jeu, options restaurées au retour sur un jeu déjà choisi, `lobby:setOptions` refusé sans jeu, statut « prêt » conservé après `lobby:setOptions`.
 - Les jeux reçoivent un `random` déterministe dans les tests.
-- Pas de tests end-to-end pour l'instant.
+- Tests de bout en bout sur une vraie socket (`src/server/socket/`) : un serveur sur un port local, des clients Socket.IO et la vraie boucle de tick. Cursor Tag y joue une partie jusqu'à `game:results`, avec une manche raccourcie par ses réglages, ainsi qu'une déconnexion et une reconnexion.
 
 ## 12. Décisions et compromis
 

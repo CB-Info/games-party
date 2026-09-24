@@ -83,6 +83,7 @@ src/
       collision.ts              disque contre mur, disque contre bords
       moveCursor.ts             déplacement d'un curseur (budget, murs, bords)
       backlog.ts                rattrapage : le reste d'un geste coupé, payé ensuite (bac à sable)
+      clearHeading.ts           direction d'un bot libre de murs et de bords
       cursorInput.ts            type et schéma de `game:input`
   server/
     index.ts                    démarrage uniquement : assemble http + socket
@@ -192,7 +193,7 @@ src/
       rules.md                  règles du jeu (source de vérité du gameplay)
       shared/                   meta.ts, constants.ts, types.ts, schemas.ts, map.ts
       logic/                    fonctions pures du jeu + leurs tests
-      server/                   CursorTagGame.ts (orchestration), bot.ts
+      server/                   CursorTagGame.ts (orchestration), bot.ts, cursorTagDefinition.ts
       client/
         CursorTagScreen.tsx     composant racine du jeu
         components/             Hud.tsx, PointerLockOverlay.tsx…
