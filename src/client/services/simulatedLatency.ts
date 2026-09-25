@@ -7,7 +7,8 @@ import { holeEndAt } from "../utils/simulatedHoles";
  * client sends and everything it receives by 200 ms, so that prediction and interpolation can be
  * watched behaving as they would on a real network — one tab slowed down, another beside it at
  * full speed. `?holeIn=250` and `?holeOut=250` open a hole of 250 ms every few seconds in one
- * direction: nothing gets through, then everything held back does at once, as after a lost packet.
+ * direction: nothing gets through, then everything held back does at once, as after a lost packet
+ * — one message per task, in order (`releaseInOrder`).
  *
  * Read **once**, when this module is first loaded, so that navigating from the home screen to a
  * room keeps them. `import.meta.env.DEV` becomes the literal `false` at build time, so the whole
@@ -56,6 +57,19 @@ export function throughSimulatedHole(way: "in" | "out", act: () => void): void {
 
   queue.push(act);
   if (queue.length === 1) {
-    setTimeout(() => queue.splice(0).forEach((heldAct) => heldAct()), (endsAt ?? now) - now);
+    setTimeout(() => releaseInOrder(queue), (endsAt ?? now) - now);
+  }
+}
+
+/**
+ * Lets what was held go, one message per task and in the order it came. Released in a single pass,
+ * the inputs would all but one be dropped: Socket.IO throws a volatile message away while the one
+ * before it still occupies the connection (docs/architecture.md, §6.2), and the hole would then
+ * simulate a loss rather than the burst TCP delivers after one.
+ */
+function releaseInOrder(queue: Array<() => void>): void {
+  queue.shift()?.();
+  if (queue.length > 0) {
+    setTimeout(() => releaseInOrder(queue), 0);
   }
 }
