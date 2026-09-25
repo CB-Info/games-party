@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import { CursorTagOptionsForm } from "../../../../games/cursor-tag/client/components/CursorTagOptionsForm";
 import { CursorTagPreview } from "../../../../games/cursor-tag/client/components/CursorTagPreview";
+import { cursorTagClient } from "../../../../games/cursor-tag/client/cursorTagClient";
 import { defaultOptions } from "../../../../games/cursor-tag/logic/cursorTagOptions";
 import {
   FREEZE_DURATION_S_MIN,
@@ -16,8 +17,6 @@ import { ReadyToggle } from "../../room/components/ReadyToggle";
 import { SettingsColumn } from "../../room/components/SettingsColumn";
 import { StartGameButton } from "../../room/components/StartGameButton";
 import { GallerySection } from "./GallerySection";
-
-const SCORE_HINT = "Ton score, c’est le temps passé sans être Chat.";
 
 /** Every setting at a bound: no « − » for the freeze, no « + » for the rounds and their length. */
 const AT_BOUNDS: CursorTagOptions = {
@@ -45,7 +44,7 @@ export function LobbySection() {
           preview={<CursorTagPreview />}
           name={CURSOR_TAG_META.name}
           description={CURSOR_TAG_META.description}
-          scoreHint={SCORE_HINT}
+          scoreHint={cursorTagClient.scoreHint}
           onChange={() => undefined}
         />
 
