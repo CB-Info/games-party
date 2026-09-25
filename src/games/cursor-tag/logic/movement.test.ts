@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 
+import { TELEPORT_SNAP_DISTANCE } from "../../../shared/constants";
+import { distance } from "../../../shared/cursor/collision";
 import { moveCursor, budgetCap } from "../../../shared/cursor/moveCursor";
 import { CHAT_SPEED_MULTIPLIER, CURSOR_RADIUS, RUNNER_MAX_SPEED } from "../shared/constants";
-import { WALLS } from "../shared/map";
+import { PORTAL_PAIRS, WALLS } from "../shared/map";
 import { CATCH_UP_TEST_MS, OPEN_GROUND, chat, runner } from "./cursorTagState.fixture";
 import { maxSpeedOf, moveAtRoleSpeed, rechargeAtRoleSpeed } from "./movement";
 
@@ -104,5 +106,21 @@ describe("rechargeAtRoleSpeed", () => {
     const formerChat = runner("r", OPEN_GROUND, { budget: budgetCap(maxSpeedOf("chat")) });
 
     expect(rechargeAtRoleSpeed(formerChat, 1).budget).toBeCloseTo(budgetCap(maxSpeedOf("runner")));
+  });
+});
+
+describe("the moves the other players watch", () => {
+  it("keep a Chat gliding across a lost view, never jumping", () => {
+    // One view lost, and a tick late enough to refill a whole reserve: a Chat may cover two
+    // reserves between the two views the others interpolate (rules.md, §15.3). Past
+    // TELEPORT_SNAP_DISTANCE they would see it jump instead, and that constant would have to follow
+    // a faster game.
+    expect(2 * budgetCap(maxSpeedOf("chat"))).toBeLessThan(TELEPORT_SNAP_DISTANCE);
+  });
+
+  it("show a jump through a portal at once, the shortest being far beyond TELEPORT_SNAP_DISTANCE", () => {
+    const shortest = Math.min(...PORTAL_PAIRS.map((pair) => distance(pair.first, pair.second)));
+
+    expect(shortest).toBeGreaterThan(TELEPORT_SNAP_DISTANCE);
   });
 });
