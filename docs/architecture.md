@@ -224,6 +224,7 @@ LOBBY ──(hôte lance)──► PLAYING ──(jeu terminé)──► RESULTS
 
 - **Messages fiables** (tous sauf `game:input` et `game:view`) : ils ne doivent pas se perdre. `game:action` renvoie `INVALID_PAYLOAD` si le schéma n'est pas respecté, `INVALID_STATE` si l'action n'est pas possible à ce moment.
 - **Messages volatiles** : un message en retard est abandonné au lieu de s'accumuler.
+- **Jamais un message volatil juste après un message fiable**, dans le même passage du code : Socket.IO le jette tant que le message fiable occupe la connexion, des deux côtés. Mesuré à l'étape 4 : 30 événements suivis de leur vue, aucune vue reçue ; côté client, 5 inputs relâchés d'un coup, un seul reçu. Le serveur envoie donc les événements d'un tick après ses vues (6.3). Côté client, les inputs partent de leur propre minuterie, jamais dans le passage d'une action, et le simulateur de latence relâche un message par tâche (8.1).
 - `room:state` est envoyé à toute la room à chaque changement de l'état de la room, jamais à chaque tick.
 
 ### 6.3 Boucle de tick
@@ -254,7 +255,8 @@ LOBBY ──(hôte lance)──► PLAYING ──(jeu terminé)──► RESULTS
 - Au clic dans l'arène, le client appelle `requestPointerLock()` **sans** `unadjustedMovement`. L'accélération et la sensibilité du système d'exploitation de chaque joueur s'appliquent donc : le curseur virtuel se comporte comme son curseur habituel.
 - La sensibilité est commune à tous : `CURSOR_SENSITIVITY`, sans réglage par joueur.
 - **Tant que la souris n'a jamais été capturée** dans cette partie : voile d'arène avec « Clique pour capturer ta souris » (`docs/design-system.md`, sections 11.19 et 12). Sans lui, un joueur arrive devant un curseur immobile sans savoir qu'un clic le démarre.
-- **Pointer Lock perdu** (Échap, alt-tab) : écran « Clique pour reprendre » (section 11.18). Aucun input n'est envoyé, donc le curseur reste immobile côté serveur, mais **la partie continue derrière le voile** et le rendu ne s'arrête pas.
+- **Pointer Lock perdu** (Échap, alt-tab) : écran « Clique pour reprendre » (section 11.18). Aucun input n'est envoyé, donc le curseur reste immobile côté serveur, mais **la partie continue derrière le voile** et le rendu ne s'arrête pas. Le mouvement accumulé et pas encore envoyé est oublié : il ne doit pas repartir à la capture suivante, depuis un autre endroit.
+- **Le mouvement compte dès la capture.** L'écouteur de `mousemove` reste posé tant que l'écran de jeu est affiché et n'enregistre que pendant la capture. Posé seulement une fois la capture vue par React, il perdait le mouvement de la première image.
 - Un spectateur ne voit ni l'un ni l'autre : il n'a pas de curseur, donc aucune capture à demander ni à perdre.
 
 **Inputs**
@@ -377,7 +379,8 @@ interface GameClientDefinition {      // frontières en `unknown`, comme Registe
     viewStore: ViewStore;              // buffer des vues, lu par le moteur sans re-render
     sendInput(input: unknown): void;
     sendAction(action: unknown): Promise<{ ok: boolean }>;
-    me: { playerId: string } | { spectator: true };
+    me: { playerId: string } | { spectator: true }; // spectateur aussi pour un arrivant en cours de partie
+    options: unknown;                  // les options du jeu, lues dans room:state
     players: ReadonlyArray<{ playerId: string; pseudo: string; color: PlayerColorId }>;
     onLeave(): void;                   // l'écran possède ce qui se pose sur l'arène (11.18, 11.19)
   }>;
@@ -425,7 +428,7 @@ interface GameClientDefinition {      // frontières en `unknown`, comme Registe
 - **Développement uniquement.** `?lag=200` sur n'importe quelle URL du site retarde de 200 ms **tout ce que le client envoie et tout ce qu'il reçoit**. Une demande avec accusé coûte donc deux fois la latence, comme sur un vrai réseau. Seule exception : l'avis de session remplacée (section 4), que le serveur fait suivre aussitôt d'une coupure de la connexion, que le simulateur ne peut pas retarder.
 - Lu **une seule fois** au chargement de la page, donc conservé en passant de l'accueil à la room. Borné par `MAX_SIMULATED_LAG_MS`, pour qu'un chiffre saisi à la main ne fige pas la page.
 - Ouvrir un onglet avec `?lag=` et un autre sans, sur la même room, est la façon de voir travailler la prédiction et l'interpolation : dans l'onglet ralenti, ton propre curseur reste collé à ta souris pendant que les autres accusent leur retard.
-- **Trous.** `?holeIn=250` et `?holeOut=250` ouvrent, toutes les `SIMULATED_HOLE_EVERY_MS`, un trou de 250 ms dans un sens : rien ne passe, puis tout ce qui a été retenu passe d'un coup, dans l'ordre, comme après un paquet perdu. `holeIn` retient ce que le client reçoit (les vues et les réponses), `holeOut` ce qu'il envoie (les inputs et les demandes). Le trou occupe la fin de chaque période : le premier arrive quelques secondes après le chargement, le temps de rejoindre une room. Combinables avec `?lag`, bornés comme lui.
+- **Trous.** `?holeIn=250` et `?holeOut=250` ouvrent, toutes les `SIMULATED_HOLE_EVERY_MS`, un trou de 250 ms dans un sens : rien ne passe, puis tout ce qui a été retenu passe d'un coup, dans l'ordre, comme après un paquet perdu. Il repart un message par tâche : relâchés dans le même passage du code, les inputs volatils auraient été jetés par Socket.IO sauf le premier (6.2), et le trou aurait simulé une perte au lieu d'une rafale. `holeIn` retient ce que le client reçoit (les vues et les réponses), `holeOut` ce qu'il envoie (les inputs et les demandes). Le trou occupe la fin de chaque période : le premier arrive quelques secondes après le chargement, le temps de rejoindre une room. Combinables avec `?lag`, bornés comme lui.
 - **Pourquoi des trous et pas seulement `?lag`** : `?lag` retarde chaque message du même délai, donc les vues gardent leur espacement de 33 ms. Il ne reproduit jamais ce qu'un réseau réel fait après une perte, et que le moteur doit encaisser (section 6.5).
 - Comme les bots, tout cela quitte le build de production : la branche est gardée par `import.meta.env.DEV`.
 

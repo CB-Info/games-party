@@ -22,7 +22,8 @@
 - **Espacements :** l'échelle par défaut de Tailwind (pas de 4 px) est conservée, mais seuls les multiples listés en section 6 sont autorisés.
 - **Point de rupture « wide » :** fenêtre d'au moins **1440 px de large et 850 px de haut** (variante Tailwind `wide:`). Partout dans ce document, « en 1440 » ou « 1440 × 900 » désigne les valeurs appliquées en wide, et « en 1366 » ou « 1366 × 768 » les valeurs par défaut, appliquées sous ce seuil. La hauteur compte, car les écrans sont limités verticalement (arène 16:9, dix lignes de classement, podium).
 - **Typographie :** chaque style de la section 5 est une classe utilitaire composite `t-…`, déclarée une seule fois dans `src/client/styles.css` : elle applique la famille, la taille, l'interligne, l'interlettrage et la graisse en reprenant les variables du `@theme`, sans aucune valeur en dur. **Seules les classes `t-…` servent à la typographie.** Les valeurs sont déclarées dans `@theme` avec le préfixe neutre `--type-<style>-size`, `--type-<style>-line-height`, `--type-<style>-letter-spacing` et `--type-<style>-font-weight` (jamais `--text-*`), pour que Tailwind ne génère aucune classe `text-<style>` en parallèle. Les classes `t-display`, `t-countdown` et `t-logo` intègrent elles-mêmes leur changement de taille au point de rupture wide.
-- **Canvas (arène) :** le moteur de rendu lit dans les variables CSS, **au démarrage et une seule fois**, les couleurs de l'arène et des joueurs, ainsi que les quelques tailles dont il a besoin — rayon de l'arène, rayon et taille de texte des étiquettes, famille de police (fonction dédiée dans `client/engine/`). Aucune couleur ni aucune taille du design system n'est réécrite dans le code de rendu.
+- **Canvas (arène) :** le moteur de rendu lit dans les variables CSS, **au démarrage et une seule fois**, les couleurs de l'arène et des joueurs, la durée et la courbe de la boucle portail, la préférence d'animations réduites, ainsi que les quelques tailles d'interface dont il a besoin — rayon de l'arène, rayon et taille de texte des étiquettes, famille de police (fonction dédiée dans `client/engine/`). Aucune couleur, aucune police ni aucun rayon d'interface du design system n'est réécrit dans le code de rendu.
+- **Géométrie de l'arène :** les tailles de la section 12 (en unités d'arène, et les quelques épaisseurs à l'écran qui y sont marquées) n'ont pas de variable CSS : elles sont la géométrie du jeu, comme la carte. Le code de rendu les écrit en **constantes nommées**, avec exactement les valeurs de la section 12, et chacune renvoie à cette section.
 - **Typographie dans le canvas :** un canvas ne peut pas porter une classe `t-…`. La police y est composée en chaîne `ctx.font` à partir des mêmes variables que ces classes, ce qui reste la seule déclaration. Aucune attente n'est nécessaire : l'arène est redessinée à chaque image, donc les étiquettes prennent la bonne police dès qu'elle est chargée.
 - **Polices :** fichiers `.woff2` hébergés par le site dans `public/fonts/` (licence OFL), jamais chargés depuis Google Fonts (la CSP l'interdit). `font-display: swap`.
 - Vérifier la syntaxe exacte de `@theme` dans la documentation de la version de Tailwind installée avant d'écrire la configuration.
@@ -70,6 +71,7 @@
 | Arène texte | `--color-arena-ink` | `#F2F5F1` | Pseudos, textes sur le voile, anneau de ton propre curseur (12,4:1) |
 | Arène texte secondaire | `--color-arena-ink-secondary` | `#9BA6A0` | Mention « chat » après le pseudo (5,1:1) |
 | Portail | `--color-portal` | `#C9D2CC` | Anneaux et lettres des portails. Jamais une couleur de joueur |
+| Portail en recharge | `--color-portal-cooldown` | `rgba(201,210,204,.4)` | Anneau d'une paire en recharge pour toi (section 12). Sa lettre reste en Portail : un texte garde 4,5:1 |
 | Gel remplissage | `--color-freeze-fill` | `rgba(142,197,232,.9)` | Disque du curseur gelé, par-dessus la couleur du joueur |
 | Gel anneau | `--color-freeze-ring` | `rgba(142,197,232,.4)` | Anneau autour du curseur gelé |
 | Gel halo | `--color-freeze-halo` | `rgba(142,197,232,.18)` | Halo extérieur du curseur gelé |
@@ -208,6 +210,7 @@ Pastilles de couleur et curseurs : cercles (50 %).
 - Les transitions d'interface ne dépassent pas 300 ms. Seules la célébration, les boucles et l'illumination dépassent cette durée.
 - En CSS, on n'anime que `transform` et `opacity` (plus `background-color` pour les survols).
 - Les curseurs, portails, halos et gels de l'arène sont animés par le moteur de jeu (canvas), jamais en CSS.
+- Le moteur lit la boucle portail dans `--transition-duration-portal-loop` et `--ease-portal-loop`. Cette courbe a son propre token, même si elle vaut aujourd'hui celle d'« ample » : changer l'une ne doit pas changer l'autre. Avec les animations réduites, rien ne pulse, mais ce que la pulsation dit reste lisible sans elle (la recharge d'un portail, section 12).
 - Aucune autre durée ni courbe n'est autorisée.
 
 ## 10. Icônes
@@ -389,7 +392,7 @@ Communes : hauteur **38 px en 1440** et **30 px en 1366**, rayon md, fond Surfac
 ### 11.18 Écran « Clique pour reprendre »
 
 - Motif voile d'arène (11.19). Contenu centré : « Clique pour reprendre » (titre-1, Arène texte), message d'avertissement (pilule Avertissement doux, texte corps-fort Avertissement, point de 8 px), puis les boutons principal « Reprendre » et secondaire « Quitter la room » (icône sortie), séparés de 16 px.
-- **Le texte de l'avertissement vient du jeu**, qui seul sait ce que perdre la souris coûte : « Ton curseur ne bouge plus. » pour le bac à sable, « Ton curseur ne bouge plus : tu peux te faire attraper » pour Cursor Tag.
+- **Le texte de l'avertissement vient du jeu**, qui seul sait ce que perdre la souris coûte : « Ton curseur ne bouge plus. » pour le bac à sable. Pour Cursor Tag, il suit ton rôle : « Ton curseur ne bouge plus : tu peux te faire attraper » pour un Coureur, « Ton curseur ne bouge plus : tu n'attrapes plus personne » pour un Chat.
 - **Cet écran est réservé à la perte de capture.** Tant que la souris n'a **jamais** été capturée dans la partie, c'est l'invitation de la section 12 qui s'affiche — « Clique pour capturer ta souris » — parce qu'un joueur qui arrive n'a rien perdu et ne sait pas encore qu'il doit cliquer. L'une invite, l'autre avertit.
 - Le voile ne couvre que l'arène (11.19) : **le bouton du son de l'en-tête reste cliquable**, et « Quitter la room » ouvre sa boîte de confirmation habituelle, qui, elle, couvre toute la fenêtre (11.17).
 - **Un spectateur ne voit ni cet écran ni l'invitation :** il n'a pas de curseur, donc aucune capture à demander ni à perdre.
@@ -409,10 +412,16 @@ Communes : hauteur **38 px en 1440** et **30 px en 1366**, rayon md, fond Surfac
 - **Arène :** fond Arène fond, rayon xl à l'écran, format 16:9, affichée la plus grande possible. Le dessin est **découpé à ce rayon** : un curseur poussé dans un angle y est rogné plutôt que de déborder du cadre. Rentrer le terrain de jeu aurait changé la géométrie que le serveur applique.
 - **Murs :** Arène mur, rayon 8 en unités d'arène.
 - **Curseur :** disque de rayon 14 (unités d'arène), couleur du joueur.
-- **Ton curseur :** anneau de 3 px Arène texte autour du disque (épaisseur à l'écran).
-- **Chat :** disque avec deux oreilles de la couleur du joueur, et halo de la couleur du joueur en deux couronnes (4 px à 28 % d'opacité, puis 9 px à 12 %), en boucle portail.
-- **Gelé :** disque recouvert de Gel remplissage, anneau de 3 px Gel anneau, halo de 7 px Gel halo, décompte en secondes au centre (micro, Gel encre).
-- **Portails :** anneau de rayon 36 (unités d'arène), trait 2 px à l'écran, couleur Portail, lettre A ou B au centre (micro, **à l'écran** comme l'étiquette de pseudo). Paire A : anneau plein. Paire B : anneau pointillé. Pulsation en boucle portail — la pulsation dit « utilisable », donc un portail sans effet, comme ceux du bac à sable, est dessiné sans elle.
+- **Ton curseur :** anneau de 3 px Arène texte autour du disque (épaisseur à l'écran). Il se dessine **par-dessus** le halo d'un Chat, pour que ton curseur se repère parmi dix. Ton curseur porte aussi son étiquette.
+- **Chat :** disque avec deux oreilles de la couleur du joueur, et halo de la couleur du joueur en deux couronnes, qui s'étendent jusqu'aux rayons 18 (28 % d'opacité) et 23 (12 %).
+  - **Oreilles :** deux carrés de 9, aux coins de rayon 2, tournés de 45°, centrés à (−8,5, −15,5) et (8,5, −15,5) du centre du disque, sous le disque.
+  - **Pulsation :** un anneau de la couleur du joueur part du bord du halo (rayon 23) et grandit jusqu'au rayon 38, en s'effaçant de 25 % d'opacité à 0, trait 2 px à l'écran, en boucle portail. C'est la pulsation d'un portail, dans le même rapport de 1,5 à 0,9.
+- **Chat gelé** (seul un Chat peut être gelé) : il garde ses oreilles et sa mention « · chat ». Son disque est recouvert de Gel remplissage, avec un anneau Gel anneau jusqu'au rayon 17 et un halo Gel halo jusqu'au rayon 21. Il perd son halo de couleur et sa pulsation : il ne chasse pas encore.
+  - **Décompte au centre :** en secondes arrondies au-dessus (3, 2, 1 pour un gel de 3 s), en micro Gel encre, **à l'écran** comme l'étiquette. Il disparaît à la fin du gel.
+- **Portails :** anneau de rayon 36 (unités d'arène), trait 2 px à l'écran, couleur Portail, lettre A ou B au centre (micro, **à l'écran** comme l'étiquette de pseudo). Paire A : anneau plein. Paire B : anneau en tirets de 8 px séparés de 6 px (à l'écran).
+  - **Pulsation :** un anneau intérieur de rayon 28 grandit de 0,9 à 1,5 fois ce rayon (de 25 à 42), en couleur Portail à 45 % dont l'opacité passe de 55 % à 0 (soit de 25 % à 0 au total), trait 2 px à l'écran, plein pour la paire A et en tirets pour la paire B, en boucle portail.
+  - **La pulsation dit « utilisable » :** un portail sans effet est dessiné sans elle — ceux du bac à sable, tous les portails pendant la préparation, où personne ne bouge, et une paire en recharge pour toi. Pendant ton gel, les portails continuent de pulser : ils agissent pour les autres.
+  - **Recharge :** une paire en recharge pour toi a son anneau en Portail en recharge et ne pulse pas, sur ses deux bouches, que les animations soient réduites ou non. Sa lettre reste en Portail. Toi seul vois ta recharge ; un spectateur voit toutes les pulsations et aucune recharge.
 - **Étiquettes de pseudo :** à droite du curseur, fond Arène étiquette, rayon xs, marge intérieure 4 × 8, texte micro Arène texte. **L'étiquette entière est en pixels d'écran** — texte, boîte, rayon et marges —, quelle que soit la taille de l'arène : un texte de 12 px dans une boîte en unités d'arène se disloquerait quand l'arène rétrécit. Pour un Chat, le pseudo est suivi de « · chat » en Arène texte secondaire.
 - Joueur déconnecté : curseur non dessiné.
 - **Annonce « Tu es le Chat ! »** : motif voile d'arène, titre en titre-1 Arène texte, phrase « Attrape un Coureur pour lui passer le rôle » en corps-l Arène texte. Visible uniquement par le joueur concerné, **chaque fois qu'il devient Chat** : tiré au début d'une manche, touché par un Chat, ou remplaçant d'un Chat déconnecté. Un joueur qui devient Chat sans l'avoir vu venir doit le savoir immédiatement. Elle reste affichée pendant son gel ; pour le remplaçant, qui n'est pas gelé, sa durée est fixée à la sous-étape 4d.
@@ -480,6 +489,10 @@ Les maquettes de `docs/maquettes/` montrent chaque écran en 1440 × 900 et, pou
 | Survol des liens en `#084F40`, survol destructif en `#8E1E18` | Liens : Accent survol souligné, sans nouvelle couleur. Destructif : nouveau token Erreur survol |
 | Espacements hors échelle (5, 6, 9, 10, 13, 14, 20, 22 px…) | Valeur de l'échelle la plus proche, la plus grande à égalité (section 6) |
 | Animations de plus de 300 ms alors que la règle les interdit | Règle précisée : la célébration, les boucles et l'illumination sont les seules exceptions |
+| Décompte du gel en Nunito 13-14 px, qui clignote (maquette 5.3, planche) | Micro, Gel encre, à l'écran, sans clignotement (section 12) |
+| Étiquette « · gelé » et curseur gelé sans oreilles (planche, 5a) | Seul un Chat peut être gelé : il garde ses oreilles et « · chat » |
+| Chat gelé qui garde son halo de couleur (5b) | Halo de couleur retiré pendant le gel (section 12) |
+| Anneau pâle de 2,5 px autour de chaque Coureur (5.2, 5.3, planche) | Aucun anneau : seul ton propre curseur en porte un |
 
 ### 17.2 Éléments des maquettes à ne pas implémenter
 

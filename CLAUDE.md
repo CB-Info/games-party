@@ -122,8 +122,8 @@ src/
         components/             DevTools.tsx, BotPanel.tsx
         hooks/                  useBots.ts
       game/                     écran de jeu, voiles, capture de la souris
-        components/             GameHost.tsx, PauseOverlay.tsx, CaptureInvite.tsx…
-        hooks/                  useGameView.ts, usePointerLock.ts, useArenaSurface.ts…
+        components/             GameHost.tsx, CaptureVeils.tsx, PauseOverlay.tsx, CaptureInvite.tsx…
+        hooks/                  useGameView.ts, usePointerLock.ts, useCursorInputs.ts, usePredictionProbe.ts…
       demo/
         components/             DemoArena.tsx (illustration fixe de l'arène)
       home/
@@ -170,10 +170,15 @@ src/
       interpolation.ts          position des autres curseurs
       prediction.ts             rejeu des inputs non traités
       correction.ts             rapprochement du curseur affiché
+      ownCursor.ts              le curseur local : acquittement, prédiction, correction, image
+      portalLoop.ts             boucle portail : phase, courbe, animations réduites
+      drawArenaGround.ts        sol et murs de l'arène, découpés à son rayon
+      drawCursor.ts             disque, anneau de ton curseur, étiquette de pseudo
+      drawPortal.ts             anneau et lettre d'un portail, pulsation, recharge
       predictionStats.ts        relevé de développement (F9) : fenêtre de 3 s et maxima de partie
       gestureMeter.ts           pointe du geste et rattrapage, cadre par cadre (développement)
     utils/                      fonctions pures génériques, nommées par sujet
-                                (lobbyPlayers.ts, readyCounter.ts, roomUrl.ts…)
+                                (lobbyPlayers.ts, readyCounter.ts, roomUrl.ts, gameViewer.ts, captureVeil.ts…)
   games/
     gameServer.types.ts         interfaces GameDefinition, GameInstance…
     gameClient.types.ts         interface GameClientDefinition
@@ -195,10 +200,11 @@ src/
       logic/                    fonctions pures du jeu + leurs tests
       server/                   CursorTagGame.ts (orchestration), bot.ts, cursorTagDefinition.ts
       client/
+        cursorTagClient.ts      définition client du jeu (icône, aperçu, écran, formulaire)
         CursorTagScreen.tsx     composant racine du jeu
-        components/             Hud.tsx, PointerLockOverlay.tsx…
-        hooks/
-        render/                 drawArena.ts, drawCursors.ts…
+        components/             CursorTagOptionsForm.tsx, CursorTagPreview.tsx, ArenaScene.tsx…
+        hooks/                  useCursorTagRenderer.ts, useTagRoundState.ts, useArenaScene.ts…
+        render/                 drawTagArena.ts, drawTagCursors.ts, tagFrame.ts, tagDrawables.ts
 ```
 
 ### Rôle de chaque couche
