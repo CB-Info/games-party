@@ -2,6 +2,7 @@ import { useMemo } from "react";
 
 import type { GameClientDefinition } from "../../../../games/gameClient.types";
 import type { RoomState } from "../../../../shared/types";
+import { playingPlayerId } from "../../../utils/gameViewer";
 import { useGameChannel } from "../hooks/useGameChannel";
 import { useGameView } from "../hooks/useGameView";
 import { WaitingMessage } from "../../room/components/WaitingMessage";
@@ -22,9 +23,12 @@ export function GameHost({ state, myPlayerId, games, onLeave }: GameHostProps) {
   const { sendInput, sendAction } = useGameChannel();
   const game = games.find((candidate) => candidate.meta.id === state.selectedGameId) ?? null;
 
+  // A member who arrived during the game watches it, session or not: the server sends them the
+  // spectator's view, so their screen asks for no mouse to capture (§5.4).
+  const playingId = playingPlayerId(state.players, myPlayerId);
   const me = useMemo(
-    () => (myPlayerId === null ? ({ spectator: true } as const) : { playerId: myPlayerId }),
-    [myPlayerId],
+    () => (playingId === null ? ({ spectator: true } as const) : { playerId: playingId }),
+    [playingId],
   );
 
   // Pseudos and colours are not in a view: the game reads them from the room, which broadcasts
