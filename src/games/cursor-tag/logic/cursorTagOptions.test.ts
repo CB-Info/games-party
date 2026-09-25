@@ -13,7 +13,7 @@ import {
   TAG_REWIND_TICKS,
 } from "../shared/constants";
 import type { CursorTagOptions } from "../shared/schemas";
-import { defaultOptions, normalizeOptions, settingsFor } from "./cursorTagOptions";
+import { chatCountMax, defaultOptions, normalizeOptions, settingsFor } from "./cursorTagOptions";
 
 const PLAYER_COUNT = 5;
 
@@ -77,6 +77,14 @@ describe("normalizeOptions", () => {
     expect(normalized({ chatCount: 3 }, 2).chatCount).toBe(1);
     expect(normalized({ chatCount: 3 }, 1).chatCount).toBe(1);
     expect(normalized({ chatCount: 0 }, 1).chatCount).toBe(1);
+  });
+});
+
+describe("chatCountMax", () => {
+  it("leaves at least one Runner, and never allows fewer than one Chat", () => {
+    expect(chatCountMax(5)).toBe(4);
+    expect(chatCountMax(2)).toBe(1);
+    expect(chatCountMax(1)).toBe(CHAT_COUNT_MIN);
   });
 });
 

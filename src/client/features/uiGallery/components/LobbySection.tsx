@@ -1,37 +1,50 @@
 import { useState } from "react";
 
+import { CursorTagOptionsForm } from "../../../../games/cursor-tag/client/components/CursorTagOptionsForm";
+import { CursorTagPreview } from "../../../../games/cursor-tag/client/components/CursorTagPreview";
+import { defaultOptions } from "../../../../games/cursor-tag/logic/cursorTagOptions";
+import {
+  FREEZE_DURATION_S_MIN,
+  ROUND_COUNT_MAX,
+  ROUND_DURATION_S_MAX,
+} from "../../../../games/cursor-tag/shared/constants";
+import { CURSOR_TAG_META } from "../../../../games/cursor-tag/shared/meta";
+import type { CursorTagOptions } from "../../../../games/cursor-tag/shared/schemas";
 import { CursorTagIcon } from "../../../assets/CursorTagIcon";
-import { Stepper } from "../../../components/ui/Stepper";
-import { DemoArena } from "../../demo/components/DemoArena";
 import { GameColumn } from "../../room/components/GameColumn";
 import { ReadyToggle } from "../../room/components/ReadyToggle";
 import { SettingsColumn } from "../../room/components/SettingsColumn";
 import { StartGameButton } from "../../room/components/StartGameButton";
 import { GallerySection } from "./GallerySection";
 
-const GAME_NAME = "Cursor Tag";
-const GAME_DESCRIPTION =
-  "Un jeu du chat à la souris. Esquive, prends les portails, ne te fais pas toucher.";
 const SCORE_HINT = "Ton score, c’est le temps passé sans être Chat.";
 
+/** Every setting at a bound: no « − » for the freeze, no « + » for the rounds and their length. */
+const AT_BOUNDS: CursorTagOptions = {
+  chatCount: 1,
+  roundCount: ROUND_COUNT_MAX,
+  roundDurationS: ROUND_DURATION_S_MAX,
+  freezeDurationS: FREEZE_DURATION_S_MIN,
+};
+
 /**
- * The three-column lobby, with Cursor Tag's own texts and settings, which arrive at step 4. The
- * application shows the same layout today with the sandbox and its one setting.
+ * The three-column lobby, with Cursor Tag's own texts, preview and settings form. The host's form
+ * and a player's share their options: a click of the host lights the value up in the player's.
  */
 export function LobbySection() {
-  const [rounds, setRounds] = useState(3);
+  const [options, setOptions] = useState<unknown>(defaultOptions());
 
   return (
     <GallerySection
       title="Lobby · jeu choisi"
-      note="Cursor Tag arrive à l’étape 4 ; dans l’application, le bac à sable emprunte la même disposition."
+      note="Le formulaire de l’hôte et celui d’un joueur partagent leurs réglages : un clic de l’hôte illumine la valeur chez le joueur."
     >
       <div className="flex items-stretch gap-6">
         <GameColumn
           icon={<CursorTagIcon />}
-          preview={<DemoArena />}
-          name={GAME_NAME}
-          description={GAME_DESCRIPTION}
+          preview={<CursorTagPreview />}
+          name={CURSOR_TAG_META.name}
+          description={CURSOR_TAG_META.description}
           scoreHint={SCORE_HINT}
           onChange={() => undefined}
         />
@@ -43,14 +56,38 @@ export function LobbySection() {
             <StartGameButton everyoneIsReady={false} disabled={false} onStart={() => undefined} />
           }
         >
-          <Stepper
-            label="Nombre de manches"
-            value={`${rounds}`}
-            editable
-            onDecrement={() => setRounds((value) => value - 1)}
-            onIncrement={() => setRounds((value) => value + 1)}
+          <CursorTagOptionsForm options={options} playerCount={4} editable onChange={setOptions} />
+        </SettingsColumn>
+      </div>
+
+      <div className="flex items-stretch gap-6">
+        <SettingsColumn
+          ready={3}
+          total={4}
+          action={<ReadyToggle ready={false} onToggle={() => undefined} />}
+        >
+          <CursorTagOptionsForm
+            options={options}
+            playerCount={4}
+            editable={false}
+            onChange={() => undefined}
           />
-          <Stepper label="Durée d’une manche" value="60 s" editable={false} />
+        </SettingsColumn>
+
+        <SettingsColumn
+          ready={1}
+          total={2}
+          action={
+            <StartGameButton everyoneIsReady={false} disabled={false} onStart={() => undefined} />
+          }
+        >
+          {/* Every bound reached, with two players: one Chat at most. */}
+          <CursorTagOptionsForm
+            options={AT_BOUNDS}
+            playerCount={2}
+            editable
+            onChange={() => undefined}
+          />
         </SettingsColumn>
       </div>
 

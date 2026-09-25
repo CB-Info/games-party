@@ -48,15 +48,23 @@ export function defaultOptions(): CursorTagOptions {
 }
 
 /**
- * Brings each option inside its bounds and onto its step (rules.md, §3). Always at least one Chat
- * and one Runner: the most Chats is one fewer than the players, and never below one, even for a
- * host alone in the lobby.
+ * The most Chats a game of `playerCount` players may have (rules.md, §3): always at least one Chat
+ * and one Runner, so one fewer than the players, and never below one, even for a host alone in the
+ * lobby. The lobby's form reads it too, to know when its « + » stops.
  */
-export function normalizeOptions(options: CursorTagOptions, playerCount: number): CursorTagOptions {
-  const chatCountMax = Math.max(CHAT_COUNT_MIN, playerCount - 1);
+export function chatCountMax(playerCount: number): number {
+  return Math.max(CHAT_COUNT_MIN, playerCount - 1);
+}
 
+/** Brings each option inside its bounds and onto its step (rules.md, §3). */
+export function normalizeOptions(options: CursorTagOptions, playerCount: number): CursorTagOptions {
   return {
-    chatCount: snapToStep(options.chatCount, CHAT_COUNT_MIN, chatCountMax, CHAT_COUNT_STEP),
+    chatCount: snapToStep(
+      options.chatCount,
+      CHAT_COUNT_MIN,
+      chatCountMax(playerCount),
+      CHAT_COUNT_STEP,
+    ),
     roundCount: snapToStep(options.roundCount, ROUND_COUNT_MIN, ROUND_COUNT_MAX, ROUND_COUNT_STEP),
     roundDurationS: snapToStep(
       options.roundDurationS,
