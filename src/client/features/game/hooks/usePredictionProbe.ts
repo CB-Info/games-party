@@ -1,6 +1,6 @@
 import { useEffect, useRef, type RefObject } from "react";
 
-import type { PredictionProbe } from "../../../../client/engine/predictionStats.types";
+import type { PredictionProbe } from "../../../engine/predictionStats.types";
 
 /**
  * The development readout's collector, or a box that stays empty (docs/architecture.md, §6.5).
@@ -19,7 +19,7 @@ export function usePredictionProbe(): RefObject<PredictionProbe | null> {
     }
 
     let alive = true;
-    void import("../../../../client/engine/predictionStats").then((module) => {
+    void import("../../../engine/predictionStats").then((module) => {
       if (alive) {
         probe.current = module.createPredictionStats();
       }

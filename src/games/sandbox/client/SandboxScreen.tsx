@@ -1,8 +1,7 @@
 import { useRef } from "react";
 
-import { CaptureInvite } from "../../../client/features/game/components/CaptureInvite";
+import { CaptureVeils } from "../../../client/features/game/components/CaptureVeils";
 import { DevHud } from "../../../client/features/game/components/DevHud";
-import { PauseOverlay } from "../../../client/features/game/components/PauseOverlay";
 import { useArenaSurface } from "../../../client/features/game/hooks/useArenaSurface";
 import { usePointerLock } from "../../../client/features/game/hooks/usePointerLock";
 import type { GameScreenProps } from "../../gameClient.types";
@@ -58,14 +57,13 @@ export function SandboxScreen({
               the player follows (docs/architecture.md, §6.5). */}
           <canvas ref={canvas} className="block cursor-none rounded-xl" />
 
-          {amPlaying && lock.neverCaptured ? <CaptureInvite onCapture={lock.request} /> : null}
-          {amPlaying && !lock.neverCaptured && !lock.locked ? (
-            <PauseOverlay
-              warning={SANDBOX_PAUSE_WARNING}
-              onResume={lock.request}
-              onLeave={onLeave}
-            />
-          ) : null}
+          <CaptureVeils
+            lock={lock}
+            playing={amPlaying}
+            active
+            warning={SANDBOX_PAUSE_WARNING}
+            onLeave={onLeave}
+          />
         </div>
       </div>
     </main>

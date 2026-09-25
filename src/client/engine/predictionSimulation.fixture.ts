@@ -118,27 +118,25 @@ export function runPredictionSimulation(setup: SimulationSetup): SimulationResul
       returning.push({ view, arrivesAt: arrival("in", now + lagMs) });
     }
 
-    const before = client.predictAt(now);
     // Still means nothing was waiting before this view either: the view that acknowledges the last
     // inputs brings the last correction of the gesture, not a glide.
     const still = now > movingMs && !client.hasPending();
-    let viewArrived = false;
+    let latest: View | null = null;
 
+    // Views that land together are taken as one, the last of them, as a frame of the renderer
+    // takes the latest view it finds: acknowledging the last covers everything before it.
     while (returning.length > 0 && (returning[0]?.arrivesAt ?? Infinity) <= now) {
-      const arrived = returning.shift();
-      if (arrived !== undefined) {
-        client.receive(arrived.view, now);
-        viewArrived = true;
-      }
+      latest = returning.shift()?.view ?? latest;
     }
 
-    if (viewArrived) {
-      const after = client.predictAt(now);
-      maxPredictionJump = Math.max(maxPredictionJump, distance(before, after));
+    const landing = latest === null ? null : client.receive(latest, now);
+    if (landing !== null) {
+      const jump = distance(landing.before, landing.after);
+      maxPredictionJump = Math.max(maxPredictionJump, jump);
       if (still) {
-        maxStillJump = Math.max(maxStillJump, distance(before, after));
+        maxStillJump = Math.max(maxStillJump, jump);
       }
-      if (client.correct(before, after)) {
+      if (landing.snapped) {
         snaps += 1;
       }
     }

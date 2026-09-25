@@ -52,6 +52,36 @@ describe("createInputSender rhythm", () => {
     expect(sent.map((input) => input.seq)).toEqual([0, 1, 2]);
   });
 
+  it("sends at its first beat the movement gathered before it started", () => {
+    // The mouse is captured before React has started the sending: that first movement counts
+    // (docs/architecture.md, §6.5).
+    const sent: CursorInput[] = [];
+    const sender = createInputSender({ send: (input) => sent.push(input), intervalMs: PERIOD_MS });
+
+    sender.add(3, 0, 1);
+    sender.start();
+    vi.advanceTimersByTime(PERIOD_MS);
+
+    expect(sent.map((input) => input.dx)).toEqual([3]);
+  });
+
+  it("forgets what was gathered and not sent when it stops, and keeps counting", () => {
+    const { sent, sender } = senderOver();
+    sender.add(1, 0, 1);
+    vi.advanceTimersByTime(PERIOD_MS);
+
+    sender.add(7, 0, 1);
+    sender.stop();
+    sender.start();
+    sender.add(2, 0, 1);
+    vi.advanceTimersByTime(PERIOD_MS);
+
+    expect(sent.map((input) => [input.seq, input.dx])).toEqual([
+      [0, 1],
+      [1, 2],
+    ]);
+  });
+
   it("stops sending once stopped", () => {
     const { sent, sender } = senderOver();
 

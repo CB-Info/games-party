@@ -15,6 +15,11 @@ export interface InputSender {
   /** One `mousemove` while the pointer is locked, in CSS pixels. */
   add: (movementX: number, movementY: number, scale: number) => void;
   start: () => void;
+  /**
+   * Stops sending, when the pointer lock is lost, and forgets what was gathered and not sent yet:
+   * sent at the next capture, it would move the cursor from wherever it then is — the spawn point
+   * of the next round, in Cursor Tag (docs/architecture.md, §6.5). The count goes on.
+   */
   stop: () => void;
   /**
    * Forgets the count and everything waiting. `seq` restarts at 0 at the start of a game and on
@@ -76,6 +81,7 @@ export function createInputSender({ send, intervalMs, now }: InputSenderDeps): I
         clearInterval(timer);
         timer = null;
       }
+      accumulator.clear();
     },
 
     restart: () => {
