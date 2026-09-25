@@ -1,5 +1,6 @@
 import { PLAYER_COLOR_IDS } from "../../shared/constants";
 import type { PlayerColorId } from "../../shared/types";
+import { parseCubicBezier, type PortalLoop } from "./portalLoop";
 
 /** Every colour the arena is drawn with (docs/design-system.md, §4.1 and §4.2). */
 export interface ArenaColors {
@@ -9,6 +10,12 @@ export interface ArenaColors {
   ink: string;
   inkSecondary: string;
   portal: string;
+  /** The ring of a pair on cooldown for the local player (§12). */
+  portalCooldown: string;
+  freezeFill: string;
+  freezeRing: string;
+  freezeHalo: string;
+  freezeInk: string;
   player: Record<PlayerColorId, string>;
 }
 
@@ -30,13 +37,16 @@ export interface ArenaMetrics {
 export interface ArenaTheme {
   colors: ArenaColors;
   metrics: ArenaMetrics;
+  /** What the portals and the Chat's halo pulse to (§9). */
+  loop: PortalLoop;
 }
 
 /**
- * Builds the theme from any way of reading a CSS variable. The renderer never writes a colour or a
- * size of its own: the design system declares them once, and the canvas reads them (§2).
+ * Builds the theme from any way of reading a CSS variable, and the player's wish for fewer
+ * animations. The renderer never writes a colour, a font or an interface radius of its own: the
+ * design system declares them once, and the canvas reads them (§2).
  */
-export function themeFrom(read: (name: string) => string): ArenaTheme {
+export function themeFrom(read: (name: string) => string, reducedMotion = false): ArenaTheme {
   const player = {} as Record<PlayerColorId, string>;
   PLAYER_COLOR_IDS.forEach((id, index) => {
     player[id] = read(`--color-player-${index + 1}`).trim();
@@ -50,6 +60,11 @@ export function themeFrom(read: (name: string) => string): ArenaTheme {
       ink: read("--color-arena-ink").trim(),
       inkSecondary: read("--color-arena-ink-secondary").trim(),
       portal: read("--color-portal").trim(),
+      portalCooldown: read("--color-portal-cooldown").trim(),
+      freezeFill: read("--color-freeze-fill").trim(),
+      freezeRing: read("--color-freeze-ring").trim(),
+      freezeHalo: read("--color-freeze-halo").trim(),
+      freezeInk: read("--color-freeze-ink").trim(),
       player,
     },
     metrics: {
@@ -58,6 +73,11 @@ export function themeFrom(read: (name: string) => string): ArenaTheme {
       labelFontSize: pixels(read("--type-micro-size")),
       labelFontWeight: pixels(read("--type-micro-font-weight")),
       fontFamily: read("--font-body").trim(),
+    },
+    loop: {
+      durationMs: Number.parseFloat(read("--transition-duration-portal-loop")),
+      curve: parseCubicBezier(read("--ease-portal-loop")),
+      reducedMotion,
     },
   };
 }
@@ -68,7 +88,8 @@ export function themeFrom(read: (name: string) => string): ArenaTheme {
  */
 export function readArenaTheme(): ArenaTheme {
   const style = getComputedStyle(document.documentElement);
-  return themeFrom((name) => style.getPropertyValue(name));
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  return themeFrom((name) => style.getPropertyValue(name), reducedMotion);
 }
 
 function pixels(value: string): number {

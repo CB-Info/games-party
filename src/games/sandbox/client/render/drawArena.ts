@@ -25,6 +25,8 @@ export function drawArena(
           radius: PORTAL_RADIUS,
           letter: pair,
           dashed: pair === "B",
+          pulse: null,
+          cooldown: false,
         });
       }
     }

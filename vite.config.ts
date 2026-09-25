@@ -22,5 +22,8 @@ export default defineConfig({
   test: {
     environment: "node",
     include: ["src/**/*.test.ts", "src/**/*.test.tsx"],
+    // Stylesheets are left out of the tests, but for the theme: a test reads it as text, to check
+    // that the canvas reads only variables it declares.
+    css: { include: [/theme\.css/] },
   },
 });

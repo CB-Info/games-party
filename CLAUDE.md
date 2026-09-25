@@ -202,9 +202,11 @@ src/
       client/
         cursorTagClient.ts      définition client du jeu (icône, aperçu, écran, formulaire)
         CursorTagScreen.tsx     composant racine du jeu
+        pauseWarning.ts         l'avertissement de « Clique pour reprendre », selon le rôle
         components/             CursorTagOptionsForm.tsx, CursorTagPreview.tsx, ArenaScene.tsx…
         hooks/                  useCursorTagRenderer.ts, useTagRoundState.ts, useArenaScene.ts…
-        render/                 drawTagArena.ts, drawTagCursors.ts, tagFrame.ts, tagDrawables.ts
+        render/                 drawTagArena.ts, drawTagCursors.ts, drawRoleMarks.ts, tagFrame.ts,
+                                tagDrawables.ts
 ```
 
 ### Rôle de chaque couche

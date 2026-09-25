@@ -33,6 +33,7 @@ const ARENA_COLORS = [
   ["bg-arena-ink", "Arène texte"],
   ["bg-arena-ink-secondary", "Arène texte secondaire"],
   ["bg-portal", "Portail"],
+  ["bg-portal-cooldown", "Portail en recharge"],
   ["bg-freeze-fill", "Gel remplissage"],
   ["bg-freeze-ring", "Gel anneau"],
   ["bg-freeze-halo", "Gel halo"],
