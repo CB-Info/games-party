@@ -55,11 +55,14 @@ export const PORTAL_RADIUS = 36;
 /** How long a pair of portals stays unusable for the player it has just carried. */
 export const PORTAL_COOLDOWN_MS = 2000;
 
-/** How often a wandering bot Runner picks a new direction, in milliseconds. */
+/** How often a wandering bot, Chat or Runner, picks a new direction, in milliseconds (§12). */
 export const BOT_WANDER_CHANGE_MS = 1000;
 
 /** Largest random angle a bot adds to its direction, in radians. */
 export const BOT_JITTER_RAD = 0.3;
+
+/** How far ahead a bot checks that its way is clear of walls and edges, in logical units. */
+export const BOT_LOOK_AHEAD = 90;
 
 /**
  * The catch-up leash, in milliseconds of travel at the role's speed (rules.md, §6.2). Zero is the
@@ -74,3 +77,15 @@ export const CATCH_UP_MS = 0;
  * `logic/cursorTagOptions.ts` alone, like `CATCH_UP_MS`.
  */
 export const TAG_REWIND_TICKS = 0;
+
+/** A player's state bit in the compact view: they are connected (rules.md, §8.2). */
+export const VIEW_STATE_CONNECTED = 1;
+
+/** A player's state bit in the compact view: a Chat during a round, ready during a preparation. */
+export const VIEW_STATE_CHAT_OR_READY = 2;
+
+/**
+ * Steps per logical unit kept for what the recipient's prediction starts from — their own
+ * position, budget and remainder: tenths (rules.md, §8.2). Everything else is rounded to the unit.
+ */
+export const VIEW_OWN_PRECISION = 10;

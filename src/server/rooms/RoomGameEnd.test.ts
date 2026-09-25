@@ -1,16 +1,23 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { fakeGame, lastFakeGameInstance } from "../../games/fakeGame.fixture";
+import { chattyFakeGame, fakeGame, lastFakeGameInstance } from "../../games/fakeGame.fixture";
 import { RESULTS_AUTO_RETURN_MS } from "../../shared/constants";
 import { addPlayer, createTestRoom } from "./roomTestHarness.fixture";
 
-/** A room with a host and two ready players, ready to start the fake game. */
-function startableRoom() {
+/** The game time a fake game's view shows. */
+function elapsedOf(view: unknown): number {
+  return typeof view === "object" && view !== null && "elapsedMs" in view
+    ? Number(view.elapsedMs)
+    : Number.NaN;
+}
+
+/** A room with a host and two ready players, ready to start a fake game. */
+function startableRoom(gameId = fakeGame.meta.id) {
   const harness = createTestRoom();
   const host = addPlayer(harness.room, "Mika", "c1");
   const nova = addPlayer(harness.room, "Nova", "c2");
   const zippy = addPlayer(harness.room, "Zippy", "c3");
-  harness.room.selectGame(host, fakeGame.meta.id);
+  harness.room.selectGame(host, gameId);
   harness.room.setReady(nova, true);
   harness.room.setReady(zippy, true);
 
@@ -108,6 +115,24 @@ describe("the end of a game", () => {
     expect(outbound.lastState?.status).toBe("results");
     expect(outbound.results.at(-1)?.ranking.at(0)?.playerId).toBe(host);
     expect(outbound.results.at(-1)?.ranking.at(0)?.pointsAwarded).toBe(2);
+  });
+
+  it("sends the events of the last tick before the results", () => {
+    // The last tick sends no view, so nothing else releases its events: they must still leave
+    // before the results, or the room would announce the end before what ended it (§6.3).
+    const { room, host, outbound } = startableRoom(chattyFakeGame.meta.id);
+    room.start(host, false);
+
+    vi.advanceTimersByTime(2000);
+
+    // The last event sent before the results is the last tick's: later than any view, since that
+    // tick sent none. The tick before it also ends with an event, which proves nothing here.
+    const results = outbound.order.indexOf("results");
+    const lastEvent = outbound.events.at(-1)?.event;
+    const latestView = Math.max(...outbound.views.map((view) => elapsedOf(view.payload.view)));
+    expect(outbound.order[results - 1]).toBe("event:ticked");
+    expect(outbound.order.slice(results).includes("event:ticked")).toBe(false);
+    expect(lastEvent?.elapsedMs).toBeGreaterThan(latestView);
   });
 
   it("returns to the lobby on its own after the delay", () => {

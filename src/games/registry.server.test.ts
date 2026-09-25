@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { CURSOR_TAG_META } from "./cursor-tag/shared/meta";
 import { SANDBOX_META } from "./sandbox/shared/meta";
 
 const REAL_NODE_ENV = process.env.NODE_ENV;
@@ -27,8 +28,13 @@ describe("the server registry", () => {
     expect(await listGamesWith("development")).toContain(SANDBOX_META.id);
   });
 
+  it("offers Cursor Tag while developing", async () => {
+    expect(await listGamesWith("development")).toContain(CURSOR_TAG_META.id);
+  });
+
   it("offers nothing at all in production", async () => {
     // The sandbox is a development tool: it must never be playable on the deployed site (§8).
+    // Nor is Cursor Tag yet, whose screen comes later in step 4.
     expect(await listGamesWith("production")).toEqual([]);
   });
 

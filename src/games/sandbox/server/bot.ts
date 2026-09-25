@@ -1,5 +1,4 @@
-import { overlapsAnyWall, type Point } from "../../../shared/cursor/collision";
-import { ARENA_HEIGHT, ARENA_WIDTH } from "../../../shared/constants";
+import { clearHeading } from "../../../shared/cursor/clearHeading";
 import type { CursorInput } from "../../../shared/cursor/cursorInput";
 import { WALLS } from "../../cursor-tag/shared/map";
 import type { BotPolicy } from "../../gameServer.types";
@@ -36,7 +35,14 @@ export const sandboxBot: BotPolicy<CursorInput, never, SandboxView> = {
     // The wobble is added before the way is checked, not after: a direction found clear and then
     // nudged by a fifth of a radian could point straight back into the wall it was avoiding.
     const wander = phaseOf(botPlayerId) - (view.timeLeftMs / 1000) * TURN_RATE + wobble(random);
-    const heading = freeHeading(me, wander) ?? wander;
+    const heading =
+      clearHeading({
+        from: me,
+        heading: wander,
+        radius: SANDBOX_CURSOR_RADIUS,
+        walls: WALLS,
+        lookAhead: LOOK_AHEAD,
+      }) ?? wander;
     // Always the default speed, whatever the host chose for the humans: a bot moving at a known,
     // unchanging pace is the fixed point you compare your own cursor against while trying the
     // speed option, and it is the only speed the view carries no word of anyway.
@@ -51,51 +57,6 @@ export const sandboxBot: BotPolicy<CursorInput, never, SandboxView> = {
     return null;
   },
 };
-
-/**
- * The wandering heading if the way is clear, otherwise the first free direction found by turning
- * away from it. Eight tries is enough to find a way out of any corner of this map, and cheap:
- * three bots at thirty ticks a second is ninety of these a second at worst.
- */
-function freeHeading(from: Point, wander: number): number | null {
-  if (isClear(from, wander)) {
-    return wander;
-  }
-
-  for (let turn = 1; turn <= 8; turn += 1) {
-    const angle = wander + (turn * Math.PI) / 4;
-    if (isClear(from, angle)) {
-      return angle;
-    }
-  }
-
-  return null;
-}
-
-/**
- * True when nothing stands along `LOOK_AHEAD` in that direction. The whole way is sampled, not
- * just its end: a direction that grazes a corner has a clear end point and still walks into the
- * wall on the way there.
- */
-function isClear(from: Point, heading: number): boolean {
-  const step = { x: Math.cos(heading), y: Math.sin(heading) };
-
-  for (const distance of [LOOK_AHEAD / 3, (LOOK_AHEAD * 2) / 3, LOOK_AHEAD]) {
-    const ahead = { x: from.x + step.x * distance, y: from.y + step.y * distance };
-
-    const insideArena =
-      ahead.x >= SANDBOX_CURSOR_RADIUS &&
-      ahead.x <= ARENA_WIDTH - SANDBOX_CURSOR_RADIUS &&
-      ahead.y >= SANDBOX_CURSOR_RADIUS &&
-      ahead.y <= ARENA_HEIGHT - SANDBOX_CURSOR_RADIUS;
-
-    if (!insideArena || overlapsAnyWall(ahead, SANDBOX_CURSOR_RADIUS, WALLS)) {
-      return false;
-    }
-  }
-
-  return true;
-}
 
 function wobble(random: () => number): number {
   return (random() * 2 - 1) * JITTER_RAD;

@@ -40,8 +40,8 @@ export function GameHost({ state, myPlayerId, games, onLeave }: GameHostProps) {
   );
 
   if (game === null) {
-    // Only reachable in a production build with a development-only game selected, which the
-    // registry makes impossible, or if a game were removed between two deployments.
+    // Reached when the server runs a game this client has no screen for: in development, Cursor
+    // Tag until its screen exists (step 4); otherwise only a game removed between two deployments.
     return (
       <main className="flex flex-1 items-start px-12 pb-10 wide:px-14">
         <WaitingMessage>Ce jeu n’est pas disponible ici.</WaitingMessage>

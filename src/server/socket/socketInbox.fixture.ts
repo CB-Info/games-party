@@ -1,11 +1,18 @@
-import type { ServerToClientEvents } from "../../shared/protocol";
-import type { GameViewPayload, RoomState } from "../../shared/types";
+import type { GameEvent, ServerToClientEvents } from "../../shared/protocol";
+import type { GameResults, GameViewPayload, RoomState } from "../../shared/types";
 import type { TestClient } from "./socketTestHarness.fixture";
 
 type SessionInit = Parameters<ServerToClientEvents["session:init"]>[0];
 
 /** Milliseconds a test waits for a message before failing with a useful error. */
 export const ACK_TIMEOUT_MS = 2000;
+
+/** What a game sends, in the order it arrived: what went before what is itself under test. */
+export type Arrival =
+  | { kind: "state"; state: RoomState }
+  | { kind: "view"; payload: GameViewPayload }
+  | { kind: "event"; event: GameEvent }
+  | { kind: "results"; results: GameResults };
 
 /**
  * Everything a client received, kept from the moment it connects. Without this buffer a test that
@@ -15,6 +22,7 @@ interface Inbox {
   sessions: SessionInit[];
   states: RoomState[];
   views: GameViewPayload[];
+  arrivals: Arrival[];
   replaced: boolean;
   listeners: Array<() => void>;
 }
@@ -23,7 +31,14 @@ const inboxes = new WeakMap<TestClient, Inbox>();
 
 /** Records everything the server sends, from the moment the client is created. */
 export function watch(client: TestClient): void {
-  const inbox: Inbox = { sessions: [], states: [], views: [], replaced: false, listeners: [] };
+  const inbox: Inbox = {
+    sessions: [],
+    states: [],
+    views: [],
+    arrivals: [],
+    replaced: false,
+    listeners: [],
+  };
   inboxes.set(client, inbox);
 
   const notify = (): void => {
@@ -38,10 +53,20 @@ export function watch(client: TestClient): void {
   });
   client.on("room:state", (state) => {
     inbox.states.push(state);
+    inbox.arrivals.push({ kind: "state", state });
     notify();
   });
   client.on("game:view", (payload) => {
     inbox.views.push(payload);
+    inbox.arrivals.push({ kind: "view", payload });
+    notify();
+  });
+  client.on("game:event", (event) => {
+    inbox.arrivals.push({ kind: "event", event });
+    notify();
+  });
+  client.on("game:results", (results) => {
+    inbox.arrivals.push({ kind: "results", results });
     notify();
   });
   client.on("session:replaced", () => {
@@ -58,6 +83,7 @@ function awaitInbox<Value>(
   client: TestClient,
   read: (inbox: Inbox) => Value | undefined,
   what: string,
+  timeoutMs = ACK_TIMEOUT_MS,
 ): Promise<Value> {
   const inbox = inboxes.get(client);
   if (inbox === undefined) {
@@ -80,7 +106,7 @@ function awaitInbox<Value>(
     const timer = setTimeout(() => {
       inbox.listeners = inbox.listeners.filter((listener) => listener !== settle);
       reject(new Error(`No matching ${what} received`));
-    }, ACK_TIMEOUT_MS);
+    }, timeoutMs);
 
     if (!settle()) {
       inbox.listeners.push(settle);
@@ -146,6 +172,23 @@ export function waitForNextView(
 /** Every view received so far, in order. Reading it needs no waiting. */
 export function receivedViews(client: TestClient): readonly GameViewPayload[] {
   return inboxes.get(client)?.views ?? [];
+}
+
+/** Room states, views, game events and results, in the order they arrived (§6.3). */
+export function receivedArrivals(client: TestClient): readonly Arrival[] {
+  return inboxes.get(client)?.arrivals ?? [];
+}
+
+/**
+ * The first arrival that satisfies `predicate`, past ones included. A game plays in real time here,
+ * so the wait is the caller's: a whole round takes longer than an answer.
+ */
+export function waitForArrival(
+  client: TestClient,
+  predicate: (arrival: Arrival) => boolean,
+  timeoutMs: number,
+): Promise<Arrival> {
+  return awaitInbox(client, (inbox) => inbox.arrivals.find(predicate), "arrival", timeoutMs);
 }
 
 /** Resolves once this client was told its session was opened elsewhere (§4). */

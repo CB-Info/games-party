@@ -193,37 +193,82 @@ Pendant une manche :
 
 Toutes les informations du jeu sont publiques : pas d'information cachée.
 
+### 8.1 Contenu
+
+La vue, telle que le client et les bots la lisent, une fois décodée par `logic/readView.ts` :
+
 ```ts
-type CursorTagView = {
-  phase: "preparation" | "round";
-  preparationStep: "waiting" | "countdown" | null; // null pendant une manche
-  round: number;               // manche en cours, ou manche à venir pendant la préparation (de 1 à roundCount)
-  roundCount: number;          // nombre total de manches de la partie
-  roundTimeLeftMs: number;     // 0 pendant la préparation
-  readyPlayerIds: string[];    // vide pendant une manche
-  autoStartMsLeft: number | null; // uniquement pendant l'étape attente
-  countdownMsLeft: number | null; // uniquement pendant l'étape compte à rebours
+type CursorTagView = PreparationView | RoundView;
+
+type PreparationView = {
+  phase: "preparation";
+  round: number;                    // la manche à venir, de 1 à roundCount
+  preparationStep: "waiting" | "countdown";
+  autoStartMsLeft: number | null;   // uniquement pendant l'étape attente
+  countdownMsLeft: number | null;   // uniquement pendant l'étape compte à rebours
+  readyPlayerIds: string[];
+  players: Array<{                  // aucun curseur pendant la préparation (4.1)
+    playerId: string;
+    connected: boolean;
+    scoreMs: number;
+  }>;
+  me: Me | null;                    // null pour un spectateur
+};
+
+type RoundView = {
+  phase: "round";
+  round: number;                    // la manche en cours
+  roundTimeLeftMs: number;
   players: Array<{
     playerId: string;
     x: number;
     y: number;
     role: "chat" | "runner";
-    frozenMsLeft: number;      // 0 si non gelé
+    frozenMsLeft: number;           // 0 si non gelé
     connected: boolean;
     scoreMs: number;
   }>;
-  me: {                        // null pour un spectateur
-    lastProcessedSeq: number;
-    budget: number;
-    portalCooldownMs: { A: number; B: number };
-    backlog?: { x: number; y: number }; // reste du rattrapage (6.2), absent quand il est nul
-  } | null;
+  me: Me | null;                    // null pour un spectateur
+};
+
+type Me = {
+  lastProcessedSeq: number;
+  budget: number;                   // 0 pendant la préparation
+  portalCooldownMs: { A: number; B: number }; // sa propre recharge seulement (6.4)
+  backlog: { x: number; y: number }; // reste du rattrapage (6.2), { 0, 0 } quand la vue n'en porte pas
 };
 ```
 
+- **Pendant la préparation**, chaque joueur n'a que sa connexion et son score : il n'y a aucun curseur à dessiner, et ce score sert aux scores provisoires (4.1).
+- **Le nombre de manches** n'est pas dans la vue : il ne change pas pendant la partie, et le client le lit dans les options du jeu de `room:state`, comme le rappel des réglages (4.1).
+- **Après la dernière manche, il n'y a plus de vue** : la room passe aux résultats dès que `isOver()` renvoie `true` (architecture 6.3), et plus rien ne la demande.
 - Les murs, portails et points d'apparition ne sont pas envoyés : le client les lit dans `shared/map.ts`.
 - **Rôle et gel des autres joueurs** : le client les dessine d'après les vues qui encadrent l'instant qu'il affiche (l'instant retardé de l'interpolation, architecture 6.5), et non d'après la dernière vue reçue. Chacun voit ainsi un Coureur devenir Chat là où le serveur l'a touché. Son propre rôle et son propre gel viennent de la dernière vue.
 - La mise en page (HUD, apparence du Chat, du gel et des portails) est définie par le design system.
+
+### 8.2 Vue compacte
+
+Ce qui voyage réellement, écrit pour être petit (architecture 7) : des clés d'une ou deux lettres, et des tableaux de valeurs pour les joueurs. `logic/buildView.ts` la construit, `logic/readView.ts` la décode.
+
+| Phase | Vue envoyée |
+|---|---|
+| Préparation, attente | `{ ph: 0, r, a, p: [[id, e, s], …], m }` |
+| Préparation, compte à rebours | `{ ph: 0, r, c, p: [[id, e, s], …], m }` |
+| Manche | `{ ph: 1, r, t, p: [[id, x, y, e, f, s], …], m }` |
+
+| Clé | Contenu |
+|---|---|
+| `r` | `round` |
+| `a` / `c` | `autoStartMsLeft` / `countdownMsLeft` : la clé présente donne l'étape de la préparation |
+| `t` | `roundTimeLeftMs` |
+| `id`, `x`, `y`, `f`, `s` | `playerId`, position, `frozenMsLeft`, `scoreMs` |
+| `e` | état du joueur : 1 s'il est connecté, plus 2 s'il est Chat pendant une manche, ou prêt pendant la préparation. Ce bit remplace la liste `readyPlayerIds`, qui répéterait les identifiants. |
+| `m` | `[lastProcessedSeq, budget, recharge A, recharge B]`, suivi de `backlog.x, backlog.y` seulement quand le reste n'est pas nul. Absent pour un spectateur. |
+
+**Arrondis :**
+- Millisecondes à l'entier. Le score reste en millisecondes : le classement en direct trie sur le score exact (7).
+- Positions des autres joueurs à l'entier : ils sont interpolés, et une unité vaut moins d'un pixel.
+- **Position du destinataire au dixième**, dans sa propre ligne de `p`, comme son budget et son reste : c'est de là que repart sa prédiction (architecture 6.5). Près d'un coin de mur, une position arrondie à l'entier peut chevaucher le mur, et la prédiction d'un curseur qui longe le pilier central se tromperait alors de 5 à 7 unités à un coin sur dix, voire sur cinq. Au dixième, c'est bien plus rare, pour 4 octets par vue.
 
 ## 9. Événements (`game:event`)
 
@@ -237,7 +282,7 @@ type CursorTagView = {
 | `readyChanged` | `{ playerId, ready }` | Un joueur se déclare prêt ou ne l'est plus pendant la préparation |
 | `preparationCountdown` | `{ round, auto }` | Début du compte à rebours ; `auto: true` s'il est déclenché par le délai de départ automatique |
 
-Tous les événements sont envoyés à toute la room.
+Tous les événements sont envoyés à toute la room. Ceux d'un tick partent après les vues de ce tick (architecture 6.3).
 
 ## 10. Input et actions
 
@@ -263,11 +308,14 @@ Tous les événements sont envoyés à toute la room.
 
 ## 12. Bot
 
-À chaque tick, pour un bot non gelé :
-- **Chat :** direction vers le Coureur connecté le plus proche.
-- **Coureur :** direction opposée au Chat non gelé le plus proche. S'il n'y en a aucun : direction aléatoire, changée toutes les `BOT_WANDER_CHANGE_MS`.
+À chaque tick d'une manche, pour un bot non gelé :
+- **Chat :** direction vers le Coureur connecté le plus proche. S'il n'y en a aucun : errance.
+- **Coureur :** direction opposée au Chat non gelé et connecté le plus proche. Un Chat déconnecté est ignoré : il ne peut toucher personne (6.3). S'il n'y en a aucun : errance.
+- **Errance :** direction aléatoire, changée toutes les `BOT_WANDER_CHANGE_MS`. Un bot ne garde aucune mémoire d'un tick à l'autre : la direction est tirée d'un mélange de son identifiant, de la manche et de la tranche de temps en cours, `floor(temps restant de la manche / BOT_WANDER_CHANGE_MS)`. Elle reste la même pendant toute la tranche et diffère d'un bot à l'autre.
 - Un angle aléatoire compris entre −`BOT_JITTER_RAD` et +`BOT_JITTER_RAD` est ajouté à la direction.
+- **Murs :** le bot vérifie ensuite que la direction est libre sur `BOT_LOOK_AHEAD` unités, murs et bords de l'arène compris. Sinon, il essaie les sept autres huitièmes de tour, en tournant toujours dans le même sens, et prend la première direction libre ; s'il n'en trouve aucune, il garde la sienne. L'angle aléatoire est ajouté avant cette vérification : une direction trouvée libre, puis décalée, pourrait repartir dans le mur.
 - L'input produit a pour longueur `vitesse maximale du rôle × dt / 1000`. Il suit le même déplacement qu'un joueur (6.2), murs compris.
+- Un bot gelé, ou hors d'une manche, n'envoie aucun input : il serait ignoré (6.2, 6.6). Pendant la préparation, il envoie l'action `ready` dès l'étape attente (4.1).
 
 ## 13. Tests à écrire (`logic/`)
 
@@ -327,8 +375,11 @@ Tous les événements sont envoyés à toute la room.
 | `PORTAL_COOLDOWN_MS` | `2000` |
 | `BOT_WANDER_CHANGE_MS` | `1000` |
 | `BOT_JITTER_RAD` | `0.3` |
+| `BOT_LOOK_AHEAD` | `90` (unités logiques) |
 | `CATCH_UP_MS` | `0` (millisecondes de trajet à la vitesse du rôle ; 0 = pas de rattrapage) |
 | `TAG_REWIND_TICKS` | `0` (ticks ; 0 = pas de rembobinage) |
+| `VIEW_STATE_CONNECTED` / `VIEW_STATE_CHAT_OR_READY` | `1` / `2` (bits de l'état `e` d'un joueur dans la vue compacte, 8.2) |
+| `VIEW_OWN_PRECISION` | `10` (dixièmes : précision de la position, du budget et du reste du destinataire, 8.2) |
 
 Vitesses, rayons et durées sont des valeurs de départ, à ajuster après le test avec le groupe en modifiant ce tableau. `RUNNER_MAX_SPEED`, `CHAT_SPEED_MULTIPLIER`, `CATCH_UP_MS` et `TAG_REWIND_TICKS` sont en outre des décisions provisoires, comparées en partie réelle à la sous-étape 4e (sections 15.2 et 15.3). Les tests sont écrits contre ces constantes, jamais contre leurs valeurs, pour qu'en changer une ne demande que ce tableau.
 

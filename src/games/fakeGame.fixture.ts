@@ -11,6 +11,7 @@ import type { GameContext, GameInstance } from "./gameServer.types";
 
 export const FAKE_GAME_ID = "fake-game";
 export const OTHER_FAKE_GAME_ID = "other-fake-game";
+export const CHATTY_FAKE_GAME_ID = "chatty-fake-game";
 export const FAKE_GAME_MIN_PLAYERS = 2;
 export const FAKE_GAME_MAX_PLAYERS = 4;
 
@@ -41,11 +42,14 @@ export class FakeGameInstance implements GameInstance<FakeInput, FakeAction, Fak
   private readonly scores = new Map<string, number>();
   private readonly ctx: GameContext;
   private readonly durationMs: number;
+  /** Sends an event at each tick and at each action, like a game with something to announce. */
+  private readonly chatty: boolean;
   private elapsedMs = 0;
 
-  constructor(ctx: GameContext, durationMs: number) {
+  constructor(ctx: GameContext, durationMs: number, chatty: boolean) {
     this.ctx = ctx;
     this.durationMs = durationMs;
+    this.chatty = chatty;
 
     for (const player of ctx.players()) {
       this.scores.set(player.playerId, 0);
@@ -62,11 +66,18 @@ export class FakeGameInstance implements GameInstance<FakeInput, FakeAction, Fak
     }
 
     this.scores.set(playerId, (this.scores.get(playerId) ?? 0) + action.amount);
+    if (this.chatty) {
+      this.ctx.emitEvent({ type: "scored", playerId });
+    }
     return { ok: true };
   }
 
   tick(dtMs: number): void {
     this.elapsedMs += dtMs;
+    if (this.chatty) {
+      // The same clock as the view, so that a test can pair each event with the view of its tick.
+      this.ctx.emitEvent({ type: "ticked", elapsedMs: this.elapsedMs });
+    }
   }
 
   onPlayerDisconnect(playerId: string): void {
@@ -104,7 +115,7 @@ export class FakeGameInstance implements GameInstance<FakeInput, FakeAction, Fak
 /** Set by `create`, so that a test can act on the running instance. */
 export let lastFakeGameInstance: FakeGameInstance | null = null;
 
-function createFakeGame(id: string, name: string): RegisteredGame {
+function createFakeGame(id: string, name: string, chatty = false): RegisteredGame {
   return defineGame<FakeInput, FakeAction, FakeGameView, FakeOptions>({
     meta: {
       id,
@@ -124,7 +135,7 @@ function createFakeGame(id: string, name: string): RegisteredGame {
       ),
     }),
     create: (ctx, options) => {
-      lastFakeGameInstance = new FakeGameInstance(ctx, options.durationMs);
+      lastFakeGameInstance = new FakeGameInstance(ctx, options.durationMs, chatty);
       return lastFakeGameInstance;
     },
     bot: {
@@ -138,3 +149,9 @@ export const fakeGame = createFakeGame(FAKE_GAME_ID, "Jeu de test");
 
 /** A second game, so that tests can switch from one to another (docs/architecture.md, §5.8). */
 export const otherFakeGame = createFakeGame(OTHER_FAKE_GAME_ID, "Autre jeu de test");
+
+/**
+ * The fake game, with an event at every tick and every action: what it takes to see whether the
+ * views of a tick survive the events sent with them (docs/architecture.md, §6.3).
+ */
+export const chattyFakeGame = createFakeGame(CHATTY_FAKE_GAME_ID, "Jeu de test bavard", true);
